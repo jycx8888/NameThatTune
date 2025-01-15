@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NameThatTune</title>
     <link rel="icon" href="icon/favicon.ico" type="image/png">
+    <link rel="stylesheet" href="user_header_footer.css">
     <style>
         html, body {
             margin: 0;
@@ -18,15 +19,6 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-        }
-
-        #header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background-color: rgb(77, 72, 144);
-            color: rgb(255, 255, 255);
         }
 
         #loginOrRegister {
@@ -94,9 +86,9 @@
             overflow: hidden;
             width: 100%;
             display: flex;
-            justify-content: center; /* Centers the gallery horizontally */
-            align-items: center; /* Centers the gallery vertically */
-            height: 300px; /* Set a height to center it vertically */
+            justify-content: center;
+            align-items: center;
+            height: 300px;
         }
 
         #quiz-gallery {
@@ -107,11 +99,11 @@
         }
 
         @keyframes scroll-left {
-            0% {
+            from {
                 transform: translateX(0);
             }
-            100% {
-                transform: translateX(calc(-100% / 2));
+            to {
+                transform: translateX(-50%);
             }
         }
 
@@ -127,7 +119,7 @@
             cursor: pointer;
             overflow: hidden;
             margin: 10px;
-            transition: transform 0.3s ease; /* Add a transition for smooth zoom effect */
+            transition: transform 0.3s ease;
         }
 
         .quiz-card img {
@@ -144,71 +136,7 @@
         }
 
         .quiz-card:hover {
-            transform: scale(1.1); /* Zoom in the card on hover */
-        }
-
-        #footer {
-            clear: both;
-            height: 250px;
-            width: 100%;
-            background-color: black;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            font-family: "Lalezar", system-ui;
-            font-weight: 1000;
-            font-size: small;
-        }
-
-        #footer {
-            clear: both;
-            height: 144px;
-            width: 100%;
-            background-color: black;
-            color: white;
-            display:inline-block;
-            position: relative;
-            bottom: 0;
-            font-family: "Lalezar", system-ui;
-            font-weight: 1000;
-            font-size: small;
-            justify-content: space-between;
-        }
-
-        #footer ul {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            padding: 0;
-        }
-
-        #footer ul li {
-            display: inline;
-            list-style-type: none;
-            font-size: 16px;
-
-            padding: 16px 16px 4px 16px;
-            text-align: center;
-        }
-
-        #footer #instagram {
-            width: 30px;
-            height: 30px;
-            vertical-align: middle;
-        }
-
-        #footer #facebook {
-            width: 26px;
-            height: 26px;
-            vertical-align: middle;
-            margin-left: 4px;
-        }
-
-        #footer #copy {
-            text-align: center;
-            font-size: 16px;
+            transform: scale(1.1);
         }
 
         #start-button {
@@ -228,7 +156,6 @@
         #start-button:hover {
             background-color: #000000;
         }
-        
     </style>
 </head>
 <body>
@@ -239,7 +166,7 @@
     <div id="header">
         <h1>NameThatTune</h1>
         <div id="loginOrRegister" onclick="">
-            <img src="icon/avatar.png" alt="avatar">
+            <img src="icon/account.png" alt="avatar">
             <span id="username">Username</span>
         </div>
     </div>
@@ -256,7 +183,6 @@
             <div id="quiz-gallery"></div>
         </div>
 
-        <!-- Button to start -->
         <button id="start-button">Click to Start</button>
     </div>
 
@@ -266,8 +192,8 @@
             <li>Terms and Conditions</li>
             <li>Privacy Policy</li>
             <li>Contact Us
-                <img src="icon/facebookLogo.png" alt="facebook" id="facebook">&nbsp;
-                <img src="icon/instagramLogo.png" alt="instagram" id="instagram">
+                <img src="icon/facebook.png" alt="facebook" id="facebook">&nbsp;
+                <img src="icon/instagram.png" alt="instagram" id="instagram">
             </li>
         </ul>
         
@@ -301,14 +227,12 @@
 
         const audioElement = document.getElementById('background-audio');
 
-        // Define audio sources for each category
         const audioSources = {
             English: 'Background Audio/Glad You Came.mp3',
             Japanese: 'Background Audio/SPECIALZ.mp3',
             Korean: 'Background Audio/HARU HARU.mp3',
         };
 
-        // Function to change audio
         function changeAudio(category) {
             if (audioSources[category]) {
                 audioElement.src = audioSources[category];
@@ -341,16 +265,32 @@
                 gallery.appendChild(card);
             });
 
-            // Clone the cards for continuous scrolling
+            setupContinuousScrolling();
+
+            changeAudio(selectedCategory);
+        });
+
+        function setupContinuousScrolling() {
+            const gallery = document.getElementById('quiz-gallery');
             const cards = Array.from(gallery.children);
+
+            // Clone the child elements to ensure seamless looping
             cards.forEach(card => {
                 const clone = card.cloneNode(true);
                 gallery.appendChild(clone);
             });
 
-            // Change audio based on the selected category
-            changeAudio(selectedCategory);
-        });
+            const galleryWidth = gallery.scrollWidth;
+
+            // Set the width of the gallery to twice its content to facilitate the seamless animation
+            gallery.style.width = `${galleryWidth}px`;
+
+            // Reset animation
+            gallery.style.animation = 'none';
+            gallery.offsetHeight; // Trigger reflow
+            gallery.style.animation = 'scroll-left 20s linear infinite';
+}
+
 
         document.getElementById('start-button').addEventListener('click', function () {
             const selectedCategory = document.getElementById('category-dropdown').value;
