@@ -36,6 +36,55 @@ if ($result->num_rows > 0) {
 }
 
 $stmt->close();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['update_username'])) {
+        $new_username = $_POST['newUsername'];
+
+        $stmt = $conn->prepare("UPDATE user SET Username = ? WHERE Username = ?");
+        $stmt->bind_param("ss", $new_username, $username);
+        if ($stmt->execute()) {
+            $_SESSION['username'] = $new_username;
+            $username = $new_username;
+        } else {
+            echo "Error updating username.";
+        }
+
+        $stmt->close();
+    }
+
+    if (isset($_POST['update_password'])) {
+        $new_password =$_POST['newPassword'];
+        $stmt = $conn->prepare("UPDATE user SET Password = ? WHERE Username = ?");
+        $stmt->bind_param("ss", $new_password, $username);
+        if ($stmt->execute()) {
+        } else {
+            echo "Error updating password.";
+        }
+        $stmt->close();
+    }
+
+    if (isset($_POST['update_profile'])) {
+        $profile_picture = $_FILES['ProfilePicture']['name'];
+        $target_dir = "uploads/";
+        $target_file = $target_dir . basename($profile_picture);
+
+        if (move_uploaded_file($_FILES['ProfilePicture']['tmp_name'], $target_file)) {
+            $stmt = $conn->prepare("UPDATE user SET ProfilePicture = ? WHERE Username = ?");
+            $stmt->bind_param("ss", $target_file, $username);
+            if ($stmt->execute()) {
+                $profile_picture_path = $target_file;
+            } else {
+                echo "Error updating profile picture.";
+            }
+
+            $stmt->close();
+        } else {
+            echo "Error uploading file.";
+        }
+    }
+}
+
 $conn->close();
 ?>
 
@@ -151,9 +200,9 @@ $conn->close();
         <div class="popup">
             <span class="close-btn" onclick="closePopup('profilePopup')">&times;</span>
             <h2>Change Profile Image</h2>
-            <form action="update_profile.php" method="post" enctype="multipart/form-data">
+            <form action="" method="post" enctype="multipart/form-data">
                 <input type="file" name="ProfilePicture" id="profileImageInput">
-                <button type="submit">Save</button>
+                <button type="submit" name="update_profile">Save</button>
             </form>
         </div>
     </div>
@@ -163,9 +212,9 @@ $conn->close();
         <div class="popup">
             <span class="close-btn" onclick="closePopup('usernamePopup')">&times;</span>
             <h2>Change Username</h2>
-            <form onsubmit="return validateNewUsername()" action="update_username.php" method="post">
+            <form onsubmit="return validateNewUsername()" action="" method="post">
                 <input type="text" name="newUsername" id="usernameInput" placeholder="Enter new username">
-                <button type="submit">Save</button>
+                <button type="submit" name="update_username">Save</button>
             </form>
         </div>
     </div>
@@ -175,7 +224,7 @@ $conn->close();
         <div class="popup">
             <span class="close-btn" onclick="closePopup('passwordPopup')">&times;</span>
             <h2>Change Password</h2>
-            <form onsubmit="return validateNewPassword()" action="update_password.php" method="post">
+            <form onsubmit="return validateNewPassword()" action="" method="post">
                 <div style="position: relative;">
                     <input type="password" name="newPassword" id="newPasswordInput" placeholder="Enter new password" required>
                     <span class="toggle-password"  style="position: absolute; right: 15px; object-fit: contain; top: 50%; transform: translateY(-50%); cursor: pointer;">
@@ -188,7 +237,7 @@ $conn->close();
                         <img src="Icon/hide.png" name alt="Show Password" onclick="togglePasswordVisibility('confirmPasswordInput',this)" style="width: 20px; height: 20px;">
                     </span>
                 </div>
-                <button type="submit">Save</button>
+                <button type="submit" name="update_password">Save</button>
             </form>
         </div>
     </div>
