@@ -7,30 +7,13 @@
     <link rel="stylesheet" href="user_header_footer.css">
     <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: rgb(104, 99, 174);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-
         main {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(3, auto);
             gap: 20px;
             place-items: center; /* Centers items horizontally and vertically */
-            min-height: 50vh; /* Ensures proper spacing */
+            min-height: 92vh; /* Ensures proper spacing */
         }
 
         .option-box {
@@ -63,21 +46,21 @@
     <div id="header">
         <h1>NameThatTune</h1>
         <div id="login" onclick="">
-            <img src="avatar.png" alt="avatar">
+            <img src="Icon/account.png" alt="avatar">
             <p>Username</p>
         </div>
     </div>
 
     <main>
-        <div class="option-box" onclick="window.location.href='quizManagementPage.php'">
+        <div class="option-box" onclick="window.location.href='admin_quiz_management.php'">
             Quiz 
             <br>Management</br>
         </div>
-        <div class="option-box" onclick="window.location.href='userManagementPage.php'">
+        <div class="option-box" onclick="window.location.href='admin_userManagementPage.php'">
             User
             <br>Management</br>
         </div>
-        <div class="option-box" onclick="window.location.href='analyticPage.php'">
+        <div class="option-box" onclick="window.location.href='admin_analyticPage.php'">
             Analytics
         </div>
     </main>
@@ -88,8 +71,8 @@
             <li>Terms and Conditions</li>
             <li>Privacy Policy</li>
             <li>Contact Us
-                <img src="facebookLogo.png" alt="facebook" id="facebook">
-                <img src="instagramLogo.png" alt="instagram" id="instagram">
+                <img src="Icon/facebook.png" alt="facebook" id="facebook">
+                <img src="Icon/instagram.png" alt="instagram" id="instagram">
             </li>
         </ul>
         <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
