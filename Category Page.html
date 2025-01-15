@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+
+        body {
+            background-color: rgb(104, 99, 174);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #header{
+            background-color: gray;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 72px;
+        }
+
+        #header h1 {
+            font-family: "Lalezar", system-ui;
+            font-size: 36px;
+            font-weight: 1000;
+            font-style: normal;
+            padding-bottom: 4px;
+            margin-left: 60px;
+        }
+
+        #login {
+            width: 180px;
+            height: 48px;
+            background-color:white;
+            border-radius: 10px;
+            display: flex;
+            justify-content: left;
+            align-items: center;
+            margin-right: 60px;
+        }
+
+        #login img {
+            width: 30px; /* Adjust the size of the avatar */
+            height: 30px;
+            border-radius: 50%;
+            margin-left: 12px;
+        }
+
+        #login p {
+            font-family: "Lalezar", system-ui;
+            font-size: 20px;
+            font-weight: 1000;
+            font-style: normal;
+            margin-left: 12px;
+            padding-bottom: 1px;
+        }
+
+        #content {
+            height: 785px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #content #category {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            width: 300px;
+            height: 60px;
+            margin-top: 96px;
+            border-radius: 10px;
+        }
+
+        #content #category p {
+            display: inline-block;
+            font-family: "Lalezar", system-ui;
+            font-size: 20px;
+            font-weight: 1000;
+            font-style: normal;
+            margin-left: 12px;
+        }
+
+        #content #category #music {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+        }
+
+        #content #category #down {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-left: 12px;
+        }
+
+        #content #quiz {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 48px;
+        }
+
+        #content #quiz div{
+            width: 300px;
+            height: 300px;
+            background-color: white;
+            margin: 0 30px;
+            border-radius: 10px;
+        }
+
+        
+        #footer {
+            clear: both;
+            height: 144px;
+            width: 100%;
+            background-color: black;
+            color: white;
+            display:inline-block;
+            bottom: 0;
+            font-family: "Lalezar", system-ui;
+            font-weight: 1000;
+            font-size: small;
+            justify-content: space-between;
+            align-self: end;
+        }
+
+        #footer ul {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            padding: 0;
+        }
+
+        #footer ul li {
+            display: inline;
+            list-style-type: none;
+            font-size: 16px;
+            padding: 16px 16px 4px 16px;
+            text-align: center;
+        }
+
+        #footer #instagram {
+            width: 30px;
+            height: 30px;
+            vertical-align: middle;
+        }
+
+        #footer #facebook {
+            width: 26px;
+            height: 26px;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+
+        #footer #copy {
+            text-align: center;
+            font-size: 16px;
+        }
+
+        </style>
+</head>
+
+<body>
+    <div id="header">
+        <h1>NameThatTune</h1>
+        <div id="login" onclick="">
+            <img src="account.png" alt="avatar">
+            <p>Username</p>
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="category">
+            <img src="music.png" alt="music" id="music">
+            <p>Select Category...</p>
+            <img src="down.png" alt="down" id="down">
+        </div>
+        
+        <div id="quiz">
+            <div>
+                <img src="" alt="">
+            </div>
+            <div>
+                <img src="" alt="">
+            </div>
+            <div>
+                <img src="" alt="">
+            </div>
+        </div>
+    </div>
+
+
+    
+    <div id="footer">
+        <ul class="nav">
+            <li>About Us</li>
+            <li>Terms and Conditions</li>
+            <li>Privacy Policy</li>
+            <li>Contact Us
+                <img src="facebook.png" alt="facebook" id="facebook">&nbsp;
+                <img src="instagram.png" alt="instagram" id="instagram">
+            </li>
+        </ul>
+        
+        <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
+    </div>
+</body>
+</html>
