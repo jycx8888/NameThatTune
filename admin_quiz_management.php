@@ -5,32 +5,198 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        /* Same CSS as provided earlier */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body {
+            background-color: rgb(104, 99, 174);
+        }
+
+        #header {
+            background-color: gray;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 72px;
+        }
+
+        #header h1 {
+            font-family: "Lalezar", system-ui;
+            font-size: 36px;
+            font-weight: 1000;
+            font-style: normal;
+            padding-bottom: 4px;
+            margin-left: 60px;
+        }
+
+        #login {
+            width: 180px;
+            height: 48px;
+            background-color: white;
+            border-radius: 10px;
+            display: flex;
+            justify-content: left;
+            align-items: center;
+            margin-right: 60px;
+        }
+
+        #login img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-left: 12px;
+        }
+
+        #login p {
+            font-family: "Lalezar", system-ui;
+            font-size: 20px;
+            font-weight: 1000;
+            font-style: normal;
+            margin-left: 12px;
+            padding-bottom: 1px;
+        }
+
+        #content {
+            background-color: #f4f4f4;
+            width: 80%;
+            max-width: 600px; /* Reduced max-width for a smaller section */
+            margin: 1rem auto;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-align: center; /* Center the title for a cleaner look */
+        }
+
+        .search-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: center; /* Center the search bar */
+            margin-bottom: 1rem;
+        }
+
+        .search-bar select, .search-bar input {
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: calc(50% - 0.5rem); /* Take up 50% width */
+            min-width: 120px; /* Ensure elements are not too small */
+        }
+
+        .search-bar button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            background-color: rgb(104, 99, 174);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9rem; /* Smaller font size for the table */
+        }
+
+        th, td {
+            padding: 0.5rem;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: rgb(104, 99, 174);
+            color: white;
+        }
+
+        .actions a {
+            font-size: 0.85rem; /* Reduced font size for actions */
+            color: #ACD7EC;
+            text-decoration: none;
+        }
+        .actions a:hover {
+            text-decoration: underline;
+            color: blue;
+        }
+
+        .back-button {
+            display: block;
+            width: fit-content;
+            padding: 0.6rem 1rem;
+            background-color: blueviolet;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            margin: 1rem auto 0;
+            font-size: 0.9rem; /* Reduced font size for the button */
+        }
+
+        #footer {
+            background-color: black;
+            color: white;
+            font-family: "Lalezar", system-ui;
+            font-weight: 1000;
+            font-size: 12px;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: auto; /* Push footer to the bottom */
+            width: 100%; /* Ensure footer spans full width */
+        }
+
+        #footer ul {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            padding: 0;
+        }
+
+        #footer ul li {
+            display: inline;
+            list-style-type: none;
+            font-size: 12px;
+            padding: 5px 10px;
+            text-align: center;
+        }
+
+        #footer #instagram {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+        }
+
+        #footer #facebook {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+
+        #footer #copy {
+            font-size: 12px;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
-    <?php
-    session_start();
-
-    $servername = "localhost";
-    $dbusername = "root"; // Database username
-    $dbpassword = ""; // Database password
-    $dbname = "namethattune";
-
-    // Create connection
-    $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
-
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-    echo "<p style='text-align: center; color: green;'>Connected successfully</p>";
-    ?>
-
     <div id="header">
         <h1>NameThatTune</h1>
         <div id="login" onclick="">
-            <img src="account.png" alt="User avatar">
+            <img src="account.png" alt="avatar">
             <p>Username</p>
         </div>
     </div>
@@ -63,26 +229,33 @@
                 </tr>
             </thead>
             <tbody id="quizTable">
-                <?php
-                // Fetch quiz data from the database
-                $sql = "SELECT quiz_id, name, num_questions, category FROM quizzes";
-                $result = $conn->query($sql);
-
-                if ($result->num_rows > 0) {
-                    // Output data of each row
-                    while($row = $result->fetch_assoc()) {
-                        echo "<tr>";
-                        echo "<td>" . $row["quiz_id"] . "</td>";
-                        echo "<td>" . $row["name"] . "</td>";
-                        echo "<td>" . $row["num_questions"] . "</td>";
-                        echo "<td>" . $row["category"] . "</td>";
-                        echo "<td class='actions'><a href='#'>Edit</a> | <a href='#'>Delete</a></td>";
-                        echo "</tr>";
-                    }
-                } else {
-                    echo "<tr><td colspan='5'>No quizzes found</td></tr>";
-                }
-                ?>
+                <tr>
+                    <td>Q001</td>
+                    <td>80s Classics</td>
+                    <td>10</td>
+                    <td>English</td>
+                    <td class="actions">
+                        <a href="#">Edit</a> | <a href="#">Delete</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Q002</td>
+                    <td>90s Classics</td>
+                    <td>10</td>
+                    <td>English</td>
+                    <td class="actions">
+                        <a href="#">Edit</a> | <a href="#">Delete</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Q003</td>
+                    <td>00s Classics</td>
+                    <td>10</td>
+                    <td>English</td>
+                    <td class="actions">
+                        <a href="#">Edit</a> | <a href="#">Delete</a>
+                    </td>
+                </tr>
             </tbody>
         </table>
 
