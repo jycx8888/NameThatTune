@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['username'])) {
-    header("Location: login_user.php");
+    header("Location: user_mainPage.php");
     exit();
 }
 
@@ -24,9 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['newUsername'])) {
     $stmt->bind_param("ss", $newUsername, $username);
     if ($stmt->execute()) {
         $_SESSION['username'] = $newUsername;
-        header("Location: mainPage_user.php?status=success");
+        header("Location: user_mainPage.php?status=success");
     } else {
-        header("Location: mainPage_user.php?status=error");
+        header("Location: user_mainPage.php?status=error");
     }
     $stmt->close();
 }

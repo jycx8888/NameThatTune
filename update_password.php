@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['username'])) {
-    header("Location: login_user.php");
+    header("Location: user_login.php");
     exit();
 }
 
@@ -25,16 +25,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['newPassword']) && isse
         $stmt = $conn->prepare("UPDATE user SET Password = ? WHERE Username = ?");
         $stmt->bind_param("ss", $newPassword, $username);
         if ($stmt->execute()) {
-            header("Location: mainPage_user.php?status=success");
+            header("Location: user_mainPage.php?status=success");
         } else {
-            header("Location: mainPage_user.php?status=error");
+            header("Location: user_mainPage.php?status=error");
         }
         $stmt->close();
     }else {
-        header("Location: mainPage_user.php?status=error");
+        header("Location: user_mainPage.php?status=error");
     }
 }else {
-    header("Location: mainPage_user.php?status=error");
+    header("Location: user_mainPage.php?status=error");
 }
 
 $conn->close();
