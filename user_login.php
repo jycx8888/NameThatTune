@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $row = $result->fetch_assoc();
         $_SESSION['username'] = $username;
         $login_success = true;
-        header("Location: mainPage_user.php");
+        header("Location: user_mainPage.php");
         exit();
     } else {
         // Login failed
@@ -305,7 +305,7 @@ $conn->close();
     <div id="login-container">
         <div id="login">
             <img src="Icon/logo.jpg" class="logo-image" alt="logo">
-            <form onsubmit="return validateForm()" action="login_user.php" method="post">
+            <form onsubmit="return validateForm()" action="user_login.php" method="post">
                 <input type="text" id="Username" name="username" placeholder="Enter your name"><br><br>
                 <div class="password-container">
                     <input type="password" id="Password" name="password" placeholder="Enter your password">
@@ -315,7 +315,7 @@ $conn->close();
                     <input type="submit" class="submit-button" value="Login">
                 </div>
                 <div id="createAccount-container">
-                    <span class="createAccount">No account?  <a href="register_user.php" target="_blank">click here</a></span><br>
+                    <span class="createAccount">No account?  <a href="user_register.php" target="_blank">click here</a></span><br>
                 </div> 
                 <?php
                     if (isset($login_error)) {
@@ -379,7 +379,7 @@ $conn->close();
 
         <?php if ($login_success): ?>
             alert('Login successfully, welcome <?php echo htmlspecialchars($username); ?>');
-            window.location.href = 'mainPage_user.php';
+            window.location.href = 'user_mainPage.php';
         <?php endif; ?>
 
         function showWarning(message) {
@@ -395,7 +395,7 @@ $conn->close();
         }
     
         function redirectToRegister() {
-            window.location.href = 'register_user.php';
+            window.location.href = 'user_register.php';
         }
     </script>
 </body>

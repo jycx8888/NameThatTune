@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "INSERT INTO user (UserID, Username, Password, DateJoined, AnswerCorrectRate, ProfilePicture) VALUES ('$userID', '$username', '$password', '$dateJoined', '$answerCorrectRate', '$profilePicture')";
  
     if ($conn->query($sql) === TRUE) {
-        echo "<script>alert('Register successfully!'); window.location.href = 'login_user.php';</script>";
+        echo "<script>alert('Register successfully!'); window.location.href = 'user_login.php';</script>";
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
@@ -292,7 +292,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div id="register-container">
         <div id="register">
             <img src="Icon/logo.jpg" class="logo-image" alt="logo">
-            <form onsubmit="return validateForm()" action="register_user.php" method="post">
+            <form onsubmit="return validateForm()" action="user_register.php" method="post">
                 <input type="text" id="Username" name="username" placeholder="Username"><br><br>
                 <div class="password-container">
                     <input type="password" id="Password" name="password" placeholder="Password">
@@ -387,7 +387,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         function redirectToLogin() {
-            window.location.href = "login_user.php";
+            window.location.href = "user_login.php";
         }
 
         function showWarning(message) {

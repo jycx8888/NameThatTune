@@ -2,7 +2,7 @@
 session_start();
 
 if (!isset($_SESSION['username'])) {
-    header("Location: login_user.php");
+    header("Location: user_login.php");
     exit();
 }
 
@@ -613,7 +613,7 @@ $conn->close();
         }
 
         function logout() {
-            window.location.href = 'login_user.php'; // Redirect to login page
+            window.location.href = 'user_login.php'; // Redirect to login page
         }
 
         document.getElementById('volumeSlider').addEventListener('input', function() {
