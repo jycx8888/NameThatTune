@@ -89,8 +89,6 @@ if (isset($_GET['search'])) {
     <link rel="stylesheet" href="user_header_footer.css">
     <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
-
-
         main {
             font-family: "Lalezar", system-ui;
             font-size: 20px;
