@@ -86,122 +86,33 @@ if (isset($_GET['search'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NameThatTune - User Information</title>
+    <link rel="stylesheet" href="user_header_footer.css">
+    <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            background-color: rgb(104, 99, 174);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
 
-        #header {
-            background-color: gray;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 72px;
-            width: 100%;
-        }
 
-        #header h1 {
-            font-family: "Lalezar", system-ui;
-            font-size: 36px;
-            font-weight: 1000;
-            padding-bottom: 4px;
-            margin-left: 60px;
-        }
-
-        #login {
-            width: 180px;
-            height: 48px;
-            background-color: white;
-            border-radius: 10px;
-            display: flex;
-            justify-content: left;
-            align-items: center;
-            margin-right: 60px;
-        }
-
-        #login img {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            margin-left: 12px;
-        }
-
-        #login p {
+        main {
             font-family: "Lalezar", system-ui;
             font-size: 20px;
             font-weight: 1000;
-            margin-left: 12px;
-            padding-bottom: 1px;
-        }
-
-        #footer {
-            margin-top: auto;
-            height: 144px;
-            width: 100%;
-            background-color: black;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-family: "Lalezar", system-ui;
-            font-size: small;
-            position: relative;
-            bottom: 0;
-        }
-
-        #footer ul {
-            display: flex;
-            justify-content: center;
-            padding: 0;
-        }
-
-        #footer ul li {
-            list-style-type: none;
-            font-size: 16px;
-            padding: 16px;
-            text-align: center;
-        }
-
-        #footer #instagram {
-            width: 30px;
-            height: 30px;
-            vertical-align: middle;
-        }
-
-        #footer #facebook {
-            width: 26px;
-            height: 26px;
-            vertical-align: middle;
-            margin-left: 4px;
-        }
-
-        #footer #copy {
-            text-align: center;
-            font-size: 16px;
-        }
-
-        main {
+            font-style: normal;
             margin: 20px;
+            margin-right: auto;
+            margin-left: auto;
             padding: 20px;
             background-color: #e7e3e2;
             border-radius: 8px;
             width: 80%;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            min-height: 82vh; /* Ensures proper spacing */
         }
 
         .table {
+            font-family: "Lalezar", system-ui;
+            font-size: 18px;
+            font-weight: 700;
+            font-style: normal;
+            margin: 0;
             width: 100%;
             border-collapse: collapse;
         }
@@ -257,7 +168,7 @@ if (isset($_GET['search'])) {
         }
 
         .search-bar {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         /* Modal styles */
@@ -305,7 +216,7 @@ if (isset($_GET['search'])) {
     <div id="header">
         <h1>NameThatTune</h1>
         <div id="login" onclick="">
-            <img src="avatar.png" alt="avatar">
+            <img src="Icon/account.png" alt="avatar">
             <p>Username</p>
         </div>
     </div>
@@ -371,8 +282,8 @@ if (isset($_GET['search'])) {
             <li>Terms and Conditions</li>
             <li>Privacy Policy</li>
             <li>Contact Us
-                <img src="facebookLogo.png" alt="facebook" id="facebook">
-                <img src="instagramLogo.png" alt="instagram" id="instagram">
+                <img src="Icon/facebook.png" alt="facebook" id="facebook">
+                <img src="Icon/instagram.png" alt="instagram" id="instagram">
             </li>
         </ul>
         <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
@@ -381,7 +292,7 @@ if (isset($_GET['search'])) {
     <!-- edit pop-up page-->
     <div id="editPopUpPage" class="editPopUpPage">
         <div class="editPopUpPage-content">
-            <span class="close" onclick="closeEditModal()">&times;</span>
+            <span class="close" onclick="closeEditPopUpPage()">&times;</span>
             <h2>Edit User</h2>
             <form method="POST" action="" enctype="multipart/form-data">
                 <input type="hidden" id="edit_user_id" name="edit_user_id">
