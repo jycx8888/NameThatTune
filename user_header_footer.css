@@ -1,0 +1,186 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+body {
+    background-color: rgb(104, 99, 174);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+#header {
+    background-color: gray;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 72px;
+    padding: 0 60px;
+}
+
+#header h1 {
+    font-family: "Lalezar", system-ui;
+    font-size: 36px;
+    font-weight: 1000;
+    font-style: normal;
+    padding-bottom: 4px;
+    margin: 0;
+}
+
+#login {
+    width: 180px;
+    height: 48px;
+    background-color: white;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#login img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+#login p {
+    font-family: "Lalezar", system-ui;
+    font-size: 20px;
+    font-weight: 1000;
+    font-style: normal;
+    margin: 0;
+}
+
+#hamburger-menu {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 300px;
+    height: 100%;
+    background-color: white;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.5);
+    transition: right 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+#hamburger-menu.open {
+    right: 0;
+}
+
+#hamburger-menu img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+#hamburger-menu .username {
+    font-family: "Lalezar", system-ui;
+    font-weight: 1000;
+    margin-bottom: 20px;
+}
+
+#hamburger-menu .menu-item {
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    cursor: pointer;
+    font-family: "Lalezar", system-ui;
+    font-weight: 1000;
+}
+
+#hamburger-menu .menu-item:hover {
+    background-color: #f0f0f0;
+}
+
+#hamburger-menu .submenu {
+    display: none;
+    flex-direction: column;
+    padding-left: 20px;
+}
+
+#hamburger-menu .submenu .submenu-item {
+    padding: 5px 0;
+    font-family: "Lalezar", system-ui;
+    font-weight: 1000;
+}
+
+#hamburger-menu .close-btn {
+    align-self: flex-end;
+    cursor: pointer;
+    font-size: 50px;
+    margin-bottom: 20px;
+}
+
+#hamburger-menu .logout-btn {
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    font-family: "Lalezar", system-ui;
+    font-weight: 1000;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+#hamburger-menu .logout-btn:hover {
+    background-color: darkred;
+}
+
+#footer {
+    clear: both;
+    height: 144px;
+    width: 100%;
+    background-color: black;
+    color: white;
+    display:inline-block;
+    position: relative;
+    bottom: 0;
+    font-family: "Lalezar", system-ui;
+    font-weight: 1000;
+    font-size: small;
+    justify-content: space-between;
+}
+
+#footer ul {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 0;
+}
+
+#footer ul li {
+    display: inline;
+    list-style-type: none;
+    font-size: 16px;
+
+    padding: 16px 16px 4px 16px;
+    text-align: center;
+}
+
+#footer #instagram {
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+}
+
+#footer #facebook {
+    width: 26px;
+    height: 26px;
+    vertical-align: middle;
+    margin-left: 4px;
+}
+
+#footer #copy {
+    text-align: center;
+    font-size: 16px;
+}
