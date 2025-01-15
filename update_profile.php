@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['username'])) {
-    header("Location: login_user.php");
+    header("Location: user_login.php");
     exit();
 }
 
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['ProfilePicture'])) {
         $stmt->bind_param("ss", $target_file, $username);
         if ($stmt->execute()) {
             $_SESSION['ProfilePicture'] = $target_file;
-            header("Location: mainPage_user.php?status=success");
+            header("Location: user_mainPage.php?status=success");
         } else {
             echo "Error updating record: " . $stmt->error;
         }
