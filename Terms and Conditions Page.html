@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+
+        body {
+            background-color: rgb(104, 99, 174);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        #header{
+            background-color: gray;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 72px;
+        }
+
+        #header h1 {
+            font-family: "Lalezar", system-ui;
+            font-size: 36px;
+            font-weight: 1000;
+            font-style: normal;
+            padding-bottom: 4px;
+            margin-left: 60px;
+        }
+
+        #login{
+            width: 180px;
+            height: 48px;
+            background-color:white;
+            border-radius: 10px;
+            display: flex;
+            justify-content: left;
+            align-items: center;
+            margin-right: 60px;
+        }
+
+        #login img {
+            width: 30px; /* Adjust the size of the avatar */
+            height: 30px;
+            border-radius: 50%;
+            margin-left: 12px;
+        }
+
+        #login p {
+            font-family: "Lalezar", system-ui;
+            font-size: 20px;
+            font-weight: 1000;
+            font-style: normal;
+            margin-left: 12px;
+            padding-bottom: 1px;
+        }
+
+        #content {
+            height: 785px;
+            display: flex;
+            justify-content: center;
+        }
+
+        #terms {
+            width: 80%;
+            height: 75%;
+            margin-top: 48px;
+            padding: 12px 20px;
+            background-color: white;
+            border-radius: 10px;
+            overflow: auto;
+        }
+
+        #terms h2 {
+            font-family: "Lalezar", system-ui;
+            font-size: 36px;
+            font-weight: 1000;
+            font-style: normal;
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        #terms .ol1 {
+            font-family: "Lalezar", system-ui;
+            font-size: 20px;
+            font-weight: 700;
+            font-style: normal;
+            margin: 12px 24px 0 24px;
+        }
+
+        #terms .ol2 {
+            font-family: "Lalezar", system-ui;
+            font-size: 20px;
+            font-weight: 700;
+            font-style: normal;
+            text-align: start;
+        }
+        
+
+        #terms ol {
+        counter-reset: item;
+       }
+
+       #terms ol > li {
+            display: block;
+            margin: 12px 0;
+        }
+
+        #terms ol > li:before {
+            content: counters(item, ".") ": ";
+            counter-increment: item;
+        }
+
+        #terms ol ol {
+            counter-reset: item;
+        }
+
+        #terms ol ol > li:before {
+            content: counters(item, ".") ": ";
+            counter-increment: item;
+        }
+
+        #footer {
+            clear: both;
+            height: 144px;
+            width: 100%;
+            background-color: black;
+            color: white;
+            display:inline-block;
+            position: relative;
+            bottom: 0;
+            font-family: "Lalezar", system-ui;
+            font-weight: 1000;
+            font-size: small;
+            justify-content: space-between;
+        }
+
+        #footer ul {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            padding: 0;
+        }
+
+        #footer ul li {
+            display: inline;
+            list-style-type: none;
+            font-size: 16px;
+
+            padding: 16px 16px 4px 16px;
+            text-align: center;
+        }
+
+        #footer #instagram {
+            width: 30px;
+            height: 30px;
+            vertical-align: middle;
+        }
+
+        #footer #facebook {
+            width: 26px;
+            height: 26px;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+
+        #footer #copy {
+            text-align: center;
+            font-size: 16px;
+        }
+
+
+
+        </style>
+</head>
+<body>
+    <div id="header">
+        <h1>NameThatTune</h1>
+        <div id="login" onclick="">
+            <img src="account.png" alt="avatar">
+            <p>Username</p>
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="terms">
+            <h2>Terms and Conditions</h2>
+            <ol class="ol1">
+                <li>Introduction
+                    <ol class="ol2">
+                        <li>Welcome to NameThatTune! By accessing or using the app, website, or any associated services, you agree to comply with these Terms and Conditions. If you do not agree, please refrain from using our services.<br></li>
+                    </ol>
+                </li>
+                <li>Eligibility
+                    <ol class="ol2">
+                        <li>You must be at least 12 years old to participate in the game.</li>
+                        <li>If you are under 18, you must have parental or guardian consent.</li>
+                    </ol>
+                </li>
+                <li>Game Rules
+                    <ol class="ol2">
+                        <li>Players must identify the song based on the audio clip provided.</li>
+                        <li>Any form of cheating, including but not limited to the use of external tools or collusion with others, is strictly prohibited.</li>
+                        <li>Players who violate the rules may be disqualified and have their accounts suspended.</li>
+                    </ol>
+                </li>
+                <li>Account Responsibility
+                    <ol class="ol2">
+                        <li>Players are responsible for maintaining the confidentiality of their account credentials.</li>
+                        <li>Sharing or transferring accounts is not permitted.</li>
+                    </ol>
+                </li>
+                <li>Intellectual Property
+                    <ol class="ol2">
+                        <li>All content in NameThatTune, including audio clips, graphics, and design, is protected by copyright laws.</li>
+                        <li>You are not permitted to reproduce, distribute, or modify any part of the app or its content without prior written consent.</li>
+                    </ol>
+                </li>
+                <li>Privacy Policy
+                    <ol class="ol2">
+                        <li>Your data will be collected and handled in accordance with our <a href="Privacy Policy Page.html">Privacy Policy</a>.</li>
+                        <li>By using the website, you consent to the collection and use of your data for game-related purposes.</li>
+                    </ol>
+                </li>
+                <li>Prohibited Conduct
+                    <ol class="ol2">
+                        <li>Use the website for illegal purposes.</li>
+                        <li>Attempt to hack, disrupt, or manipulate the game mechanics or other players.</li>
+                        <li>Post or share offensive or inappropriate content within the website or related communities.</li>
+                    </ol>
+                </li>
+                <li>Limitation of Liability
+                    <ol class="ol2">
+                        <li>NameThatTune and its developers are not responsible for technical issues, including app crashes, data loss, or delays.</li>
+                        <li>We are not liable for any disputes or losses arising from the use of the website.</li>
+                    </ol>
+                </li>
+                <li>Updates and Modifications
+                    <ol class="ol2">
+                        <li>We reserve the right to update these Terms and Conditions at any time.</li>
+                        <li>Continued use of the website after updates constitutes acceptance of the revised terms.</li>
+                    </ol>
+                </li>
+                <li>Termination
+                    <ol class="ol2">
+                        <li>We may terminate your account at any time for violation of these Terms and Conditions.</li>
+                        <li>You may discontinue your use of the website at any time.</li>
+                    </ol>
+                </li>
+                <li>Governing Law
+                    <ol class="ol2">
+                        <li>These terms shall be governed by the laws of Malaysia.</li>
+                    </ol>
+                </li>
+                <li>Contact Us
+                    <ol class="ol2">
+                        <li>For any questions regarding these Terms and Conditions, please contact us at 019-999-9999.</li>
+                        <li>By using NameThatTune, you confirm that you have read, understood, and agreed to these Terms and Conditions.</li>
+                    </ol>
+                </li>
+
+            </ol>
+        </div>
+    </div>
+    
+    <div id="footer">
+        <ul class="nav">
+            <li>About Us</li>
+            <li>Terms and Conditions</li>
+            <li>Privacy Policy</li>
+            <li>Contact Us
+                <img src="facebook.png" alt="facebook" id="facebook">&nbsp;
+                <img src="instagram.png" alt="instagram" id="instagram">
+            </li>
+        </ul>
+        
+        <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
+    </div>
+</body>
+</html>
