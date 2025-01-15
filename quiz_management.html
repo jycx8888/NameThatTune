@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body {
+            background-color: rgb(104, 99, 174);
+        }
+
+        #header {
+            background-color: gray;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 72px;
+        }
+
+        #header h1 {
+            font-family: "Lalezar", system-ui;
+            font-size: 36px;
+            font-weight: 1000;
+            font-style: normal;
+            padding-bottom: 4px;
+            margin-left: 60px;
+        }
+
+        #login {
+            width: 180px;
+            height: 48px;
+            background-color: white;
+            border-radius: 10px;
+            display: flex;
+            justify-content: left;
+            align-items: center;
+            margin-right: 60px;
+        }
+
+        #login img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-left: 12px;
+        }
+
+        #login p {
+            font-family: "Lalezar", system-ui;
+            font-size: 20px;
+            font-weight: 1000;
+            font-style: normal;
+            margin-left: 12px;
+            padding-bottom: 1px;
+        }
+
+        #content {
+            background-color: #f4f4f4;
+            width: 80%;
+            max-width: 600px; /* Reduced max-width for a smaller section */
+            margin: 1rem auto;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-align: center; /* Center the title for a cleaner look */
+        }
+
+        .search-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: center; /* Center the search bar */
+            margin-bottom: 1rem;
+        }
+
+        .search-bar select, .search-bar input {
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: calc(50% - 0.5rem); /* Take up 50% width */
+            min-width: 120px; /* Ensure elements are not too small */
+        }
+
+        .search-bar button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            background-color: rgb(104, 99, 174);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.9rem; /* Smaller font size for the table */
+        }
+
+        th, td {
+            padding: 0.5rem;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: rgb(104, 99, 174);
+            color: white;
+        }
+
+        .actions a {
+            font-size: 0.85rem; /* Reduced font size for actions */
+            color: #ACD7EC;
+            text-decoration: none;
+        }
+        .actions a:hover {
+            text-decoration: underline;
+            color: blue;
+        }
+
+        .back-button {
+            display: block;
+            width: fit-content;
+            padding: 0.6rem 1rem;
+            background-color: blueviolet;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            margin: 1rem auto 0;
+            font-size: 0.9rem; /* Reduced font size for the button */
+        }
+
+        #footer {
+            background-color: black;
+            color: white;
+            font-family: "Lalezar", system-ui;
+            font-weight: 1000;
+            font-size: 12px;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: auto; /* Push footer to the bottom */
+            width: 100%; /* Ensure footer spans full width */
+        }
+
+        #footer ul {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            padding: 0;
+        }
+
+        #footer ul li {
+            display: inline;
+            list-style-type: none;
+            font-size: 12px;
+            padding: 5px 10px;
+            text-align: center;
+        }
+
+        #footer #instagram {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+        }
+
+        #footer #facebook {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+
+        #footer #copy {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>NameThatTune</h1>
+        <div id="login" onclick="">
+            <img src="account.png" alt="avatar">
+            <p>Username</p>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div id="content">
+        <div class="section-title">Edit Quiz</div>
+
+        <!-- Search Filter Section -->
+        <div class="search-bar">
+            <label for="filter">Search by:</label>
+            <select id="filter">
+                <option value="name">Name</option>
+                <option value="id">Quiz ID</option>
+                <option value="category">Category</option>
+            </select>
+            <input type="text" id="search" placeholder="Search....">
+            <button onclick="performSearch()">Search</button>
+        </div>
+
+        <!-- Table Section -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Quiz ID</th>
+                    <th>Name</th>
+                    <th>Number of Questions</th>
+                    <th>Category</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="quizTable">
+                <tr>
+                    <td>Q001</td>
+                    <td>80s Classics</td>
+                    <td>10</td>
+                    <td>English</td>
+                    <td class="actions">
+                        <a href="#">Edit</a> | <a href="#">Delete</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Q002</td>
+                    <td>90s Classics</td>
+                    <td>10</td>
+                    <td>English</td>
+                    <td class="actions">
+                        <a href="#">Edit</a> | <a href="#">Delete</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Q003</td>
+                    <td>00s Classics</td>
+                    <td>10</td>
+                    <td>English</td>
+                    <td class="actions">
+                        <a href="#">Edit</a> | <a href="#">Delete</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Back Button -->
+        <a href="#" class="back-button">Back</a>
+    </div>
+
+    <div id="footer">
+        <ul class="nav">
+            <li>About Us</li>
+            <li>Terms and Conditions</li>
+            <li>Privacy Policy</li>
+            <li>Contact Us
+                <img src="images/facebook.png" alt="facebook" id="facebook">&nbsp;
+                <img src="images/instagram.png" alt="instagram" id="instagram">
+            </li>
+        </ul>
+        
+        <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
+    </div>
+
+    <!-- Script for Search Functionality -->
+    <script>
+        function performSearch() {
+            const filter = document.getElementById("filter").value;
+            const searchTerm = document.getElementById("search").value.toLowerCase();
+            const table = document.getElementById("quizTable");
+            const rows = table.getElementsByTagName("tr");
+
+            for (let row of rows) {
+                const cells = row.getElementsByTagName("td");
+                let shouldDisplay = false;
+
+                if (filter === "id" && cells[0].textContent.toLowerCase().includes(searchTerm)) {
+                    shouldDisplay = true;
+                } else if (filter === "name" && cells[1].textContent.toLowerCase().includes(searchTerm)) {
+                    shouldDisplay = true;
+                } else if (filter === "category" && cells[3].textContent.toLowerCase().includes(searchTerm)) {
+                    shouldDisplay = true;
+                }
+
+                row.style.display = shouldDisplay ? "table-row" : "none";
+            }
+        }
+    </script>
+</body>
+</html>
