@@ -51,65 +51,17 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="user_header_footer.css">
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-        }
-        body {
-            background-color: rgb(104, 99, 174);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        #header{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            align-items: center;
-            height: 72px;
-        }
-
-        #header h1 {
-            font-family: "Lalezar", system-ui;
-            font-size: 36px;
-            font-weight: 1000;
-            font-style: normal;
-            padding-bottom: 4px;
-            margin-left: 60px;
-        }
-
-        #loginOrRegister{
-            width: 180px;
-            height: 48px;
-            background-color:white;
-            border-radius: 10px;
-            display: flex;
-            justify-content: left;
-            align-items: center;
-            margin-right: 60px;
-        }
-
-        #loginOrRegister p {
-            font-family: "Lalezar", system-ui;
-            font-size: 20px;
-            font-weight: 1000;
-            font-style: normal;
-            margin-left: 20px;
-            padding-bottom: 1px;
-        }
-
         #login-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: calc(100vh - 100px); /* Adjust height to account for header */
+            height: calc(100vh - 72px); /* Adjust height to account for header */
             width: 100%;
         }
 
-        #login {
+        #login2 {
             width: 650px;
             height: 400px;
             background-color: white;
@@ -120,8 +72,8 @@ $conn->close();
             padding-top: 20px; /* Add padding to the top */
         }
 
-        #login input[type="text"],
-        #login input[type="password"]{
+        #login2 input[type="text"],
+        #login2 input[type="password"]{
             margin: 0px 0;
             padding: 10px 150px;
             padding-left: 5px;
@@ -194,56 +146,6 @@ $conn->close();
             margin-left: -30px;
         }
 
-        #footer {
-            clear: both;
-            height: 144px;
-            width: 100%;
-            background-color: black;
-            color: white;
-            display: inline-block;
-            position: relative;
-            bottom: 0;
-            font-family: "Lalezar", system-ui;
-            font-weight: 1000;
-            font-size: small;
-            justify-content: space-between;
-
-        }
-
-        #footer ul {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            padding: 0;
-        }
-
-        #footer ul li {
-            display: inline;
-            list-style-type: none;
-            font-size: 16px;
-
-            padding: 16px 16px 4px 16px;
-            text-align: center;
-        }
-
-        #footer #instagram {
-            width: 30px;
-            height: 30px;
-            vertical-align: middle;
-        }
-
-        #footer #facebook {
-            width: 26px;
-            height: 26px;
-            vertical-align: middle;
-            margin-left: 4px;
-        }
-
-        #footer #copy {
-            text-align: center;
-            font-size: 16px;
-        }
-
         .overlay {
             position: fixed;
             top: 0;
@@ -297,13 +199,13 @@ $conn->close();
 <body>
     <div id="header">
         <h1>NameThatTune</h1>
-        <div id="loginOrRegister" onclick="redirectToRegister()">
+        <div id="login" onclick="redirectToRegister()">
            <p>Login/Sign Up</p>
         </div>
     </div>
 
     <div id="login-container">
-        <div id="login">
+        <div id="login2">
             <img src="Icon/logo.jpg" class="logo-image" alt="logo">
             <form onsubmit="return validateForm()" action="user_login.php" method="post">
                 <input type="text" id="Username" name="username" placeholder="Enter your name"><br><br>

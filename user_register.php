@@ -44,62 +44,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="user_header_footer.css">
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        body {
-            background-color: rgb(104, 99, 174);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        
-        #header{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 72px;
-        }
-
-        #header h1 {
-            font-family: "Lalezar", system-ui;
-            font-size: 36px;
-            font-weight: 1000;
-            font-style: normal;
-            padding-bottom: 4px;
-            margin-left: 60px;
-        } 
-
-        #loginOrRegister{
-            width: 180px;
-            height: 48px;
-            background-color:white;
-            border-radius: 10px;
-            display: flex;
-            justify-content: left;
-            align-items: center;
-            margin-right: 60px;
-        }
-
-        #loginOrRegister p {
-            font-family: "Lalezar", system-ui;
-            font-size: 20px;
-            font-weight: 1000;
-            font-style: normal;
-            margin-left: 20px;
-            padding-bottom: 1px;
-        }
-
         #register-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: calc(100vh - 100px); /* Adjust height to account for header */
+            height: calc(100vh - 72px); /* Adjust height to account for header */
             width: 100%;
         }
 
@@ -185,55 +136,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-style: normal;
         }
 
-        #footer {
-            clear: both;
-            height: 144px;
-            width: 100%;
-            background-color: black;
-            color: white;
-            display: inline-block;
-            position: relative;
-            bottom: 0;
-            font-family: "Lalezar", system-ui;
-            font-weight: 1000;
-            font-size: small;
-            justify-content: space-between;
-        }
-
-        #footer ul {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            padding: 0;
-        }
-
-        #footer ul li {
-            display: inline;
-            list-style-type: none;
-            font-size: 16px;
-
-            padding: 16px 16px 4px 16px;
-            text-align: center;
-        }
-
-        #footer #instagram {
-            width: 30px;
-            height: 30px;
-            vertical-align: middle;
-        }
-
-        #footer #facebook {
-            width: 26px;
-            height: 26px;
-            vertical-align: middle;
-            margin-left: 4px;
-        }
-
-        #footer #copy {
-            text-align: center;
-            font-size: 16px;
-        }
-
         h1{
             font-family: "Lalezar", system-ui;
             font-weight: 1000;
@@ -250,41 +152,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         display: none;
         justify-content: center;
         align-items: center;
-    }
+        }
+        
+        .overlay.show {
+            display: flex;
+        }
+        
+        .popup {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .popup .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 20px;
+        }
     
-    .overlay.show {
-        display: flex;
-    }
-    
-    .popup {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        position: relative;
-    }
-    
-    .popup .close-btn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        cursor: pointer;
-        font-size: 20px;
-    }
-
-    #warningPopup {
-        font-family: "Lalezar", system-ui;
-        font-size: 20px;
-        font-weight: 1000;
-        font-style: normal;
-    }
+        #warningPopup {
+            font-family: "Lalezar", system-ui;
+            font-size: 20px;
+            font-weight: 1000;
+            font-style: normal;
+        }
     </style>
 </head>
 <body>
     <div id="header">
         <h1>NameThatTune</h1>
-        <div id="loginOrRegister" onclick="redirectToLogin()">
+        <div id="login" onclick="redirectToLogin()">
             <p>Login/Sign Up</p>
         </div>
     </div>

@@ -45,64 +45,9 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="user_header_footer.css">
+    <link rel="stylesheet" href="user_hamburger.css">
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        body {
-            background-color: rgb(104, 99, 174);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        #header{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 72px;
-        }
-
-        #header h1 {
-            font-family: "Lalezar", system-ui;
-            font-size: 36px;
-            font-weight: 1000;
-            font-style: normal;
-            padding-bottom: 4px;
-            margin-left: 60px;
-        }
-
-        #profile{
-            width: 180px;
-            height: 48px;
-            background-color:white;
-            border-radius: 10px;
-            display: flex;
-            justify-content: left;
-            align-items: center;
-            margin-right: 60px;
-        }
-
-        #profile img {
-            width: 30px; /* Adjust the size of the avatar */
-            height: 30px;
-            border-radius: 50%;
-            margin-left: 12px;
-        }
-
-        #profile p {
-            font-family: "Lalezar", system-ui;
-            font-size: 20px;
-            font-weight: 1000;
-            font-style: normal;
-            margin-left: 20px;
-            padding-bottom: 1px;
-        }
-
         #hamburger-menu {
             position: fixed;
             top: 0;
@@ -117,20 +62,24 @@ $conn->close();
             align-items: center;
             padding: 20px;
         }
+
         #hamburger-menu.open {
             right: 0;
         }
+
         #hamburger-menu img {
             width: 60px;
             height: 60px;
             border-radius: 50%;
             margin-bottom: 10px;
         }
+
         #hamburger-menu .username {
             font-family: "Lalezar", system-ui;
             font-weight: 1000;
             margin-bottom: 20px;
         }
+
         #hamburger-menu .menu-item {
             width: 100%;
             padding: 10px;
@@ -139,25 +88,30 @@ $conn->close();
             font-family: "Lalezar", system-ui;
             font-weight: 1000;
         }
+
         #hamburger-menu .menu-item:hover {
             background-color: #f0f0f0;
         }
+
         #hamburger-menu .submenu {
             display: none;
             flex-direction: column;
             padding-left: 20px;
         }
+
         #hamburger-menu .submenu .submenu-item {
             padding: 5px 0;
             font-family: "Lalezar", system-ui;
             font-weight: 1000;
         }
+
         #hamburger-menu .close-btn {
             align-self: flex-end;
             cursor: pointer;
             font-size: 50px;
             margin-bottom: 20px;
         }
+
         #hamburger-menu .logout-btn {
             width: 100%;
             padding: 10px;
@@ -171,9 +125,11 @@ $conn->close();
             border-radius: 5px;
             margin-top: 20px;
         }
+
         #hamburger-menu .logout-btn:hover {
             background-color: darkred;
         }
+
         #startQuiz-container {
             display: flex;
             flex-direction: column;
@@ -182,6 +138,7 @@ $conn->close();
             height: calc(100vh - 100px); /* Adjust height to account for header */
             width: 100%;
         }
+
         #startQuiz-container img {
             width: 150px;
             height: 150px;
@@ -189,17 +146,20 @@ $conn->close();
             border-radius: 25px;
             margin-bottom: 20px; /* Space between the logo and the form */
         }
+
         #button-container {
             display:flex;
             justify-content: center;
         }
+
         #startQuiz-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: calc(100vh - 100px); /* Adjust height to account for header */
+            height: calc(100vh - 72px); /* Adjust height to account for header */
             width: 100%;
         }
+
         #startQuiz{
             width: 650px;
             height: 400px;
@@ -213,6 +173,7 @@ $conn->close();
             font-size: 20px;
             padding-top: 20px; /* Add padding to the top */
         }
+
         .start-button {
             margin-top: 20px;
             padding: 20px 15px;
@@ -229,55 +190,6 @@ $conn->close();
 
         .start-button:hover {
             background-color: #1a0573;
-        }
-        
-        #footer {
-            clear: both;
-            height: 144px;
-            width: 100%;
-            background-color: black;
-            color: white;
-            display: inline-block;
-            position: relative;
-            bottom: 0;
-            font-family: "Lalezar", system-ui;
-            font-weight: 1000;
-            font-size: small;
-            justify-content: space-between;
-
-        }
-        #footer ul {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            padding: 0;
-        }
-
-        #footer ul li {
-            display: inline;
-            list-style-type: none;
-            font-size: 16px;
-
-            padding: 16px 16px 4px 16px;
-            text-align: center;
-        }
-
-        #footer #instagram {
-            width: 30px;
-            height: 30px;
-            vertical-align: middle;
-        }
-
-        #footer #facebook {
-            width: 26px;
-            height: 26px;
-            vertical-align: middle;
-            margin-left: 4px;
-        }
-
-        #footer #copy {
-            text-align: center;
-            font-size: 16px;
         }
 
         h1{
@@ -413,7 +325,7 @@ $conn->close();
 <body>
     <div id="header">
         <h1>NameThatTune</h1>
-        <div id="profile">
+        <div id="login">
             <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
             <p><?php echo htmlspecialchars($username); ?></p>
         </div>
@@ -566,7 +478,7 @@ $conn->close();
             return true;
         }
 
-        document.getElementById('profile').addEventListener('click', function() {
+        document.getElementById('login').addEventListener('click', function() {
             document.getElementById('hamburger-menu').classList.toggle('open');
         });
 
