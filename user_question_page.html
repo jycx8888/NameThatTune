@@ -153,7 +153,6 @@
             display: inline;
             list-style-type: none;
             font-size: 16px;
-
             padding: 16px 16px 4px 16px;
             text-align: center;
         }
@@ -175,7 +174,6 @@
             text-align: center;
             font-size: 16px;
         }
-
     </style>
 </head>
 <body>
@@ -206,8 +204,8 @@
             <li>Terms and Conditions</li>
             <li>Privacy Policy</li>
             <li>Contact Us
-                <img src="icon/facebookLogo.png" alt="facebook" id="facebook">&nbsp;
-                <img src="icon/instagramLogo.png" alt="instagram" id="instagram">
+                <img src="icon/facebook.png" alt="facebook" id="facebook">&nbsp;
+                <img src="icon/instagram.png" alt="instagram" id="instagram">
             </li>
         </ul>
         
@@ -215,6 +213,16 @@
     </div>
 
     <script>
+        // Add the sound effect for hovering over the buttons
+        const hoverSound = new Audio('hover_sound_effect.mp3');  // Replace with the actual path to your sound file
+
+        // Add event listener to play sound on hover
+        document.querySelectorAll('.option-button').forEach(button => {
+            button.addEventListener('mouseover', () => {
+                hoverSound.play();
+            });
+        });
+
         let countdown = 3;
 
         function updateCountdown() {
@@ -224,13 +232,13 @@
                 setTimeout(updateCountdown, 1000);
             } else {
                 setTimeout(() => {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('header').style.display = 'flex';
-                document.getElementById('main').style.display = 'flex';
-                document.getElementById('footer').style.display = 'flex';
-            }, 1000);
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('header').style.display = 'flex';
+                    document.getElementById('main').style.display = 'flex';
+                    document.getElementById('footer').style.display = 'flex';
+                }, 1000);
+            }
         }
-    }
 
         document.addEventListener('DOMContentLoaded', () => {
             updateCountdown();
