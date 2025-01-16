@@ -169,7 +169,7 @@ if (isset($_GET['search'])) {
             margin-bottom: 30px;
         }
 
-        /* Modal styles */
+        /* Pop-Up styles */
         .editPopUpPage {
             display: none;
             position: fixed;
@@ -227,51 +227,26 @@ if (isset($_GET['search'])) {
             <button type="submit">Search</button>
         </form>
     </div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>User ID</th>
-                <th>Username</th>
-                <th>Date Joined</th>
-                <th>Profile Picture</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            // Fetch user data based on search query
-            $sql = "SELECT UserID, Username, DateJoined, ProfilePicture FROM user WHERE UserID LIKE ? OR Username LIKE ?";
-            $stmt = $conn->prepare($sql);
-            $search_param = "%" . $search_query . "%";
-            $stmt->bind_param("ss", $search_param, $search_param);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    $userId = htmlspecialchars($row['UserID']);
-                    $username = htmlspecialchars($row['Username']);
-                    $profilePicture = htmlspecialchars($row['ProfilePicture']);
-                    echo "<tr>
-                            <td>{$userId}</td>
-                            <td>{$username}</td>
-                            <td>{$row['DateJoined']}</td>
-                            <td><img src='{$profilePicture}' alt='Profile Picture' style='width:50px; height:50px; border-radius:50%;'></td>
-                            <td>
-                                <form method='POST' style='display: inline;'>
-                                    <input type='hidden' name='delete_user_id' value='{$userId}'>
-                                    <button type='submit' class='action-button'>Delete</button>
-                                </form>
-                                <button class='edit-button' onclick='openEditPopUpPage(\"{$userId}\", \"{$username}\", \"{$profilePicture}\")'>Edit</button>
-                            </td>
-                          </tr>";
-                }
-            } else {
-                echo "<tr><td colspan='5'>No users found.</td></tr>";
-            }
-            ?>
-        </tbody>
-    </table>
+    <div id="table-container" style="overflow-y: auto; max-height: 400px;">
+        <table class="table" id="user-table">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Username</th>
+                    <th>Date Joined</th>
+                    <th>Profile Picture</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <!-- Rows will be dynamically generated here -->
+            </tbody>
+        </table>
+    </div>
+    <div id="pagination-controls" style="margin-top: 20px; text-align: center;">
+        <button onclick="previousPage()" id="prev-btn" style="display: none;">Previous</button>
+        <button onclick="nextPage()" id="next-btn" style="display: none;">Next</button>
+    </div>
 </main>
 
     <div id="footer">
@@ -322,5 +297,72 @@ if (isset($_GET['search'])) {
     }
     
     </script>
+
+<script>
+    const rowsPerPage = 10; // Number of rows to display per page
+    let currentPage = 1; // Current page
+    const users = <?php
+        // Fetch user data from the database
+        $sql = "SELECT UserID, Username, DateJoined, ProfilePicture FROM user WHERE UserID LIKE ? OR Username LIKE ?";
+        $stmt = $conn->prepare($sql);
+        $search_param = "%" . $search_query . "%";
+        $stmt->bind_param("ss", $search_param, $search_param);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $users = [];
+        while ($row = $result->fetch_assoc()) {
+            $users[] = $row;
+        }
+        echo json_encode($users);
+    ?>;
+
+function renderTable() {
+    const tableBody = document.getElementById('table-body');
+    tableBody.innerHTML = ''; // Clear previous content
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    const paginatedUsers = users.slice(start, end);
+
+    // Populate the table with paginated data
+    paginatedUsers.forEach(user => {
+        const row = `
+            <tr>
+                <td>${user.UserID}</td>
+                <td>${user.Username}</td>
+                <td>${user.DateJoined}</td>
+                <td><img src="${user.ProfilePicture}" alt="Profile Picture" style="width:50px; height:50px; border-radius:50%;"></td>
+                <td>
+                    <form method='POST' style='display: inline;'>
+                        <input type='hidden' name='delete_user_id' value='${user.UserID}'>
+                        <button type='submit' class='action-button'>Delete</button>
+                    </form>
+                    <button class='edit-button' onclick='openEditPopUpPage("${user.UserID}", "${user.Username}", "${user.ProfilePicture}")'>Edit</button>
+                </td>
+            </tr>`;
+        tableBody.insertAdjacentHTML('beforeend', row);
+    });
+
+    // Update pagination controls
+    document.getElementById('prev-btn').style.display = currentPage > 1 ? 'inline-block' : 'none';
+    document.getElementById('next-btn').style.display = currentPage * rowsPerPage < users.length ? 'inline-block' : 'none';
+}
+
+    function nextPage() {
+    if (currentPage * rowsPerPage < users.length) {
+        currentPage++;
+        renderTable();
+    }
+}
+
+    function previousPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        renderTable();
+    }
+}
+
+    // Initial rendering
+    renderTable();
+</script>
 </body>
 </html>
