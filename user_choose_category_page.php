@@ -165,6 +165,9 @@ $conn->close();
         }
 
         .quiz-card {
+            font-family: "Lalezar", system-ui;
+            font-weight: 1000;
+            font-size: small;
             display: inline-block;
             min-width: 180px;
             height: 240px;
@@ -187,9 +190,11 @@ $conn->close();
 
         .quiz-card span {
             display: block;
-            padding: 5px;
+            padding: 10px 5px; /* Increase padding at the top */
             font-size: 1.3rem;
             background-color: rgba(0, 0, 0, 0.6);
+            position: relative;
+            top: 5px; /* Move the text down */
         }
 
         .quiz-card:hover {
@@ -260,7 +265,7 @@ $conn->close();
         
         <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
     </div>
-
+        
     <div id="hamburger-menu">
         <div class="close-btn" onclick="toggleMenu()">×</div>
         <div class="profile-container">
