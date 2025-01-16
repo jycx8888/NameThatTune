@@ -191,9 +191,9 @@ $conn->close();
             margin-top: 20px;
             padding: 20px 15px;
             font-size: 25px;
-            border-radius: 5px;
+            border-radius: 50px;
             border: none;
-            background-color: #320fbd;
+            background: linear-gradient(to left, #E09385, #B959DD, #7CB4E1);
             color: white;
             cursor: pointer;
             font-family: "Lalezar", system-ui;
@@ -429,7 +429,7 @@ $conn->close();
             if (selectedCategory === 'Category List') {
                 alert('Please select a category first!');
             } else {
-                window.location.href = 'question_page_user.html';
+                window.location.href = 'user_question_page.php';
             }
         });
 
