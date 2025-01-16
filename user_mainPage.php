@@ -98,8 +98,7 @@ $conn->close();
     <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
         #startQuiz-container {
-            display: flex;
-            flex-direction: column;
+            display: flex; 
             justify-content: center;
             align-items: center;
             height: calc(100vh - 100px); /* Adjust height to account for header */
@@ -254,7 +253,7 @@ $conn->close();
         <div id="startQuiz">
             <img src="Icon/logo.jpg" alt="logo">
             <h1>NameThatTune</h1>
-            <div id="button-container">
+            <div id="button-container" onclick="directToChooseCategory()">
                 <input type="submit" class="start-button" value="Start Quiz">
             </div>
         </div>
@@ -387,6 +386,10 @@ $conn->close();
         function closeWarningPopup() {
             const warningPopup = document.getElementById('warningPopup');
             warningPopup.classList.remove('show');
+        }
+
+        function directToChooseCategory() {
+            window.location.href = 'user_choose_category_page.html';
         }
     </script>
 </body>
