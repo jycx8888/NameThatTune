@@ -157,17 +157,17 @@ $conn->close();
 
         @keyframes scroll-left {
             from {
-                transform: translateX(0);
+                transform: translateX(0); /* Start from the original position */
             }
             to {
-                transform: translateX(-50%);
+                transform: translateX(-50%); /* Move to the end of the first loop */
             }
         }
 
         .quiz-card {
             display: inline-block;
-            min-width: 150px;
-            height: 200px;
+            min-width: 180px;
+            height: 240px;
             background-color: #444;
             color: white;
             text-align: center;
@@ -181,14 +181,14 @@ $conn->close();
 
         .quiz-card img {
             width: 100%;
-            height: 80%;
+            height: 75%;
             object-fit: cover;
         }
 
         .quiz-card span {
             display: block;
             padding: 5px;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             background-color: rgba(0, 0, 0, 0.6);
         }
 
@@ -208,11 +208,15 @@ $conn->close();
             font-family: "Lalezar", system-ui;
             font-weight: 1000; /* Change the font family */
             align-self: center;
+            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
         }
 
         #start-button:hover {
             background-color: #1a0573;
+            transform: scale(1.1); /* Slightly enlarge the button */
+            box-shadow: 0 8px 15px rgba(26, 5, 115, 0.5); /* Add a shadow effect */
         }
+
     </style>
 </head>
 <body>
@@ -415,26 +419,19 @@ $conn->close();
             const gallery = document.getElementById('quiz-gallery');
             const cards = Array.from(gallery.children);
 
-            // Clear the existing gallery for a fresh setup
-            gallery.innerHTML = '';
+            // Clone cards until the gallery width exceeds the container width
+            const galleryContainer = document.getElementById('quiz-gallery-container');
+            let totalWidth = 0;
 
-            // Add original cards to the gallery
-            cards.forEach(card => gallery.appendChild(card));
+            while (totalWidth < galleryContainer.offsetWidth * 2) {
+                cards.forEach(card => {
+                    const clone = card.cloneNode(true);
+                    gallery.appendChild(clone);
+                    totalWidth += card.offsetWidth + parseFloat(getComputedStyle(card).marginRight);
+                });
+            }
 
-            // Clone each card to create a seamless loop
-            cards.forEach(card => {
-                const clone = card.cloneNode(true);
-                gallery.appendChild(clone);
-            });
-
-            // Calculate the total width of all cards
-            const totalWidth = Array.from(gallery.children).reduce((sum, card) => {
-                const style = getComputedStyle(card); // Get computed styles for margins
-                const margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight); // Calculate horizontal margin
-                return sum + card.offsetWidth + margin; // Add width and margins
-            }, 0);
-
-            // Set the gallery width dynamically to accommodate all cards
+            // Set the gallery width dynamically
             gallery.style.width = `${totalWidth}px`;
 
             // Reset and reapply animation
@@ -442,6 +439,7 @@ $conn->close();
             gallery.offsetHeight; // Trigger reflow
             gallery.style.animation = `scroll-left ${totalWidth / 100}s linear infinite`; // Set duration based on total width
         }
+
 
         document.getElementById('start-button').addEventListener('click', function () {
             const selectedCategory = document.getElementById('category-dropdown').value;
@@ -452,6 +450,20 @@ $conn->close();
             }
         });
 
+        // Add a hover sound effect
+        const startButton = document.getElementById('start-button');
+        const hoverSound = new Audio('Sound Effect/hover_sound_effect.mp3'); // Replace with the actual path
+        const clickSound = new Audio('Sound Effect/click_sound_effect.mp3'); // Replace with the actual path
+
+        // Play hover sound
+        startButton.addEventListener('mouseover', () => {
+            hoverSound.play();
+        });
+
+        // Play click sound
+        startButton.addEventListener('click', () => {
+            clickSound.play();
+        });
 
         function validateNewUsername() {
             const username = document.getElementById('usernameInput').value;
