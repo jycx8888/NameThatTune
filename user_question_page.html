@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NameThatTune</title>
+    <link rel="icon" href="icon/logo.jpg" type="image/png">
+    <link rel="stylesheet" href="user_header_footer.css">
+    <style>
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(77, 72, 144);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Lalezar", system-ui;
+            font-size: 3rem;
+            font-weight: 1000;
+            z-index: 1000;
+        }
+
+        #loginOrRegister {
+            width: auto;
+            height: 60px;
+            background-color: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            cursor: pointer;
+        }
+
+        #loginOrRegister img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        #username {
+            font-size: 16px;
+            color: black;
+            font-weight: bold;
+            font-family: "Lalezar", system-ui;
+            font-weight: 1000;
+            font-style: normal;
+        }
+
+        #main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .question-box {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .options {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-button {
+            background-color: rgb(77, 72, 144);
+            color: white;
+            font-size: 1rem;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .option-button:hover {
+            background-color: rgb(104, 99, 174);
+            transform: scale(1.05);
+        }
+
+        .option-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .option-button.disabled-hover:hover {
+            background-color: rgb(77, 72, 144);
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        #question-image {
+            max-width: 50%;
+            border-radius: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">3</div>
+
+    <div id="header" style="display: none;">
+        <h1>NameThatTune</h1>
+        <div id="loginOrRegister">
+            <img src="icon/account.png" alt="avatar">
+            <span id="username">Username</span>
+        </div>
+    </div>
+
+    <div id="main" style="display: none;">
+        <div class="question-box">
+            <img id="question-image" src="Japanese Song Photo/BLUE BIRD.jpg" alt="Question Image">
+            <div class="options">
+                <button class="option-button" onclick="selectOption('A')">A. Berlin</button>
+                <button class="option-button" onclick="selectOption('B')">B. Madrid</button>
+                <button class="option-button" onclick="selectOption('C')">C. Paris</button>
+                <button class="option-button" onclick="selectOption('D')">D. Rome</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer" style="display: none;">
+        <ul class="nav">
+            <li>About Us</li>
+            <li>Terms and Conditions</li>
+            <li>Privacy Policy</li>
+            <li>Contact Us
+                <img src="icon/facebook.png" alt="facebook" id="facebook">&nbsp;
+                <img src="icon/instagram.png" alt="instagram" id="instagram">
+            </li>
+        </ul>
+        
+        <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
+    </div>
+
+    <script>
+        // Add the sound effect for hovering over the buttons
+        const hoverSound = new Audio('Sound Effect/hover_sound_effect.mp3');
+
+        // Add event listener to play sound on hover
+        document.querySelectorAll('.option-button').forEach(button => {
+            button.addEventListener('mouseover', () => {
+                hoverSound.play();
+            });
+        });
+
+        let countdown = 3;
+
+        function updateCountdown() {
+            document.getElementById('loading').textContent = countdown;
+            if (countdown > 1) {
+                countdown--;
+                setTimeout(updateCountdown, 1000);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('header').style.display = 'flex';
+                    document.getElementById('main').style.display = 'flex';
+                    document.getElementById('footer').style.display = 'flex';
+                }, 1000);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', updateCountdown);
+
+        function selectOption(answer) {
+            const currentQuestion = questions[currentQuestionIndex];
+            const correctAnswer = currentQuestion.correct;
+            const buttons = document.querySelectorAll(".option-button");
+
+            buttons.forEach(button => {
+                button.disabled = true;
+                button.classList.add('disabled-hover');
+            });
+
+            buttons.forEach(button => {
+                if (button.textContent.startsWith(answer)) {
+                    button.style.backgroundColor = answer === correctAnswer ? "green" : "red";
+                }
+            });
+
+            buttons.forEach(button => {
+                if (button.textContent.startsWith(correctAnswer)) {
+                    button.style.backgroundColor = "green";
+                }
+            });
+
+            setTimeout(loadNextQuestion, 2000);
+        }
+
+        let currentQuestionIndex = 0;
+        const questions = [
+            {
+                question: "What is the capital of France?",
+                options: ["A. Berlin", "B. Madrid", "C. Paris", "D. Rome"],
+                correct: "C",
+                image: "images/question1.jpg"
+            },
+            {
+                question: "What is 2 + 2?",
+                options: ["A. 3", "B. 4", "C. 5", "D. 6"],
+                correct: "B",
+                image: "images/question2.jpg"
+            }
+        ];
+
+        function loadNextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                const currentQuestion = questions[currentQuestionIndex];
+                document.getElementById("question-image").src = currentQuestion.image;
+                const buttons = document.querySelectorAll(".option-button");
+
+                buttons.forEach((button, index) => {
+                    button.textContent = currentQuestion.options[index];
+                    button.style.backgroundColor = "rgb(77, 72, 144)";
+                    button.disabled = false;
+                    button.classList.remove('disabled-hover');
+                });
+            } else {
+                alert("Quiz Finished!");
+            }
+        }
+    </script>
+</body>
+</html>
