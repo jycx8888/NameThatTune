@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Management</title>
     <style>
+        /* General Styles */
         html, body {
             margin: 0;
             padding: 0;
             width: 100%;
+            font-family: Arial, sans-serif;
         }
 
         body {
@@ -18,6 +20,7 @@
             min-height: 100vh;
         }
 
+        /* Header */
         #header {
             background-color: gray;
             display: flex;
@@ -28,9 +31,8 @@
         }
 
         #header h1 {
-            font-family: "Lalezar", system-ui;
+            font-family: "Lalezar", sans-serif;
             font-size: 36px;
-            font-weight: 1000;
             color: white;
         }
 
@@ -46,17 +48,15 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            border: 2px solid rgba(104, 99, 174, 0.8);
         }
 
         #login p {
-            font-family: "Lalezar", system-ui;
-            font-size: 18px;
-            font-weight: 600;
             margin-left: 10px;
             color: rgb(104, 99, 174);
+            font-weight: bold;
         }
 
+        /* Main Content */
         #container {
             display: flex;
             justify-content: center;
@@ -66,128 +66,123 @@
         }
 
         #form-container {
-            width: 500px;
-            padding: 20px;
+            position: relative;
+            width: 600px;
+            padding: 20px 30px;
             background-color: white;
-            border-radius: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         #form-container h2 {
             text-align: center;
-            font-family: "Lalezar", system-ui;
-            font-size: 24px;
             margin-bottom: 20px;
         }
 
+        /* Close Button */
+        #close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Form Fields */
         .form-group {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
             margin-bottom: 5px;
-            font-weight: bold;
         }
 
         input[type="text"], input[type="file"] {
-            width: 90%; /* Reduced the width */
-            padding: 10px; /* Reduced padding */
-            border: 1px solid black;
-            border-radius: 15px;
-            font-size: 14px; /* Slightly smaller font size */
-        }
-
-        .options input[type="text"] {
-            margin-bottom: 10px;
-        }
-
-        #photo-preview {
-            margin-top: 20px;
-            display: none;
-            position: relative;
-        }
-
-        #photo-preview img {
-            max-width: 100%;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-
-        #photo-preview button {
-            display: inline-block;
-            background-color: red;
-            color: white;
-            border: none;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
             border-radius: 5px;
-            padding: 5px 10px;
-            cursor: pointer;
             font-size: 14px;
         }
 
+        /* File Input Delete Button */
+        .file-preview {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .file-preview button {
+            margin-left: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Photo Preview */
+        #photo-preview img {
+            max-width: 100%;
+            max-height: 150px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+        /* Options Section */
+        .options input[type="text"] {
+            width: calc(100% - 40px);
+            margin-right: 10px;
+        }
+
+        .correct-answer {
+            display: inline-block;
+            background-color: gray;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .correct-answer.selected {
+            background-color: green;
+        }
+
+        /* Confirm Button */
         .submit-button {
             width: 100%;
             padding: 10px;
             background-color: #4B006E;
             color: white;
             border: none;
-            border-radius: 15px;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
-            font-family: "Lalezar", system-ui;
-            font-size: 18px;
         }
 
         .submit-button:hover {
-            background-color: #CBC3E3;
+            background-color: #673ab7;
         }
 
+        /* Footer */
         #footer {
             height: 72px;
-            width: 100%;
             background-color: black;
             color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: "Lalezar", system-ui;
-            font-weight: 1000;
-            font-size: small;
-            padding-top: 10px;
-        }
-
-        #footer ul {
-            display: flex;
-            justify-content: center;
-            padding: 0;
-            margin: 0;
-        }
-
-        #footer ul li {
-            display: inline;
-            list-style-type: none;
-            font-size: 16px;
-            padding: 16px;
             text-align: center;
-        }
-
-        #footer #instagram, #footer #facebook {
-            width: 30px;
-            height: 30px;
-            vertical-align: middle;
-        }
-
-        #footer #facebook {
-            margin-left: 4px;
-        }
-
-        #footer #copy {
-            text-align: center;
-            font-size: 16px;
+            line-height: 72px;
         }
     </style>
 </head>
 <body>
-    <!-- Header Section -->
+    <!-- Header -->
     <div id="header">
         <h1>NameThatTune</h1>
         <div id="login">
@@ -196,37 +191,58 @@
         </div>
     </div>
 
-    <!-- Main Content Section -->
+    <!-- Main Form -->
     <div id="container">
         <div id="form-container">
+            <button id="close-button">×</button>
             <h2>Edit Quiz</h2>
-            <form id="quiz-form">
-                <div class="form-group">
-                    <label for="question-id">Question ID</label>
-                    <input type="text" id="question-id" placeholder="Enter Question ID">
-                </div>
-
+            <form>
+                <!-- Song Name -->
                 <div class="form-group">
                     <label for="song-name">Song Name</label>
                     <input type="text" id="song-name" placeholder="Enter Song Name">
                 </div>
 
+                <!-- Song File -->
+                <div class="form-group">
+                    <label for="song-file">Song File</label>
+                    <input type="file" id="song-file" accept=".mp3">
+                    <div class="file-preview" id="song-file-preview" style="display: none;">
+                        <span>Uploaded Song.mp3</span>
+                        <button type="button" id="delete-song-file">Delete</button>
+                    </div>
+                </div>
+
+                <!-- Song Photo -->
                 <div class="form-group">
                     <label for="song-photo">Song Photo</label>
-                    <input type="file" id="song-photo">
+                    <input type="file" id="song-photo" accept="image/*">
+                    <div class="file-preview" id="song-photo-preview" style="display: none;">
+                        <span>Uploaded Photo</span>
+                        <button type="button" id="delete-song-photo">Delete</button>
+                    </div>
+                    <div id="photo-preview"></div>
                 </div>
 
-                <div id="photo-preview">
-                    <img id="preview-image" src="" alt="Song Preview">
-                    <button type="button" id="delete-photo">Delete Photo</button>
-                </div>
-
+                <!-- Options -->
                 <div class="form-group options">
                     <label>Options</label>
-                    <input type="text" placeholder="Option 1">
-                    <input type="text" placeholder="Option 2">
-                    <input type="text" placeholder="Option 3">
-                    <input type="text" placeholder="Option 4">
+                    <div>
+                        <input type="text" placeholder="Option 1">
+                        <button type="button" class="correct-answer">✓</button>
+                    </div>
+                    <div>
+                        <input type="text" placeholder="Option 2">
+                        <button type="button" class="correct-answer">✓</button>
+                    </div>
+                    <div>
+                        <input type="text" placeholder="Option 3">
+                        <button type="button" class="correct-answer">✓</button>
+                    </div>
+                    <div>
+                        <input type="text" placeholder="Option 4">
+                        <button type="button" class="correct-answer">✓</button>
+                    </div>
                 </div>
 
                 <button type="submit" class="submit-button">Confirm</button>
@@ -234,43 +250,55 @@
         </div>
     </div>
 
-    <!-- Footer Section -->
-    <div id="footer">
-        <ul>
-            <li>About Us</li>
-            <li>Terms and Conditions</li>
-            <li>Privacy Policy</li>
-            <li>Contact Us
-                <img src="Icon/facebook.png" alt="Facebook" id="facebook">
-                <img src="Icon/instagram.png" alt="Instagram" id="instagram">
-            </li>
-        </ul>
-        <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
-    </div>
+    <!-- Footer -->
+    <div id="footer">&copy; 2025 NameThatTune. All Rights Reserved.</div>
 
     <script>
-        // Preview and delete photo functionality
-        const fileInput = document.getElementById('song-photo');
-        const previewContainer = document.getElementById('photo-preview');
-        const previewImage = document.getElementById('preview-image');
-        const deletePhotoButton = document.getElementById('delete-photo');
+        // Song File Delete
+        const songFileInput = document.getElementById('song-file');
+        const songFilePreview = document.getElementById('song-file-preview');
+        const deleteSongFileButton = document.getElementById('delete-song-file');
 
-        fileInput.addEventListener('change', (event) => {
+        songFileInput.addEventListener('change', () => {
+            songFilePreview.style.display = 'flex';
+        });
+
+        deleteSongFileButton.addEventListener('click', () => {
+            songFileInput.value = '';
+            songFilePreview.style.display = 'none';
+        });
+
+        // Song Photo Preview and Delete
+        const songPhotoInput = document.getElementById('song-photo');
+        const songPhotoPreview = document.getElementById('song-photo-preview');
+        const deleteSongPhotoButton = document.getElementById('delete-song-photo');
+        const photoPreview = document.getElementById('photo-preview');
+
+        songPhotoInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    previewImage.src = e.target.result;
-                    previewContainer.style.display = 'block';
+                    photoPreview.innerHTML = `<img src="${e.target.result}" alt="Photo Preview">`;
                 };
                 reader.readAsDataURL(file);
+                songPhotoPreview.style.display = 'flex';
             }
         });
 
-        deletePhotoButton.addEventListener('click', () => {
-            fileInput.value = '';
-            previewContainer.style.display = 'none';
-            previewImage.src = '';
+        deleteSongPhotoButton.addEventListener('click', () => {
+            songPhotoInput.value = '';
+            songPhotoPreview.style.display = 'none';
+            photoPreview.innerHTML = '';
+        });
+
+        // Correct Answer Selection
+        const correctAnswerButtons = document.querySelectorAll('.correct-answer');
+        correctAnswerButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                correctAnswerButtons.forEach(btn => btn.classList.remove('selected'));
+                button.classList.add('selected');
+            });
         });
     </script>
 </body>
