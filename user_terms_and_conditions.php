@@ -1,3 +1,18 @@
+<?php
+$servername = "localhost";
+$dbusername = "root"; // Database username
+$dbpassword = ""; // Database password
+$dbname = "namethattune";
+
+// Create connection
+$conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -87,7 +102,6 @@
                 margin: 12px 12px 0 12px;
             }
         }
-
         </style>
 </head>
 <body>
@@ -135,7 +149,7 @@
                 </li>
                 <li>Privacy Policy
                     <ol class="ol2">
-                        <li>Your data will be collected and handled in accordance with our <a href="Privacy Policy Page.html">Privacy Policy</a>.</li>
+                        <li>Your data will be collected and handled in accordance with our <a href="user_privacy_policy.php">Privacy Policy</a>.</li>
                         <li>By using the website, you consent to the collection and use of your data for game-related purposes.</li>
                     </ol>
                 </li>
