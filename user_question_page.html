@@ -127,6 +127,12 @@
             cursor: not-allowed;
         }
 
+        .option-button.disabled-hover:hover {
+            background-color: rgb(77, 72, 144);
+            transform: none;
+            cursor: not-allowed;
+        }
+
         #footer {
             clear: both;
             height: 144px;
@@ -248,8 +254,11 @@
             const correctAnswer = "C"; // Set the correct answer
             const buttons = document.querySelectorAll(".option-button");
 
-            // Disable all buttons after selecting an answer
-            buttons.forEach(button => button.disabled = true);
+            // Disable all buttons after selecting an answer and disable hover effect
+            buttons.forEach(button => {
+                button.disabled = true;
+                button.classList.add('disabled-hover');
+            });
 
             // Highlight the selected answer and indicate if it is correct or wrong
             buttons.forEach(button => {
@@ -272,6 +281,7 @@
             // Add a delay and then load the next question
             setTimeout(loadNextQuestion, 2000);
         }
+
 
         function loadNextQuestion() {
             // Simulate loading a new question (you can replace this with real question loading logic)
