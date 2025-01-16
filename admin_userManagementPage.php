@@ -202,12 +202,40 @@ if (isset($_GET['search'])) {
         }
 
         .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-    </style>
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .back-button {
+        padding: 6px 12px; /* Same padding as the delete button */
+        font-size: 12px; /* Match font size */
+        background-color: #4CAF50; /* Green background */
+        color: white; /* White text */
+        border: none; /* Remove borders */
+        border-radius: 4px; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor */
+        text-decoration: none; /* No underline */
+        display: inline-block; /* Inline-block for button-like behavior */
+        box-shadow: 0 2px #999; /* Subtle shadow effect */
+    }
+
+    .back-button:hover {
+        background-color: #45a049; /* Slightly darker green on hover */
+    }
+
+    .back-button:active {
+        background-color: #3e8e41; /* Even darker green on click */
+        box-shadow: 0 3px #666; /* Adjust shadow on click */
+        transform: translateY(2px); /* Slight button press effect */
+    }
+
+    .center-align {
+        text-align: center;
+        margin-top: 20px;
+    }
+</style>
 </head>
 <body>
 
@@ -228,26 +256,38 @@ if (isset($_GET['search'])) {
         </form>
     </div>
     <div id="table-container" style="overflow-y: auto; max-height: 400px;">
-        <table class="table" id="user-table">
-            <thead>
-                <tr>
-                    <th>User ID</th>
-                    <th>Username</th>
-                    <th>Date Joined</th>
-                    <th>Profile Picture</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="table-body">
-                <!-- Rows will be dynamically generated here -->
-            </tbody>
-        </table>
-    </div>
-    <div id="pagination-controls" style="margin-top: 20px; text-align: center;">
-        <button onclick="previousPage()" id="prev-btn" style="display: none;">Previous</button>
-        <button onclick="nextPage()" id="next-btn" style="display: none;">Next</button>
-    </div>
+    <table class="table" id="user-table">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Username</th>
+                <th>Date Joined</th>
+                <th>Profile Picture</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+            <!-- Rows will be dynamically generated here -->
+        </tbody>
+    </table>
+</div>
+<div id="pagination-controls" style="margin-top: 20px; text-align: center;">
+    <button onclick="previousPage()" id="prev-btn" style="display: none;">Previous</button>
+    <button onclick="nextPage()" id="next-btn" style="display: none;">Next</button>
+</div>
+
+<!-- Back to First Page Button -->
+<div id="back-to-first-page" style="text-align: center; margin-top: 20px; display: none;">
+    <button onclick="resetSearch()" class="back-button">Back to Full List</button>
+</div>
+
+<!-- Back button -->
+<div class="center-align">
+    <button onclick="goBackToDashboard()" class="back-button">Back to Dashboard</button>
+</div>
 </main>
+
+    
 
     <div id="footer">
         <ul class="nav">
@@ -279,6 +319,7 @@ if (isset($_GET['search'])) {
         </div>
     </div>
 
+    
 
     <script>
     function openEditPopUpPage(userId, username, profilePicture) {
@@ -295,8 +336,12 @@ if (isset($_GET['search'])) {
         // Hide the pop-up
         document.getElementById('editPopUpPage').style.display = "none";
     }
-    
+
+    function goBackToDashboard() {
+        window.location.href = 'admin_adminDashboard.php'; 
+    }
     </script>
+
 
 <script>
     const rowsPerPage = 10; // Number of rows to display per page
@@ -316,8 +361,11 @@ if (isset($_GET['search'])) {
         echo json_encode($users);
     ?>;
 
+// Function to render the table and manage button visibility
 function renderTable() {
     const tableBody = document.getElementById('table-body');
+    const backToFirstPageButton = document.getElementById('back-to-first-page');
+
     tableBody.innerHTML = ''; // Clear previous content
     const start = (currentPage - 1) * rowsPerPage;
     const end = start + rowsPerPage;
@@ -333,7 +381,7 @@ function renderTable() {
                 <td><img src="${user.ProfilePicture}" alt="Profile Picture" style="width:50px; height:50px; border-radius:50%;"></td>
                 <td>
                     <form method='POST' style='display: inline;'>
-                        <input type='hidden' name='delete_user_id' value='${user.UserID}'>
+                        <input type='hidden' name='delete_user_id' value='${user.UserID}' />
                         <button type='submit' class='action-button'>Delete</button>
                     </form>
                     <button class='edit-button' onclick='openEditPopUpPage("${user.UserID}", "${user.Username}", "${user.ProfilePicture}")'>Edit</button>
@@ -345,7 +393,29 @@ function renderTable() {
     // Update pagination controls
     document.getElementById('prev-btn').style.display = currentPage > 1 ? 'inline-block' : 'none';
     document.getElementById('next-btn').style.display = currentPage * rowsPerPage < users.length ? 'inline-block' : 'none';
+
+    // Show or hide the back-to-first-page button based on search query
+    const searchQuery = document.querySelector('input[name="search"]').value.trim();
+    backToFirstPageButton.style.display = searchQuery ? 'block' : 'none';
 }
+
+
+    // Function to reset the table to the original unfiltered list
+    function resetSearch() {
+            window.location.href = 'admin_userManagementPage.php';
+        }
+
+
+// Function to fetch the original users without any search filter
+async function fetchOriginalUsers() {
+    const response = await fetch(window.location.href.split('?')[0] + "?reset=1");
+    if (!response.ok) {
+        throw new Error("Failed to fetch the original user list.");
+    }
+    return response.json();
+}
+
+
 
     function nextPage() {
     if (currentPage * rowsPerPage < users.length) {
