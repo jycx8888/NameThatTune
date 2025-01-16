@@ -91,30 +91,26 @@
         }
 
         input[type="text"], input[type="file"] {
-            width: 90%; /* Reduced the width */
-            padding: 10px; /* Reduced padding */
+            width: 90%;
+            padding: 10px;
             border: 1px solid black;
             border-radius: 15px;
-            font-size: 14px; /* Slightly smaller font size */
+            font-size: 14px;
         }
 
-        .options input[type="text"] {
-            margin-bottom: 10px;
-        }
-
-        #photo-preview {
+        #photo-preview, #audio-preview {
             margin-top: 20px;
             display: none;
             position: relative;
         }
 
-        #photo-preview img {
+        #photo-preview img, #audio-preview audio {
             max-width: 100%;
             border-radius: 10px;
             margin-bottom: 10px;
         }
 
-        #photo-preview button {
+        #photo-preview button, #audio-preview button {
             display: inline-block;
             background-color: red;
             color: white;
@@ -139,6 +135,39 @@
 
         .submit-button:hover {
             background-color: #CBC3E3;
+        }
+
+        /* Wrapper for options */
+        .option-wrapper {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .option-wrapper input[type="text"] {
+            width: 100%;
+            padding-right: 40px; /* Add space for the button */
+            border: 1px solid black;
+            border-radius: 15px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        /* Correct Answer Button */
+        .correct-answer {
+            position: absolute;
+            top: 50%;
+            right: 10px; /* Align to the far right */
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            height: 20px;
+            width: 20px;
+        }
+
+        .correct-answer img {
+            max-height: 20px;
         }
 
         #footer {
@@ -187,7 +216,6 @@
     </style>
 </head>
 <body>
-    <!-- Header Section -->
     <div id="header">
         <h1>NameThatTune</h1>
         <div id="login">
@@ -196,16 +224,10 @@
         </div>
     </div>
 
-    <!-- Main Content Section -->
     <div id="container">
         <div id="form-container">
             <h2>Edit Quiz</h2>
             <form id="quiz-form">
-                <div class="form-group">
-                    <label for="question-id">Question ID</label>
-                    <input type="text" id="question-id" placeholder="Enter Question ID">
-                </div>
-
                 <div class="form-group">
                     <label for="song-name">Song Name</label>
                     <input type="text" id="song-name" placeholder="Enter Song Name">
@@ -221,12 +243,42 @@
                     <button type="button" id="delete-photo">Delete Photo</button>
                 </div>
 
+                <div class="form-group">
+                    <label for="song-file">Song File (MP3)</label>
+                    <input type="file" id="song-file" accept=".mp3">
+                </div>
+
+                <div id="audio-preview">
+                    <audio controls id="preview-audio"></audio>
+                    <button type="button" id="delete-audio">Delete MP3</button>
+                </div>
+
                 <div class="form-group options">
                     <label>Options</label>
-                    <input type="text" placeholder="Option 1">
-                    <input type="text" placeholder="Option 2">
-                    <input type="text" placeholder="Option 3">
-                    <input type="text" placeholder="Option 4">
+                    <div class="option-wrapper">
+                        <input type="text" placeholder="Option 1">
+                        <button class="correct-answer">
+                            <img src="Icon/select.png" alt="Correct Answer">
+                        </button>
+                    </div>
+                    <div class="option-wrapper">
+                        <input type="text" placeholder="Option 2">
+                        <button class="not correct-answer">
+                            <img src="Icon/no_select.png" alt="Not Correct Answer">
+                        </button>
+                    </div>
+                    <div class="option-wrapper">
+                        <input type="text" placeholder="Option 3">
+                        <button class="not correct-answer">
+                            <img src="Icon/no_select.png" alt="Not Correct Answer">
+                        </button>
+                    </div>
+                    <div class="option-wrapper">
+                        <input type="text" placeholder="Option 4">
+                        <button class="not correct-answer">
+                            <img src="Icon/no_select.png" alt="Not Correct Answer">
+                        </button>
+                    </div>
                 </div>
 
                 <button type="submit" class="submit-button">Confirm</button>
@@ -234,7 +286,6 @@
         </div>
     </div>
 
-    <!-- Footer Section -->
     <div id="footer">
         <ul>
             <li>About Us</li>
@@ -249,7 +300,6 @@
     </div>
 
     <script>
-        // Preview and delete photo functionality
         const fileInput = document.getElementById('song-photo');
         const previewContainer = document.getElementById('photo-preview');
         const previewImage = document.getElementById('preview-image');
@@ -271,6 +321,26 @@
             fileInput.value = '';
             previewContainer.style.display = 'none';
             previewImage.src = '';
+        });
+
+        const audioInput = document.getElementById('song-file');
+        const audioPreview = document.getElementById('audio-preview');
+        const previewAudio = document.getElementById('preview-audio');
+        const deleteAudioButton = document.getElementById('delete-audio');
+
+        audioInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const audioURL = URL.createObjectURL(file);
+                previewAudio.src = audioURL;
+                audioPreview.style.display = 'block';
+            }
+        });
+
+        deleteAudioButton.addEventListener('click', () => {
+            audioInput.value = '';
+            previewAudio.src = '';
+            audioPreview.style.display = 'none';
         });
     </script>
 </body>
