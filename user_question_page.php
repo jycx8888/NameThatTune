@@ -14,7 +14,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgb(77, 72, 144);
+            background-color: #9370db;
             color: white;
             display: flex;
             justify-content: center;
