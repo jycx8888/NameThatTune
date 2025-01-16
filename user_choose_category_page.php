@@ -83,6 +83,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "Error uploading file.";
         }
     }
+
+    // Redirect to avoid form resubmission
+    header("Location: user_mainPage.php");
+    exit();
 }
 
 $conn->close();
@@ -93,54 +97,97 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>NameThatTune</title>
+    <link rel="icon" href="icon/logo.jpg" type="image/png">
     <link rel="stylesheet" href="user_header_footer.css">
     <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
-        #startQuiz-container {
-            display: flex; 
-            justify-content: center;
-            align-items: center;
-            height: calc(100vh - 100px); /* Adjust height to account for header */
-            width: 100%;
-        }
-
-        #startQuiz-container img {
-            width: 150px;
-            height: 150px;
-            border: 3px solid #000; /* Black border */
-            border-radius: 25px;
-            margin-bottom: 20px; /* Space between the logo and the form */
-        }
-
-        #button-container {
-            display:flex;
-            justify-content: center;
-        }
-
-        #startQuiz-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: calc(100vh - 72px); /* Adjust height to account for header */
-            width: 100%;
-        }
-
-        #startQuiz{
-            width: 650px;
-            height: 400px;
-            background-color: white;
-            border-radius: 25px;
+        #main {
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-family: "Lalezar", system-ui;
-            font-weight: 1000; /* Change the font family */
-            font-size: 20px;
-            padding-top: 20px; /* Add padding to the top */
+            justify-content: center;
+            padding: 20px;
+            height: calc(99vh - 100px); 
         }
 
-        .start-button {
+        .category-dropdown {
+            font-family: "Lalezar", system-ui;
+            font-weight: 1000;
+            font-size: small;
+            padding: 10px;
+            border: 2px solid #000000;
+            border-radius: 10px;
+            background-color: #ffffff;
+            color: #000000;
+            background-image: url('icon/music.png');
+            background-repeat: no-repeat;
+            background-position: right 25px center;
+            background-size: 20px;
+            padding-right: 40px;
+            margin-top: -100px;
+        }
+
+        #quiz-gallery-container {
+            overflow: hidden;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(50vh - 100px);
+            
+        }
+
+        #quiz-gallery {
+            display: flex;
+            gap: 10px;
+            animation: scroll-left 20s linear infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes scroll-left {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
+        .quiz-card {
+            display: inline-block;
+            min-width: 150px;
+            height: 200px;
+            background-color: #444;
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            overflow: hidden;
+            margin: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .quiz-card img {
+            width: 100%;
+            height: 80%;
+            object-fit: cover;
+        }
+
+        .quiz-card span {
+            display: block;
+            padding: 5px;
+            font-size: 1.2rem;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        .quiz-card:hover {
+            transform: scale(1.1);
+        }
+
+        #start-button {
             margin-top: 20px;
             padding: 20px 15px;
             font-size: 25px;
@@ -154,24 +201,51 @@ $conn->close();
             align-self: center;
         }
 
-        .start-button:hover {
+        #start-button:hover {
             background-color: #1a0573;
-        }
-
-        h1{
-            font-family: "Lalezar", system-ui;
-            font-weight: 1000;
-            font-style: normal;
         }
     </style>
 </head>
 <body>
+    <audio id="background-audio" autoplay loop>
+        <source src="Background Audio/Hotel lobby music.mp3" type="audio/mpeg">
+    </audio> 
+
     <div id="header">
         <h1>NameThatTune</h1>
         <div id="login">
-            <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
-            <p><?php echo htmlspecialchars($username); ?></p>
+        <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
+        <p><?php echo htmlspecialchars($username); ?></p>
         </div>
+    </div>
+
+    <div id="main">
+        <select class="category-dropdown" id="category-dropdown">
+            <option value="Category List">Select a Category...</option>
+            <option value="English">English</option>
+            <option value="Japanese">Japanese</option>
+            <option value="Korean">Korean</option>
+        </select>
+
+        <div id="quiz-gallery-container">
+            <div id="quiz-gallery"></div>
+        </div>
+
+        <button id="start-button">Click to Start</button>
+    </div>
+
+    <div id="footer">
+        <ul class="nav">
+            <li>About Us</li>
+            <li>Terms and Conditions</li>
+            <li>Privacy Policy</li>
+            <li>Contact Us
+                <img src="icon/facebook.png" alt="facebook" id="facebook">&nbsp;
+                <img src="icon/instagram.png" alt="instagram" id="instagram">
+            </li>
+        </ul>
+        
+        <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
     </div>
 
     <div id="hamburger-menu">
@@ -249,30 +323,6 @@ $conn->close();
         </div>
     </div>
 
-    <div id="startQuiz-container">
-        <div id="startQuiz">
-            <img src="Icon/logo.jpg" alt="logo">
-            <h1>NameThatTune</h1>
-            <div id="button-container" onclick="directToChooseCategory()">
-                <input type="submit" class="start-button" value="Start Quiz">
-            </div>
-        </div>
-    </div>
-    
-    <div id="footer">
-         <ul class="nav">
-            <li>About Us</li>
-            <li>Terms and Conditions</li>
-            <li>Privacy Policy</li>
-            <li>Contact Us
-                <img src="Icon/facebook.png" alt="facebook" id="facebook">&nbsp;
-                <img src="Icon/instagram.png" alt="instagram" id="instagram">
-            </li>
-        </ul>
-        
-        <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
-    </div>
-
     <div id="logoutOverlay" class="overlay">
         <div class="popup" id="logoutPopup">
             <p>Do you want to log out?</p>
@@ -281,7 +331,108 @@ $conn->close();
         </div>
     </div>
 
+
     <script>
+        const englishSongs = [
+            { image: 'English Song Photo/Doja.jpg', name: 'Doja' },
+            { image: 'English Song Photo/Rewrite The Stars.jpg', name: 'Rewrite The Stars' },
+            { image: 'English Song Photo/Viva La Vida.jpg', name: 'Viva La Vida' },
+            { image: 'English Song Photo/We Dont Talk Anymore.jpg', name: 'We Dont Talk Anymore' },
+            { image: "English Song Photo/I'm Yours.png", name: "I'm Yours" }
+        ];
+
+        const japaneseSongs = [
+            { image: 'Japanese Song Photo/BLUE BIRD.jpg', name: 'BLUE BIRD' },
+            { image: 'Japanese Song Photo/CRY FOR ME.jpeg', name: 'CRY FOR ME' },
+            { image: 'Japanese Song Photo/Flamingo.png', name: 'Flamingo' },
+            { image: 'Japanese Song Photo/Gunjo.jpeg', name: 'Gunjo' },
+            { image: 'Japanese Song Photo/Gurenge.jpg', name: 'Gurenge' },
+        ];
+
+        const koreanSongs = [
+            { image: 'Korean Song Photo/Blackpink.png', name: 'How You Like That' },
+            { image: 'Korean Song Photo/G-IDLE.jpg', name: 'Tomboy' },
+            { image: 'Korean Song Photo/ILLIT.webp', name: 'Magnetic' },
+            { image: 'Korean Song Photo/New Jeans.jpg', name: 'Ditto' },
+            { image: 'Korean Song Photo/TWICE.jpg', name: 'I GOT YOU' },
+        ];
+
+        const audioElement = document.getElementById('background-audio');
+
+        const audioSources = {
+            English: 'Background Audio/Glad You Came.mp3',
+            Japanese: 'Background Audio/SPECIALZ.mp3',
+            Korean: 'Background Audio/HARU HARU.mp3',
+        };
+
+        function changeAudio(category) {
+            if (audioSources[category]) {
+                audioElement.src = audioSources[category];
+                audioElement.play();
+            }
+        }
+
+        document.getElementById('category-dropdown').addEventListener('change', function () {
+            const selectedCategory = this.value;
+            let songsToShow = [];
+
+            if (selectedCategory === 'English') {
+                songsToShow = englishSongs;
+            } else if (selectedCategory === 'Japanese') {
+                songsToShow = japaneseSongs;
+            } else if (selectedCategory === 'Korean') {
+                songsToShow = koreanSongs;
+            }
+
+            const gallery = document.getElementById('quiz-gallery');
+            gallery.innerHTML = '';  // Clear the existing gallery
+
+            songsToShow.forEach(song => {
+                const card = document.createElement('div');
+                card.classList.add('quiz-card');
+                card.innerHTML = `
+                    <img src="${song.image}" alt="${song.name}">
+                    <span>${song.name}</span>
+                `;
+                gallery.appendChild(card);
+            });
+
+            setupContinuousScrolling();
+
+            changeAudio(selectedCategory);
+        });
+
+        function setupContinuousScrolling() {
+            const gallery = document.getElementById('quiz-gallery');
+            const cards = Array.from(gallery.children);
+
+            // Clone the child elements to ensure seamless looping
+            cards.forEach(card => {
+                const clone = card.cloneNode(true);
+                gallery.appendChild(clone);
+            });
+
+            const galleryWidth = gallery.scrollWidth;
+
+            // Set the width of the gallery to twice its content to facilitate the seamless animation
+            gallery.style.width = `${galleryWidth}px`;
+
+            // Reset animation
+            gallery.style.animation = 'none';
+            gallery.offsetHeight; // Trigger reflow
+            gallery.style.animation = 'scroll-left 20s linear infinite';
+}
+
+
+        document.getElementById('start-button').addEventListener('click', function () {
+            const selectedCategory = document.getElementById('category-dropdown').value;
+            if (selectedCategory === 'Category List') {
+                alert('Please select a category first!');
+            } else {
+                window.location.href = 'question_page_user.html';
+            }
+        });
+
         function validateNewUsername() {
             const username = document.getElementById('usernameInput').value;
             
