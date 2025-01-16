@@ -130,23 +130,23 @@ $conn->close();
             width: 650px;
             height: 400px;
             background-color: white;
-            border-radius: 25px;
+            border-radius: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
             font-family: "Lalezar", system-ui;
             font-weight: 1000; /* Change the font family */
             font-size: 20px;
-            padding-top: 20px; /* Add padding to the top */
+            padding-top: 48px; /* Add padding to the top */
         }
 
         .start-button {
             margin-top: 20px;
             padding: 20px 15px;
             font-size: 25px;
-            border-radius: 5px;
+            border-radius: 15px;
             border: none;
-            background-color: #320fbd;
+            background-color:rgb(91, 75, 193);
             color: white;
             cursor: pointer;
             font-family: "Lalezar", system-ui;
