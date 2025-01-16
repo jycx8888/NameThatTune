@@ -309,17 +309,17 @@ if (isset($_GET['search'])) {
 
     <script>
     function openEditPopUpPage(userId, username, profilePicture) {
-        // Set values in the modal
+        // Set values in the pop-up
         document.getElementById('edit_user_id').value = userId;
         document.getElementById('edit_username').value = username;
         document.getElementById('current_profile_picture').src = profilePicture;
     
-        // Show the modal
+        // Show the pop-up
         document.getElementById('editPopUpPage').style.display = "block";
     }
     
     function closeEditPopUpPage() {
-        // Hide the modal
+        // Hide the pop-up
         document.getElementById('editPopUpPage').style.display = "none";
     }
     
