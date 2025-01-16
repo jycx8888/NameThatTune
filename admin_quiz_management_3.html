@@ -98,27 +98,32 @@
             font-size: 14px;
         }
 
-        #photo-preview, #audio-preview {
-            margin-top: 20px;
-            display: none;
-            position: relative;
+        .options {
+            margin-bottom: 20px;
         }
 
-        #photo-preview img, #audio-preview audio {
-            max-width: 100%;
-            border-radius: 10px;
+        .option-item {
+            display: flex;
+            align-items: center;
             margin-bottom: 10px;
         }
 
-        #photo-preview button, #audio-preview button {
-            display: inline-block;
-            background-color: red;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 5px 10px;
+        .option-item input[type="text"] {
+            flex: 1;
+            margin-right: 10px;
+            border-radius: 10px;
+        }
+
+        .option-item img {
             cursor: pointer;
-            font-size: 14px;
+            width: 30px;
+            height: 30px;
+            margin-left: 10px;
+        }
+
+        .option-item img.selected {
+            border: 2px solid green;
+            border-radius: 50%;
         }
 
         .submit-button {
@@ -135,39 +140,6 @@
 
         .submit-button:hover {
             background-color: #CBC3E3;
-        }
-
-        /* Wrapper for options */
-        .option-wrapper {
-            position: relative;
-            margin-bottom: 10px;
-        }
-
-        .option-wrapper input[type="text"] {
-            width: 100%;
-            padding-right: 40px; /* Add space for the button */
-            border: 1px solid black;
-            border-radius: 15px;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-
-        /* Correct Answer Button */
-        .correct-answer {
-            position: absolute;
-            top: 50%;
-            right: 10px; /* Align to the far right */
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            height: 20px;
-            width: 20px;
-        }
-
-        .correct-answer img {
-            max-height: 20px;
         }
 
         #footer {
@@ -216,6 +188,7 @@
     </style>
 </head>
 <body>
+    <!-- Header Section -->
     <div id="header">
         <h1>NameThatTune</h1>
         <div id="login">
@@ -224,6 +197,7 @@
         </div>
     </div>
 
+    <!-- Main Content Section -->
     <div id="container">
         <div id="form-container">
             <h2>Edit Quiz</h2>
@@ -235,49 +209,33 @@
 
                 <div class="form-group">
                     <label for="song-photo">Song Photo</label>
-                    <input type="file" id="song-photo">
-                </div>
-
-                <div id="photo-preview">
-                    <img id="preview-image" src="" alt="Song Preview">
-                    <button type="button" id="delete-photo">Delete Photo</button>
+                    <input type="file" id="song-photo" accept="image/*">
+                    <div id="song-photo-display" style="margin-top: 10px;"></div>
                 </div>
 
                 <div class="form-group">
-                    <label for="song-file">Song File (MP3)</label>
-                    <input type="file" id="song-file" accept=".mp3">
-                </div>
-
-                <div id="audio-preview">
-                    <audio controls id="preview-audio"></audio>
-                    <button type="button" id="delete-audio">Delete MP3</button>
+                    <label for="song-mp3">Song MP3</label>
+                    <input type="file" id="song-mp3" accept=".mp3">
+                    <div id="mp3-display" style="margin-top: 10px;"></div>
                 </div>
 
                 <div class="form-group options">
                     <label>Options</label>
-                    <div class="option-wrapper">
+                    <div class="option-item">
                         <input type="text" placeholder="Option 1">
-                        <button class="correct-answer">
-                            <img src="Icon/select.png" alt="Correct Answer">
-                        </button>
+                        <img src="Icon/no_select.png" alt="Correct Icon" class="correct-icon">
                     </div>
-                    <div class="option-wrapper">
+                    <div class="option-item">
                         <input type="text" placeholder="Option 2">
-                        <button class="not correct-answer">
-                            <img src="Icon/no_select.png" alt="Not Correct Answer">
-                        </button>
+                        <img src="Icon/no_select.png" alt="Correct Icon" class="correct-icon">
                     </div>
-                    <div class="option-wrapper">
+                    <div class="option-item">
                         <input type="text" placeholder="Option 3">
-                        <button class="not correct-answer">
-                            <img src="Icon/no_select.png" alt="Not Correct Answer">
-                        </button>
+                        <img src="Icon/no_select.png" alt="Correct Icon" class="correct-icon">
                     </div>
-                    <div class="option-wrapper">
+                    <div class="option-item">
                         <input type="text" placeholder="Option 4">
-                        <button class="not correct-answer">
-                            <img src="Icon/no_select.png" alt="Not Correct Answer">
-                        </button>
+                        <img src="Icon/no_select.png" alt="Correct Icon" class="correct-icon">
                     </div>
                 </div>
 
@@ -286,6 +244,7 @@
         </div>
     </div>
 
+    <!-- Footer Section -->
     <div id="footer">
         <ul>
             <li>About Us</li>
@@ -300,47 +259,77 @@
     </div>
 
     <script>
-        const fileInput = document.getElementById('song-photo');
-        const previewContainer = document.getElementById('photo-preview');
-        const previewImage = document.getElementById('preview-image');
-        const deletePhotoButton = document.getElementById('delete-photo');
+        const songPhotoInput = document.getElementById('song-photo');
+        const songPhotoDisplay = document.getElementById('song-photo-display');
+        const songMp3Input = document.getElementById('song-mp3');
+        const mp3Display = document.getElementById('mp3-display');
+        const correctIcons = document.querySelectorAll('.correct-icon');
+        let audioElement;
 
-        fileInput.addEventListener('change', (event) => {
+        // Handle song photo selection
+        songPhotoInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
-            if (file) {
+            if (file && file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    previewImage.src = e.target.result;
-                    previewContainer.style.display = 'block';
+                    songPhotoDisplay.innerHTML = `
+                        <img src="${e.target.result}" alt="Song Photo" style="max-width: 200px;">
+                        <button id="delete-photo">Delete Photo</button>
+                    `;
+                    // Delete the photo when the button is clicked
+                    document.getElementById('delete-photo').addEventListener('click', () => {
+                        songPhotoDisplay.innerHTML = '';
+                        songPhotoInput.value = ''; // Clear input
+                    });
                 };
                 reader.readAsDataURL(file);
+            } else {
+                alert("Please select a valid image file.");
             }
         });
 
-        deletePhotoButton.addEventListener('click', () => {
-            fileInput.value = '';
-            previewContainer.style.display = 'none';
-            previewImage.src = '';
-        });
-
-        const audioInput = document.getElementById('song-file');
-        const audioPreview = document.getElementById('audio-preview');
-        const previewAudio = document.getElementById('preview-audio');
-        const deleteAudioButton = document.getElementById('delete-audio');
-
-        audioInput.addEventListener('change', (event) => {
+        // Handle MP3 file selection
+        songMp3Input.addEventListener('change', (event) => {
             const file = event.target.files[0];
-            if (file) {
-                const audioURL = URL.createObjectURL(file);
-                previewAudio.src = audioURL;
-                audioPreview.style.display = 'block';
+            if (file && file.type === "audio/mp3") {
+                const fileName = file.name;
+
+                // Display the selected MP3 file
+                mp3Display.innerHTML = `
+                    <p>Selected MP3: ${fileName}</p>
+                    <button id="play-mp3">Play</button>
+                    <button id="delete-mp3">Delete</button>
+                `;
+                
+                // Play the MP3 when the button is clicked
+                document.getElementById('play-mp3').addEventListener('click', () => {
+                    if (!audioElement) {
+                        audioElement = new Audio(URL.createObjectURL(file));
+                    }
+                    audioElement.play();
+                });
+
+                // Delete the MP3 when the button is clicked
+                document.getElementById('delete-mp3').addEventListener('click', () => {
+                    mp3Display.innerHTML = '';
+                    songMp3Input.value = ''; // Clear input
+                    if (audioElement) {
+                        audioElement.pause();  // Stop the audio if playing
+                        audioElement = null;   // Reset the audio element
+                    }
+                });
+            } else {
+                alert("Please select a valid MP3 file.");
+                songMp3Input.value = ''; // Clear input if invalid file
             }
         });
 
-        deleteAudioButton.addEventListener('click', () => {
-            audioInput.value = '';
-            previewAudio.src = '';
-            audioPreview.style.display = 'none';
+        // Select the correct option
+        correctIcons.forEach(icon => {
+            icon.addEventListener('click', () => {
+                correctIcons.forEach(icon => icon.classList.remove('selected'));  // Deselect all
+                icon.classList.add('selected');  // Select the clicked icon
+            });
         });
     </script>
 </body>
