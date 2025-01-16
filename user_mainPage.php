@@ -97,6 +97,7 @@ $conn->close();
     <link rel="stylesheet" href="user_header_footer.css">
     <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
+
         #startQuiz-container {
             display: flex; 
             justify-content: center;
