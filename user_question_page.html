@@ -4,21 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NameThatTune</title>
-    <link rel="icon" href="icon/favicon.ico" type="image/png">
+    <link rel="icon" href="icon/logo.jpg" type="image/png">
+    <link rel="stylesheet" href="user_header_footer.css">
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        body {
-            background-color: rgb(104, 99, 174);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
 
         #loading {
             position: fixed;
@@ -37,41 +25,31 @@
             z-index: 1000;
         }
 
-        #header, #main, #footer {
-            display: none;
-        }
-
-        #header, #footer {
-            background-color: rgb(77, 72, 144);
-        }
-
-        #header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-        }
-
         #loginOrRegister {
-            width: 60px;
+            width: auto;
             height: 60px;
             background-color: white;
             border-radius: 15px;
             display: flex;
-            justify-content: center;
             align-items: center;
+            padding: 0 10px;
+            cursor: pointer;
         }
 
         #loginOrRegister img {
             width: 30px;
             height: 30px;
             border-radius: 50%;
+            margin-right: 10px;
         }
-
-        h1 {
+        
+        #username {
+            font-size: 16px;
+            color: black;
+            font-weight: bold;
             font-family: "Lalezar", system-ui;
             font-weight: 1000;
-            color: white;
+            font-style: normal;
         }
 
         #main {
@@ -133,62 +111,16 @@
             cursor: not-allowed;
         }
 
-        #footer {
-            clear: both;
-            height: 144px;
-            width: 100%;
-            background-color: black;
-            color: white;
-            display:inline-block;
-            position: relative;
-            bottom: 0;
-            font-family: "Lalezar", system-ui;
-            font-weight: 1000;
-            font-size: small;
-            justify-content: space-between;
-        }
-
-        #footer ul {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            padding: 0;
-        }
-
-        #footer ul li {
-            display: inline;
-            list-style-type: none;
-            font-size: 16px;
-            padding: 16px 16px 4px 16px;
-            text-align: center;
-        }
-
-        #footer #instagram {
-            width: 30px;
-            height: 30px;
-            vertical-align: middle;
-        }
-
-        #footer #facebook {
-            width: 26px;
-            height: 26px;
-            vertical-align: middle;
-            margin-left: 4px;
-        }
-
-        #footer #copy {
-            text-align: center;
-            font-size: 16px;
-        }
     </style>
 </head>
 <body>
     <div id="loading">3</div>
 
     <div id="header">
-        <h1>Question Page</h1>
-        <div id="loginOrRegister">
-            <img src="avatar.png" alt="avatar">
+        <h1>NameThatTune</h1>
+        <div id="loginOrRegister" onclick="">
+            <img src="icon/account.png" alt="avatar">
+            <span id="username">Username</span>
         </div>
     </div>
 
