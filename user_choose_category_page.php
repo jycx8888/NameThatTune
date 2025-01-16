@@ -129,6 +129,15 @@ $conn->close();
             margin-top: -100px;
         }
 
+        .category-dropdown option {
+            font-family: "Lalezar", system-ui;
+            font-weight: 1000;
+            font-size: small;
+            color: #000; /* Text color */
+            background-color: #fff; /* Background color */
+            padding: 5px; /* Option padding */
+        }
+
         #quiz-gallery-container {
             overflow: hidden;
             width: 100%;
@@ -406,23 +415,33 @@ $conn->close();
             const gallery = document.getElementById('quiz-gallery');
             const cards = Array.from(gallery.children);
 
-            // Clone the child elements to ensure seamless looping
+            // Clear the existing gallery for a fresh setup
+            gallery.innerHTML = '';
+
+            // Add original cards to the gallery
+            cards.forEach(card => gallery.appendChild(card));
+
+            // Clone each card to create a seamless loop
             cards.forEach(card => {
                 const clone = card.cloneNode(true);
                 gallery.appendChild(clone);
             });
 
-            const galleryWidth = gallery.scrollWidth;
+            // Calculate the total width of all cards
+            const totalWidth = Array.from(gallery.children).reduce((sum, card) => {
+                const style = getComputedStyle(card); // Get computed styles for margins
+                const margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight); // Calculate horizontal margin
+                return sum + card.offsetWidth + margin; // Add width and margins
+            }, 0);
 
-            // Set the width of the gallery to twice its content to facilitate the seamless animation
-            gallery.style.width = `${galleryWidth}px`;
+            // Set the gallery width dynamically to accommodate all cards
+            gallery.style.width = `${totalWidth}px`;
 
-            // Reset animation
-            gallery.style.animation = 'none';
+            // Reset and reapply animation
+            gallery.style.animation = 'none'; // Stop animation temporarily
             gallery.offsetHeight; // Trigger reflow
-            gallery.style.animation = 'scroll-left 20s linear infinite';
-}
-
+            gallery.style.animation = `scroll-left ${totalWidth / 100}s linear infinite`; // Set duration based on total width
+        }
 
         document.getElementById('start-button').addEventListener('click', function () {
             const selectedCategory = document.getElementById('category-dropdown').value;

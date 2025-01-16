@@ -111,6 +111,31 @@
             cursor: not-allowed;
         }
 
+        #backButton {
+            background-color: rgb(77, 72, 144);
+            color: white;
+            font-size: 1rem;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            position: absolute;
+            top: 100px; /* Adjust this value to move the button down as needed */
+            left: 50px; /* Adjust this value to move the button horizontally as needed */
+            transition: background-color 0.3s, transform 0.2s;
+            z-index: 1001; /* Ensure it appears above other elements */
+        }
+
+        #header {
+            position: relative;
+            z-index: 1000;
+        }
+
+        #backButton:hover {
+            background-color: rgb(104, 99, 174);
+            transform: scale(1.05);
+        }
+
     </style>
 </head>
 <body>
@@ -118,6 +143,7 @@
 
     <div id="header">
         <h1>NameThatTune</h1>
+        <button id="backButton" onclick="goBack()">Back</button>
         <div id="loginOrRegister" onclick="">
             <img src="icon/account.png" alt="avatar">
             <span id="username">Username</span>
@@ -232,6 +258,11 @@
                 button.disabled = false;
             });
         }
+
+        function goBack() {
+            window.history.back();
+        }
+
     </script>
 </body>
 </html>
