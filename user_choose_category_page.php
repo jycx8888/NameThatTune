@@ -427,11 +427,12 @@ $conn->close();
         document.getElementById('start-button').addEventListener('click', function () {
             const selectedCategory = document.getElementById('category-dropdown').value;
             if (selectedCategory === 'Category List') {
-                alert('Please select a category first!');
+                showWarning('Please select a category first!');
             } else {
                 window.location.href = 'user_question_page.php';
             }
         });
+
 
         function validateNewUsername() {
             const username = document.getElementById('usernameInput').value;
