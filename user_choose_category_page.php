@@ -271,6 +271,39 @@ $conn->close();
             cursor: pointer;
         }
 
+        /* Snow container */
+        #snow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Ensure it doesn't interfere with user interactions */
+            z-index: 9999; /* Keep it above all other elements */
+            overflow: hidden;
+        }
+
+        /* Snowflake */
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: white; /* Snowflake color */
+            font-size: 1rem; /* Adjust size of snowflake */
+            animation-name: fall;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+
+        /* Animation for falling */
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -285,6 +318,8 @@ $conn->close();
         <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>
+
+    <div id="snow"></div>
 
     <div id="main">
         <select class="category-dropdown" id="category-dropdown">
@@ -410,6 +445,33 @@ $conn->close();
 
 
     <script>
+        function createSnowflakes() {
+            const snowContainer = document.getElementById('snow');
+            const snowflakeCount = 20; // Decreased number of snowflakes per interval
+
+            for (let i = 0; i < snowflakeCount; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.classList.add('snowflake');
+                snowflake.innerHTML = '&#10052;'; // Unicode for a snowflake
+
+                // Random position and animation duration
+                snowflake.style.left = Math.random() * 100 + 'vw';
+                snowflake.style.animationDuration = Math.random() * 5 + 3 + 's'; // Slower fall (3s to 8s)
+                snowflake.style.fontSize = Math.random() * 10 + 8 + 'px'; // Smaller snowflakes (8px to 18px)
+                snowflake.style.opacity = Math.random() * 0.8 + 0.2; // Lighter snowflakes
+
+                snowContainer.appendChild(snowflake);
+
+                // Remove the snowflake after animation ends
+                snowflake.addEventListener('animationend', () => {
+                    snowflake.remove();
+                });
+            }
+        }
+
+        // Decrease frequency of snowflake generation (every 1 second)
+        setInterval(createSnowflakes, 1000);
+
         const AudioElement = document.getElementById('background-audio');
         const volumeSlider = document.getElementById('volume-slider');
 
