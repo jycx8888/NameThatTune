@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="user_header_footer.css">
     <style>
         
         #content {
@@ -18,9 +19,11 @@
             align-items: center;
             background-color: white;
             width: 50%;
+            min-width: 450px;
             height: 80%;
             margin-top: 48px;
             border-radius: 10px;
+            padding: 10%, min(5em, 5%);
         }
 
         #leaderboard h1 {
@@ -28,15 +31,15 @@
             font-size: 36px;
             font-weight: 1000;
             font-style: normal;
-            padding-bottom: 4px;
             margin-top: 48px;
         }
 
         .record {
-            height: 10%;
-            width: 50%;
             display: flex;
             justify-content: space-between;
+            height: auto;
+            width: 60%;
+            min-width: 240px;
             align-items: center;
             margin-top: 12px;
             background-color: grey;
@@ -48,7 +51,6 @@
             font-size: 20px;
             font-weight: 1000;
             font-style: normal;
-            padding-bottom: 4px;
             margin-left: px;
         }
 

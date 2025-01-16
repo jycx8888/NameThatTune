@@ -4,17 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="user_header_footer.css">
     <style>
+
         #content {
-            height: 785px;
+            height: max-content;
             display: flex;
             justify-content: center;
         }
 
         #terms {
             width: 80%;
-            height: 75%;
-            margin-top: 48px;
+            height: auto;
+            margin: 48px 0;
             padding: 12px 20px;
             background-color: white;
             border-radius: 10px;
@@ -71,7 +73,24 @@
 
         #terms ul {
             list-style-type: square;
-            margin-left: 24px;
+            margin: 0 24px;
+        }
+
+        @media (max-width: 768px) {
+            #terms {
+                height: auto;
+                padding: 12px 10px;
+            }
+
+            #terms h2 {
+                font-size: 28px;
+                margin-top: 6px;
+            }
+
+            #terms .ol1, #terms .ol2 {
+                font-size: 18px;
+                margin: 12px 12px 0 12px;
+            }
         }
 
         </style>
@@ -181,7 +200,8 @@
                         <li>Email: namethattune@gmail.com</li>
                     </ul>
                 </li>
-                By using NameThatTune, you acknowledge that you have read and understood this Privacy Policy.</li>
+
+                <p>By using NameThatTune, you acknowledge that you have read and understood this Privacy Policy.</p>
             </ol>
             
         </div>
