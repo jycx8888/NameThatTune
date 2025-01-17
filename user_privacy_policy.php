@@ -14,7 +14,7 @@
         }
 
         #terms {
-            width: 80%;
+            width: 75vw;
             height: auto;
             margin: 48px 0;
             padding: 12px 20px;
@@ -25,7 +25,7 @@
 
         #terms h2 {
             font-family: "Lalezar", system-ui;
-            font-size: clamp(0.5rem, 5.5vw, 2.5rem);
+            font-size: clamp(0.65em, 5.5vw, 2.2em);
             font-weight: 1000;
             font-style: normal;
             margin-top: 12px;
@@ -34,7 +34,7 @@
 
         #terms .ol1 {
             font-family: "Lalezar", system-ui;
-            font-size: clamp(1rem, 3vw, 1.3rem);
+            font-size: clamp(1em, 3vw, 1.3em);
             font-weight: 700;
             font-style: normal;
             margin: 12px 24px 0 24px;

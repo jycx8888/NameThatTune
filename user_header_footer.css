@@ -32,7 +32,7 @@ body {
 
 #header h1 {
     font-family: "Lalezar", system-ui;
-    font-size: clamp(2rem, 1.8vw, 8rem);
+    font-size: clamp(1.8rem, 4.5vw, 2.2rem);
     font-weight: 1000;
     font-style: normal;
     padding-bottom: 4px;
@@ -59,16 +59,11 @@ body {
 
 #login p {
     font-family: "Lalezar", system-ui;
-    font-size: 20px;
+    font-size: clamp(1.15rem, 2.8vw, 1.25rem);
     font-weight: 1000;
     font-style: normal;
     margin: 0 12px;
 }
-
-
-
-
-
 
 #footer {
     clear: both;
@@ -81,7 +76,7 @@ body {
     bottom: 0;
     font-family: "Lalezar", system-ui;
     font-weight: 1000;
-    font-size: small;
+    font-size: 16px;
     justify-content: space-between;
 }
 
@@ -95,8 +90,7 @@ body {
 #footer ul li {
     display: inline;
     list-style-type: none;
-    font-size: 16px;
-
+    font-size: clamp(0.95rem, 3vw, 1.18rem);
     padding: 16px 16px 4px 16px;
     text-align: center;
 }
@@ -116,5 +110,5 @@ body {
 
 #footer #copy {
     text-align: center;
-    font-size: 16px;
+    font-size: clamp(0.95rem, 3vw, 1.18rem);
 }
