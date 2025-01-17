@@ -22,7 +22,7 @@ body {
 }
 
 #header {
-    background-color: gray;
+    background-color: rgb(139, 59, 214);
     display: flex;
     justify-content: space-between;
     align-items: center;

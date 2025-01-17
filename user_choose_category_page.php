@@ -129,6 +129,15 @@ $conn->close();
             margin-top: -100px;
         }
 
+        .category-dropdown option {
+            font-family: "Lalezar", system-ui;
+            font-weight: 1000;
+            font-size: small;
+            color: #000; /* Text color */
+            background-color: #fff; /* Background color */
+            padding: 5px; /* Option padding */
+        }
+
         #quiz-gallery-container {
             overflow: hidden;
             width: 100%;
@@ -148,17 +157,20 @@ $conn->close();
 
         @keyframes scroll-left {
             from {
-                transform: translateX(0);
+                transform: translateX(0); /* Start from the original position */
             }
             to {
-                transform: translateX(-50%);
+                transform: translateX(-50%); /* Move to the end of the first loop */
             }
         }
 
         .quiz-card {
+            font-family: "Lalezar", system-ui;
+            font-weight: 1000;
+            font-size: small;
             display: inline-block;
-            min-width: 150px;
-            height: 200px;
+            min-width: 180px;
+            height: 240px;
             background-color: #444;
             color: white;
             text-align: center;
@@ -172,15 +184,17 @@ $conn->close();
 
         .quiz-card img {
             width: 100%;
-            height: 80%;
+            height: 75%;
             object-fit: cover;
         }
 
         .quiz-card span {
             display: block;
-            padding: 5px;
-            font-size: 1.2rem;
+            padding: 10px 5px; /* Increase padding at the top */
+            font-size: 1.3rem;
             background-color: rgba(0, 0, 0, 0.6);
+            position: relative;
+            top: 5px; /* Move the text down */
         }
 
         .quiz-card:hover {
@@ -199,11 +213,97 @@ $conn->close();
             font-family: "Lalezar", system-ui;
             font-weight: 1000; /* Change the font family */
             align-self: center;
+            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
         }
 
         #start-button:hover {
             background-color: #1a0573;
+            transform: scale(1.1); /* Slightly enlarge the button */
+            box-shadow: 0 8px 15px rgba(26, 5, 115, 0.5); /* Add a shadow effect */
         }
+
+        /* Volume and Fullscreen Controls */
+        #controls {
+            position: sticky; /* Fixes the controls to the viewport */
+            width: 100%; /* Full width of the screen */
+            bottom: 20px; /* Stays 20px from the bottom */
+            display: flex; /* Align buttons */
+            justify-content: space-between; /* Align one button to the left and the other to the right */
+            align-items: center;
+            padding: 0 20px;
+            z-index: 9999; /* Ensures the controls stay above other elements */
+            background-color: transparent; /* Optional: Makes the background transparent */
+        }
+
+        #volume-control {
+            display: flex;
+            align-items: center;
+            left: 20px; /* Optional: Fine-tune button spacing */
+        }
+
+        #volume-icon {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        #volume-slider {
+            display: none;
+            width: 150px;
+            height: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #fullscreen-control {
+            display: flex;
+            align-items: center;
+            position: sticky; /* Ensures it stays in place */
+            bottom: 20px; /* Keep it at the bottom */
+            right: 10px; /* Adjust this value to move it left */
+            z-index: 9999; /* Keeps it above other content */
+        }
+
+        #fullscreen-icon {
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+        }
+
+        /* Snow container */
+        #snow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Ensure it doesn't interfere with user interactions */
+            z-index: 9999; /* Keep it above all other elements */
+            overflow: hidden;
+        }
+
+        /* Snowflake */
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: white; /* Snowflake color */
+            font-size: 1rem; /* Adjust size of snowflake */
+            animation-name: fall;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+
+        /* Animation for falling */
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -218,6 +318,8 @@ $conn->close();
         <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>
+
+    <div id="snow"></div>
 
     <div id="main">
         <select class="category-dropdown" id="category-dropdown">
@@ -234,6 +336,16 @@ $conn->close();
         <button id="start-button">Click to Start</button>
     </div>
 
+    <div id="controls">
+        <div id="volume-control">
+            <img id="volume-icon" src="icon/volume.png" alt="Volume Icon" onclick="toggleVolumeSlider()">
+            <input id="volume-slider" type="range" min="0" max="100" value="50" onchange="adjustVolume(this.value)">
+        </div>
+        <div id="fullscreen-control">
+            <img id="fullscreen-icon" src="icon/fullscreen.png" alt="Fullscreen Icon" onclick="toggleFullscreen()">
+        </div>
+    </div>
+
     <div id="footer">
         <ul class="nav">
             <li>About Us</li>
@@ -247,7 +359,7 @@ $conn->close();
         
         <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
     </div>
-
+        
     <div id="hamburger-menu">
         <div class="close-btn" onclick="toggleMenu()">×</div>
         <div class="profile-container">
@@ -333,6 +445,55 @@ $conn->close();
 
 
     <script>
+        function createSnowflakes() {
+            const snowContainer = document.getElementById('snow');
+            const snowflakeCount = 20; // Decreased number of snowflakes per interval
+
+            for (let i = 0; i < snowflakeCount; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.classList.add('snowflake');
+                snowflake.innerHTML = '&#10052;'; // Unicode for a snowflake
+
+                // Random position and animation duration
+                snowflake.style.left = Math.random() * 100 + 'vw';
+                snowflake.style.animationDuration = Math.random() * 5 + 3 + 's'; // Slower fall (3s to 8s)
+                snowflake.style.fontSize = Math.random() * 10 + 8 + 'px'; // Smaller snowflakes (8px to 18px)
+                snowflake.style.opacity = Math.random() * 0.8 + 0.2; // Lighter snowflakes
+
+                snowContainer.appendChild(snowflake);
+
+                // Remove the snowflake after animation ends
+                snowflake.addEventListener('animationend', () => {
+                    snowflake.remove();
+                });
+            }
+        }
+
+        // Decrease frequency of snowflake generation (every 1 second)
+        setInterval(createSnowflakes, 1000);
+
+        const AudioElement = document.getElementById('background-audio');
+        const volumeSlider = document.getElementById('volume-slider');
+
+        function toggleVolumeSlider() {
+            volumeSlider.style.display = volumeSlider.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function adjustVolume(value) {
+            AudioElement.volume = value / 100; // Adjust the audio volume
+        }
+
+        // Fullscreen Toggle
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
         const englishSongs = [
             { image: 'English Song Photo/Doja.jpg', name: 'Doja' },
             { image: 'English Song Photo/Rewrite The Stars.jpg', name: 'Rewrite The Stars' },
@@ -406,22 +567,26 @@ $conn->close();
             const gallery = document.getElementById('quiz-gallery');
             const cards = Array.from(gallery.children);
 
-            // Clone the child elements to ensure seamless looping
-            cards.forEach(card => {
-                const clone = card.cloneNode(true);
-                gallery.appendChild(clone);
-            });
+            // Clone cards until the gallery width exceeds the container width
+            const galleryContainer = document.getElementById('quiz-gallery-container');
+            let totalWidth = 0;
 
-            const galleryWidth = gallery.scrollWidth;
+            while (totalWidth < galleryContainer.offsetWidth * 2) {
+                cards.forEach(card => {
+                    const clone = card.cloneNode(true);
+                    gallery.appendChild(clone);
+                    totalWidth += card.offsetWidth + parseFloat(getComputedStyle(card).marginRight);
+                });
+            }
 
-            // Set the width of the gallery to twice its content to facilitate the seamless animation
-            gallery.style.width = `${galleryWidth}px`;
+            // Set the gallery width dynamically
+            gallery.style.width = `${totalWidth}px`;
 
-            // Reset animation
-            gallery.style.animation = 'none';
+            // Reset and reapply animation
+            gallery.style.animation = 'none'; // Stop animation temporarily
             gallery.offsetHeight; // Trigger reflow
-            gallery.style.animation = 'scroll-left 20s linear infinite';
-}
+            gallery.style.animation = `scroll-left ${totalWidth / 100}s linear infinite`; // Set duration based on total width
+        }
 
 
         document.getElementById('start-button').addEventListener('click', function () {
@@ -433,7 +598,21 @@ $conn->close();
             }
         });
 
+        // Add a hover sound effect
+        const startButton = document.getElementById('start-button');
+        const hoverSound = new Audio('Sound Effect/hover_sound_effect.mp3'); // Replace with the actual path
+        const clickSound = new Audio('Sound Effect/click_sound_effect.mp3'); // Replace with the actual path
 
+        // Play hover sound
+        startButton.addEventListener('mouseover', () => {
+            hoverSound.play();
+        });
+
+        // Play click sound
+        startButton.addEventListener('click', () => {
+            clickSound.play();
+        });
+        
         function validateNewUsername() {
             const username = document.getElementById('usernameInput').value;
             
