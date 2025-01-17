@@ -167,6 +167,12 @@ if (isset($_GET['search'])) {
 
         .search-bar {
             margin-bottom: 30px;
+            width: 100%; /* Make the search bar larger */
+            max-width: 800px; /* Set a maximum width */
+            padding: 10px; /* Add padding for better appearance */
+            font-size: 16px; /* Increase font size */
+            border: 1px solid #ccc; /* Add border */
+            border-radius: 4px; /* Add border radius */
         }
 
         /* Pop-Up styles */
