@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="user_header_footer.css">
+    <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
 
         #content {
