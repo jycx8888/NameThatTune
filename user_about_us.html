@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
         #content {
-            height: 785px;
+            height: auto;
             display: flex;
             justify-content: center;
         }
@@ -16,15 +16,14 @@
         #content div {
             background-color: white;
             width: 65%;
-            height: fit-content;
-            margin: 48px 0 ;
+            height: auto;
+            margin: 48px 0 180px 0 ;
             overflow: auto;
-            
         }
 
         #content h2 {
             font-family: "Lalezar", system-ui;
-            font-size: 36px;
+            font-size: clamp(0.5rem, 5.5vw, 2.5rem);
             font-weight: 1000;
             font-style: normal;
             margin: 0;
@@ -34,30 +33,12 @@
 
         #content p {
             font-family: "Lalezar", system-ui;
-            font-size: 24px;
+            font-size: clamp(0.5rem, 3.3vw, 1.5rem);
             font-weight: 1000;
             font-style: normal;
-            margin: 0 60px;
-            padding: 24px 0 60px 0;
+            margin: 0 10%;
+            padding: 24px 0 48px 0;
             text-align: justify;
-        }
-
-        @media (max-width: 768px) {
-            #content div {
-                width: 90%;
-                margin: 48px 0 ;
-            }
-        
-            #content h2 {
-                font-size: 28px;
-                padding-top: 24px;
-            }
-        
-            #content p {
-                font-size: 20px;
-                margin: 0 30px;
-                padding: 12px 0 30px 0;
-            }
         }
 
         </style>
