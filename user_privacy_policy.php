@@ -25,7 +25,7 @@
 
         #terms h2 {
             font-family: "Lalezar", system-ui;
-            font-size: 36px;
+            font-size: clamp(0.5rem, 5.5vw, 2.5rem);
             font-weight: 1000;
             font-style: normal;
             margin-top: 12px;
@@ -34,7 +34,7 @@
 
         #terms .ol1 {
             font-family: "Lalezar", system-ui;
-            font-size: 20px;
+            font-size: clamp(1rem, 3vw, 1.3rem);
             font-weight: 700;
             font-style: normal;
             margin: 12px 24px 0 24px;
@@ -42,7 +42,7 @@
 
         #terms .ol2 {
             font-family: "Lalezar", system-ui;
-            font-size: 20px;
+            font-size: clamp(1rem, 3vw, 1.3rem);
             font-weight: 700;
             font-style: normal;
             text-align: start;
@@ -74,23 +74,6 @@
         #terms ul {
             list-style-type: square;
             margin: 0 24px;
-        }
-
-        @media (max-width: 768px) {
-            #terms {
-                height: auto;
-                padding: 12px 10px;
-            }
-
-            #terms h2 {
-                font-size: 28px;
-                margin-top: 6px;
-            }
-
-            #terms .ol1, #terms .ol2 {
-                font-size: 18px;
-                margin: 12px 12px 0 12px;
-            }
         }
 
         </style>
