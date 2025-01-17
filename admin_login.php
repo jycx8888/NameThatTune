@@ -204,7 +204,7 @@ $conn->close();
                 </div>
                 <?php
                     if (isset($login_error)) {
-                        echo "<h3 style='color:red; display:flex; justify-content: center; margin-top: -100px;'>$login_error</h3>";
+                        echo "<h3 style='color:red; display:flex; justify-content: center; margin-top: -70px;'>$login_error</h3>";
                     }
                 ?>
                 </form>
