@@ -69,6 +69,7 @@
             width: 100%;
             text-align: center;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            position: relative;
         }
 
         .question-image {
@@ -112,7 +113,8 @@
         }
 
         .option-button:disabled {
-            background-color: #ccc;
+            background-color: gray; /* Clear visual feedback for disabled state */
+            color: white;
             cursor: not-allowed;
         }
 
@@ -202,6 +204,29 @@
             outline: none; /* Removes the default outline */
         }
 
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-family: "Lalezar", system-ui;
+            font-weight: bold;
+            color: rgb(77, 72, 144);
+        }
+
+        #question-number {
+            font-family: "Lalezar", system-ui;
+            font-weight: 1000;
+            font-size: 1.2rem;
+            margin-left: 10px; /* Adjust spacing as needed */
+        }
+
+        #current-question {
+            font-family: "Lalezar", system-ui;
+            font-weight: 1000;
+            font-size: 1.2rem;
+            margin-right: 10px; /* Adjust spacing as needed */
+        }
 
     </style>
 </head>
@@ -218,26 +243,28 @@
     </div>
 
     <div id="main">
-    <div class="question-box">
-        <!-- Add your image here -->
-        <img src="Korean Song Photo/Blackpink.png" alt="Question Image" class="question-image">
+        <div class="question-box">
+            <div class="question-header">
+                <span id="question-number">1</span>
+                <span id="current-question">1/15</span>
+            </div>
+            <img id="question-image" src="Korean Song Photo/Blackpink.png" alt="Question Image" class="question-image">
+            <h2 id="question">What song is this?</h2>
 
-        <h2 id="question">What is the capital of France?</h2>
+            <!-- Add the audio bar -->
+            <audio id="question-audio" controls autoplay>
+                <source id="audio-source" src="Background Audio/HARU HARU.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
 
-        <!-- Add the audio bar -->
-        <audio id="question-audio" controls>
-            <source src="Background Audio/HARU HARU.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
-
-        <div class="options">
-            <button class="option-button" onclick="selectOption('A')">A. Berlin</button>
-            <button class="option-button" onclick="selectOption('B')">B. Madrid</button>
-            <button class="option-button" onclick="selectOption('C')">C. Paris</button>
-            <button class="option-button" onclick="selectOption('D')">D. Rome</button>
+            <div class="options">
+                <button class="option-button" onclick="selectOption('A')">A. Berlin</button>
+                <button class="option-button" onclick="selectOption('B')">B. Madrid</button>
+                <button class="option-button" onclick="selectOption('C')">C. Paris</button>
+                <button class="option-button" onclick="selectOption('D')">D. Rome</button>
+            </div>
         </div>
     </div>
-</div>
 
 
     <div id="controls">
@@ -329,61 +356,104 @@
             updateCountdown();
         });
 
-        function selectOption(answer) {
-            const correctAnswer = "C"; // Set the correct answer
-            const buttons = document.querySelectorAll(".option-button");
+        document.addEventListener("DOMContentLoaded", () => {
+        const questions = [
+            {
+                number: 1,
+                questionText: "What song is this?",
+                image: "Korean Song Photo/Blackpink.png",
+                audio: "Background Audio/HARU HARU.mp3",
+                options: ["A. Berlin", "B. Madrid", "C. Paris", "D. Rome"],
+                correctAnswer: "C",
+            },
+            {
+                number: 2,
+                questionText: "Who is the artist of this song?",
+                image: "Korean Song Photo/BTS.png",
+                audio: "Background Audio/Dynamite.mp3",
+                options: ["A. BTS", "B. BLACKPINK", "C. EXO", "D. TWICE"],
+                correctAnswer: "A",
+            },
+        ];
 
-            // Disable all buttons after selecting an answer and disable hover effect
-            buttons.forEach(button => {
-                button.disabled = true;
-                button.classList.add('disabled-hover');
-            });
+        let currentQuestionIndex = 0;
 
-            // Highlight the selected answer and indicate if it is correct or wrong
-            buttons.forEach(button => {
-                if (button.textContent.startsWith(answer)) {
-                    if (answer === correctAnswer) {
-                        button.style.backgroundColor = "green";
-                    } else {
-                        button.style.backgroundColor = "red";
-                    }
-                }
-            });
-
-            // Highlight the correct answer
-            buttons.forEach(button => {
-                if (button.textContent.startsWith(correctAnswer)) {
-                    button.style.backgroundColor = "green";
-                }
-            });
-
-            // Add a delay and then load the next question
-            setTimeout(loadNextQuestion, 2000);
-        }
-
-
+        // Load the next question
         function loadNextQuestion() {
-            // Simulate loading a new question (you can replace this with real question loading logic)
-            const questionElement = document.getElementById("question");
-            const buttons = document.querySelectorAll(".option-button");
+            if (currentQuestionIndex >= questions.length) {
+                alert("Quiz completed!");
+                return;
+            }
 
-            questionElement.textContent = "What is 2 + 2?";
-            buttons[0].textContent = "A. 3";
-            buttons[1].textContent = "B. 4";
-            buttons[2].textContent = "C. 5";
-            buttons[3].textContent = "D. 6";
+            const currentQuestion = questions[currentQuestionIndex];
 
-            // Reset button styles and enable them
-            buttons.forEach(button => {
+            // Update question number and text
+            document.getElementById("question-number").textContent = currentQuestion.number;
+            document.getElementById("current-question").textContent = `${currentQuestion.number}/${questions.length}`;
+            document.getElementById("question").textContent = currentQuestion.questionText;
+
+            // Update question image
+            document.getElementById("question-image").src = currentQuestion.image;
+
+            // Update audio source
+            const audioSource = document.getElementById("audio-source");
+            audioSource.src = currentQuestion.audio;
+            document.getElementById("question-audio").load();
+
+            // Update option buttons
+            const optionButtons = document.querySelectorAll(".option-button");
+            optionButtons.forEach((button, index) => {
+                button.textContent = currentQuestion.options[index];
                 button.style.backgroundColor = "rgb(77, 72, 144)";
                 button.disabled = false;
             });
+
+            currentQuestionIndex++;
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const questionAudio = document.getElementById("question-audio");
-            questionAudio.play();
+        // Handle option selection
+        function selectOption(selectedOption) {
+            const currentQuestion = questions[currentQuestionIndex - 1]; // Get the last loaded question
+            const buttons = document.querySelectorAll(".option-button");
+
+            buttons.forEach((button) => {
+                button.disabled = true;
+
+                // Highlight the correct answer
+                if (button.textContent.trim().startsWith(currentQuestion.correctAnswer)) {
+                    button.style.backgroundColor = "green";
+                }
+
+                // Highlight the incorrect selection
+                if (button.textContent.trim().startsWith(selectedOption) && selectedOption !== currentQuestion.correctAnswer) {
+                    button.style.backgroundColor = "red";
+                }
+            });
+
+            // Delay before loading the next question
+            setTimeout(loadNextQuestion, 2000);
+        }
+
+        // Initialize the quiz
+        loadNextQuestion();
+
+        // Adjust volume
+        const volumeSlider = document.getElementById("volume-slider");
+        const questionAudio = document.getElementById("question-audio");
+        volumeSlider.addEventListener("input", (e) => {
+            questionAudio.volume = e.target.value / 100;
         });
+
+        // Hover sound logic (optional)
+        const hoverSound = new Audio('Sound Effect/hover_sound_effect.mp3');
+        document.querySelectorAll(".option-button").forEach((button) => {
+            button.addEventListener("mouseover", () => {
+                hoverSound.play().catch(() => {
+                    // Ignore autoplay restrictions
+                });
+            });
+        });
+    });
 
     </script>
 </body>
