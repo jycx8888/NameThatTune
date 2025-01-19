@@ -111,6 +111,11 @@
             cursor: not-allowed;
         }
 
+        #header {
+            position: relative;
+            z-index: 1000;
+        }
+
         #backButton {
             background-color: rgb(77, 72, 144);
             color: white;
@@ -126,14 +131,58 @@
             z-index: 1001; /* Ensure it appears above other elements */
         }
 
-        #header {
-            position: relative;
-            z-index: 1000;
-        }
-
         #backButton:hover {
             background-color: rgb(104, 99, 174);
             transform: scale(1.05);
+        }
+
+        /* Volume and Fullscreen Controls */
+        #controls {
+            position: sticky; /* Fixes the controls to the viewport */
+            width: 100%; /* Full width of the screen */
+            bottom: 20px; /* Stays 20px from the bottom */
+            display: flex; /* Align buttons */
+            justify-content: space-between; /* Align one button to the left and the other to the right */
+            align-items: center;
+            padding: 0 20px;
+            z-index: 9999; /* Ensures the controls stay above other elements */
+            background-color: transparent; /* Optional: Makes the background transparent */
+        }
+
+        #volume-control {
+            display: flex;
+            align-items: center;
+            left: 20px; /* Optional: Fine-tune button spacing */
+        }
+
+        #volume-icon {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        #volume-slider {
+            display: none;
+            width: 150px;
+            height: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #fullscreen-control {
+            display: flex;
+            align-items: center;
+            position: sticky; /* Ensures it stays in place */
+            bottom: 20px; /* Keep it at the bottom */
+            right: 10px; /* Adjust this value to move it left */
+            z-index: 9999; /* Keeps it above other content */
+        }
+
+        #fullscreen-icon {
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
         }
 
     </style>
@@ -162,6 +211,16 @@
         </div>
     </div>
 
+    <div id="controls">
+        <div id="volume-control">
+            <img id="volume-icon" src="icon/volume.png" alt="Volume Icon" onclick="toggleVolumeSlider()">
+            <input id="volume-slider" type="range" min="0" max="100" value="50" onchange="adjustVolume(this.value)">
+        </div>
+        <div id="fullscreen-control">
+            <img id="fullscreen-icon" src="icon/fullscreen.png" alt="Fullscreen Icon" onclick="toggleFullscreen()">
+        </div>
+    </div>
+
     <div id="footer">
         <ul class="nav">
             <li>About Us</li>
@@ -177,6 +236,39 @@
     </div>
 
     <script>
+
+        function goBack() {
+            if (window.history.length > 1) {
+                // Go back if there's history
+                window.history.back();
+            } else {
+                // Fallback to a default page if no history exists
+                window.location.href = 'user_choose_category_page.php'; // Replace with your fallback URL
+            }
+        }
+
+        const AudioElement = document.getElementById('background-audio');
+        const volumeSlider = document.getElementById('volume-slider');
+
+        function toggleVolumeSlider() {
+            volumeSlider.style.display = volumeSlider.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function adjustVolume(value) {
+            AudioElement.volume = value / 100; // Adjust the audio volume
+        }
+
+        // Fullscreen Toggle
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
         // Add the sound effect for hovering over the buttons
         const hoverSound = new Audio('Sound Effect/hover_sound_effect.mp3');  // Replace with the actual path to your sound file
 
@@ -257,10 +349,6 @@
                 button.style.backgroundColor = "rgb(77, 72, 144)";
                 button.disabled = false;
             });
-        }
-
-        function goBack() {
-            window.history.back();
         }
 
     </script>
