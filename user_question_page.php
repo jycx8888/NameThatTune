@@ -266,7 +266,6 @@
         </div>
     </div>
 
-
     <div id="controls">
         <div id="volume-control">
             <img id="volume-icon" src="icon/volume.png" alt="Volume Icon" onclick="toggleVolumeSlider()">
@@ -303,12 +302,67 @@
             }
         }
 
-        const AudioElement = document.getElementById('background-audio');
-        const volumeSlider = document.getElementById('volume-slider');
+        const questions = [
+            { number: 1, questionText: "What song is this?", image: "Korean Song Photo/Blackpink.png", audio: "Background Audio/HARU HARU.mp3", options: ["A. Berlin", "B. Madrid", "C. Paris", "D. Rome"], correctAnswer: "C" },
+            { number: 2, questionText: "Who is the artist?", image: "Korean Song Photo/BTS.png", audio: "Background Audio/Dynamite.mp3", options: ["A. BTS", "B. BLACKPINK", "C. EXO", "D. TWICE"], correctAnswer: "A" },
+            { number: 3, questionText: "Which group released 'Butter'?", image: "Korean Song Photo/Butter.png", audio: "Background Audio/Butter.mp3", options: ["A. BTS", "B. BLACKPINK", "C. Stray Kids", "D. Seventeen"], correctAnswer: "A" },
+            // Add 12 more questions here following the same structure
+        ];
 
-        function toggleVolumeSlider() {
-            volumeSlider.style.display = volumeSlider.style.display === 'block' ? 'none' : 'block';
+        let currentQuestionIndex = 0;
+
+        function loadNextQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                alert("Quiz completed!");
+                return;
+            }
+
+            const currentQuestion = questions[currentQuestionIndex];
+
+            document.getElementById("question-number").textContent = currentQuestion.number;
+            document.getElementById("current-question").textContent = `${currentQuestion.number}/${questions.length}`;
+            document.getElementById("question").textContent = currentQuestion.questionText;
+            document.getElementById("question-image").src = currentQuestion.image;
+            document.getElementById("audio-source").src = currentQuestion.audio;
+            document.getElementById("question-audio").load();
+
+            const optionButtons = document.querySelectorAll(".option-button");
+            optionButtons.forEach((button, index) => {
+                button.textContent = currentQuestion.options[index];
+                button.style.backgroundColor = "rgb(77, 72, 144)";
+                button.disabled = false;
+            });
+
+            currentQuestionIndex++;
         }
+
+        function selectOption(selectedOption) {
+            const currentQuestion = questions[currentQuestionIndex - 1];
+            const buttons = document.querySelectorAll(".option-button");
+
+            buttons.forEach((button) => {
+                button.disabled = true;
+                if (button.textContent.trim().startsWith(currentQuestion.correctAnswer)) {
+                    button.style.backgroundColor = "green";
+                }
+                if (button.textContent.trim().startsWith(selectedOption) && selectedOption !== currentQuestion.correctAnswer) {
+                    button.style.backgroundColor = "red";
+                }
+            });
+
+            setTimeout(loadNextQuestion, 2000);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadNextQuestion();
+        });
+
+        const volumeSlider = document.getElementById("volume-slider");
+        const questionAudio = document.getElementById("question-audio");
+
+        volumeSlider.addEventListener("input", (e) => {
+            questionAudio.volume = e.target.value / 100;
+        });
 
         function adjustVolume(value) {
             AudioElement.volume = value / 100; // Adjust the audio volume
@@ -355,105 +409,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateCountdown();
         });
-
-        document.addEventListener("DOMContentLoaded", () => {
-        const questions = [
-            {
-                number: 1,
-                questionText: "What song is this?",
-                image: "Korean Song Photo/Blackpink.png",
-                audio: "Background Audio/HARU HARU.mp3",
-                options: ["A. Berlin", "B. Madrid", "C. Paris", "D. Rome"],
-                correctAnswer: "C",
-            },
-            {
-                number: 2,
-                questionText: "Who is the artist of this song?",
-                image: "Korean Song Photo/BTS.png",
-                audio: "Background Audio/Dynamite.mp3",
-                options: ["A. BTS", "B. BLACKPINK", "C. EXO", "D. TWICE"],
-                correctAnswer: "A",
-            },
-        ];
-
-        let currentQuestionIndex = 0;
-
-        // Load the next question
-        function loadNextQuestion() {
-            if (currentQuestionIndex >= questions.length) {
-                alert("Quiz completed!");
-                return;
-            }
-
-            const currentQuestion = questions[currentQuestionIndex];
-
-            // Update question number and text
-            document.getElementById("question-number").textContent = currentQuestion.number;
-            document.getElementById("current-question").textContent = `${currentQuestion.number}/${questions.length}`;
-            document.getElementById("question").textContent = currentQuestion.questionText;
-
-            // Update question image
-            document.getElementById("question-image").src = currentQuestion.image;
-
-            // Update audio source
-            const audioSource = document.getElementById("audio-source");
-            audioSource.src = currentQuestion.audio;
-            document.getElementById("question-audio").load();
-
-            // Update option buttons
-            const optionButtons = document.querySelectorAll(".option-button");
-            optionButtons.forEach((button, index) => {
-                button.textContent = currentQuestion.options[index];
-                button.style.backgroundColor = "rgb(77, 72, 144)";
-                button.disabled = false;
-            });
-
-            currentQuestionIndex++;
-        }
-
-        // Handle option selection
-        function selectOption(selectedOption) {
-            const currentQuestion = questions[currentQuestionIndex - 1]; // Get the last loaded question
-            const buttons = document.querySelectorAll(".option-button");
-
-            buttons.forEach((button) => {
-                button.disabled = true;
-
-                // Highlight the correct answer
-                if (button.textContent.trim().startsWith(currentQuestion.correctAnswer)) {
-                    button.style.backgroundColor = "green";
-                }
-
-                // Highlight the incorrect selection
-                if (button.textContent.trim().startsWith(selectedOption) && selectedOption !== currentQuestion.correctAnswer) {
-                    button.style.backgroundColor = "red";
-                }
-            });
-
-            // Delay before loading the next question
-            setTimeout(loadNextQuestion, 2000);
-        }
-
-        // Initialize the quiz
-        loadNextQuestion();
-
-        // Adjust volume
-        const volumeSlider = document.getElementById("volume-slider");
-        const questionAudio = document.getElementById("question-audio");
-        volumeSlider.addEventListener("input", (e) => {
-            questionAudio.volume = e.target.value / 100;
-        });
-
-        // Hover sound logic (optional)
-        const hoverSound = new Audio('Sound Effect/hover_sound_effect.mp3');
-        document.querySelectorAll(".option-button").forEach((button) => {
-            button.addEventListener("mouseover", () => {
-                hoverSound.play().catch(() => {
-                    // Ignore autoplay restrictions
-                });
-            });
-        });
-    });
 
     </script>
 </body>
