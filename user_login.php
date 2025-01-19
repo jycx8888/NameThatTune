@@ -53,37 +53,40 @@ $conn->close();
     <title>Document</title>
     <link rel="stylesheet" href="user_header_footer.css">
     <style>
-        
-
         #login-container {
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: calc(100vh - 72px); /* Adjust height to account for header */
+            height: 50%; /* Adjust height to account for header */
             width: 100%;
+            margin: 120px 0 180px 0;
         }
 
         #login2 {
-            width: 650px;
-            height: 400px;
+            width: clamp(20em, 50vw, 30em);
+            height: auto;
+            padding: 48px;
             background-color: white;
             border-radius: 25px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 20px; /* Add padding to the top */
         }
 
         #login2 input[type="text"],
         #login2 input[type="password"]{
-            margin: 0px 0;
-            padding: 10px 150px;
+            height: 32px;
+            width: clamp(15em, 20vw, 25em);
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
             padding-left: 5px;
+            margin: 5px 0;
             border: 3px solid #ccc;
             border-radius: 5px;
             cursor: pointer;
             font-family: "Lalezar", system-ui;
-            font-weight: 1000;
+            font-weight: 700;
+            font-size: 18px;
         }
 
         .logo-image {
@@ -102,7 +105,7 @@ $conn->close();
         .submit-button {
             margin-top: 20px;
             padding: 10px 20px;
-            font-size: 16px;
+            font-size: 10vw;
             border-radius: 5px;
             border: none;
             background-color: #320fbd;
@@ -128,24 +131,21 @@ $conn->close();
             font-family: "Roboto", sans-serif;
             font-weight: 100;
             font-style: normal;
+            margin-top: 20px;
         }
 
         .password-container {
+            position: relative;
             display: flex;
             align-items: center;
         }
 
-        .password-container input {
-            margin-right: 5px;
-            margin-left: 5px;
-        }
-
         .password-container img {
+            position: absolute;
             cursor: pointer;
+            right: 10px;
             width: 20px;
-            height: 20px;
-            object-fit: contain;
-            margin-left: -30px;
+            height: 16px;
         }
 
         .overlay {
@@ -210,11 +210,11 @@ $conn->close();
         <div id="login2">
             <img src="Icon/logo.jpg" class="logo-image" alt="logo">
             <form onsubmit="return validateForm()" action="user_login.php" method="post">
-                <input type="text" id="Username" name="username" placeholder="Enter your name"><br><br>
+                <input type="text" id="Username" name="username" placeholder="Enter your name">
                 <div class="password-container">
                     <input type="password" id="Password" name="password" placeholder="Enter your password">
                     <img src="Icon/hide.png" class="toggle-password" onclick="togglePasswordVisibility('Password', this)">
-                </div><br>
+                </div>
                 <div id="button-container">
                     <input type="submit" class="submit-button" value="Login">
                 </div>

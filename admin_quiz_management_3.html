@@ -263,7 +263,6 @@
         const songPhotoDisplay = document.getElementById('song-photo-display');
         const songMp3Input = document.getElementById('song-mp3');
         const mp3Display = document.getElementById('mp3-display');
-        const correctIcons = document.querySelectorAll('.correct-icon');
         let audioElement;
 
         // Handle song photo selection
@@ -291,40 +290,54 @@
         // Handle MP3 file selection
         songMp3Input.addEventListener('change', (event) => {
             const file = event.target.files[0];
-            if (file && file.type === "audio/mp3") {
-                const fileName = file.name;
 
-                // Display the selected MP3 file
+            // Ensure a file is selected and is an MP3
+            if (file && file.type === "audio/mpeg") {
+                const fileURL = URL.createObjectURL(file); // Create a temporary URL for the file
+
+                // Display the selected MP3 file with controls
                 mp3Display.innerHTML = `
-                    <p>Selected MP3: ${fileName}</p>
-                    <button id="play-mp3">Play</button>
-                    <button id="delete-mp3">Delete</button>
+                    <p>Selected MP3: ${file.name}</p>
+                    <audio id="audio-player" src="${fileURL}" controls></audio>
+                    <div style="margin-top: 10px;">
+                        <button id="delete-mp3">Delete</button>
+                    </div>
                 `;
-                
-                // Play the MP3 when the button is clicked
-                document.getElementById('play-mp3').addEventListener('click', () => {
-                    if (!audioElement) {
-                        audioElement = new Audio(URL.createObjectURL(file));
+
+                // Set up delete functionality
+                document.getElementById('delete-mp3').addEventListener('click', () => {
+                    mp3Display.innerHTML = ''; // Clear display
+                    songMp3Input.value = ''; // Clear file input
+                    if (audioElement) {
+                        audioElement.pause(); // Stop playback
+                        audioElement = null; // Reset audio element
                     }
-                    audioElement.play();
                 });
 
-                // Delete the MP3 when the button is clicked
-                document.getElementById('delete-mp3').addEventListener('click', () => {
-                    mp3Display.innerHTML = '';
-                    songMp3Input.value = ''; // Clear input
-                    if (audioElement) {
-                        audioElement.pause();  // Stop the audio if playing
-                        audioElement = null;   // Reset the audio element
-                    }
+                // Handle audio length and other properties
+                const audioPlayer = document.getElementById('audio-player');
+                audioPlayer.addEventListener('loadedmetadata', () => {
+                    const duration = audioPlayer.duration; // Get the duration of the song in seconds
+                    const formattedDuration = formatTime(duration);
+                    const info = document.createElement('p');
+                    info.innerHTML = `Song Length: ${formattedDuration}`;
+                    mp3Display.appendChild(info);
                 });
-            } else {
-                alert("Please select a valid MP3 file.");
-                songMp3Input.value = ''; // Clear input if invalid file
+            } else if (file) {
+                // Reset file input if it's not an MP3
+                songMp3Input.value = '';
             }
         });
 
+        // Format time helper function
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
         // Select the correct option
+        const correctIcons = document.querySelectorAll('.correct-icon');
         correctIcons.forEach(icon => {
             icon.addEventListener('click', () => {
                 correctIcons.forEach(icon => icon.classList.remove('selected'));  // Deselect all

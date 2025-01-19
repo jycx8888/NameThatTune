@@ -1,59 +1,3 @@
-<?php
-session_start();
-include 'db_connection.php';
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terms and Conditions</title>
-    <link rel="stylesheet" href="user_header_footer.css">
-    <style>
-        #content {
-            height: max-content;
-            display: flex;
-            justify-content: center;
-        }
-
-        #terms {
-            width: 80%;
-            height: auto;
-            margin: 48px 0;
-            padding: 12px 20px;
-            background-color: white;
-            border-radius: 10px;
-            overflow: auto;
-        }
-
-        #terms h2 {
-            font-family: "Lalezar", system-ui;
-            font-size: 36px;
-            font-weight: 1000;
-            font-style: normal;
-            margin-top: 12px;
-            text-align: center;
-        }
-
-        #terms .ol1 {
-            font-family: "Lalezar", system-ui;
-            font-size: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div id="content">
-        <div id="terms">
-            <h2>Terms and Conditions</h2>
-            <!-- Terms and conditions content here -->
-        </div>
-    </div>
-</body>
-</html>
-<?php
-$conn->close();
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,6 +5,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="user_header_footer.css">
+    <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
 
         #content {
@@ -70,7 +15,7 @@ $conn->close();
         }
 
         #terms {
-            width: 80%;
+            width: 75vw;
             height: auto;
             margin: 48px 0;
             padding: 12px 20px;
@@ -81,7 +26,7 @@ $conn->close();
 
         #terms h2 {
             font-family: "Lalezar", system-ui;
-            font-size: 36px;
+            font-size: clamp(0.65em, 5.5vw, 2.2em);
             font-weight: 1000;
             font-style: normal;
             margin-top: 12px;
@@ -90,7 +35,7 @@ $conn->close();
 
         #terms .ol1 {
             font-family: "Lalezar", system-ui;
-            font-size: 20px;
+            font-size: clamp(1em, 3vw, 1.3em);
             font-weight: 700;
             font-style: normal;
             margin: 12px 24px 0 24px;
@@ -98,7 +43,7 @@ $conn->close();
 
         #terms .ol2 {
             font-family: "Lalezar", system-ui;
-            font-size: 20px;
+            font-size: clamp(1rem, 3vw, 1.3rem);
             font-weight: 700;
             font-style: normal;
             text-align: start;
@@ -130,23 +75,6 @@ $conn->close();
         #terms ul {
             list-style-type: square;
             margin: 0 24px;
-        }
-
-        @media (max-width: 768px) {
-            #terms {
-                height: auto;
-                padding: 12px 10px;
-            }
-
-            #terms h2 {
-                font-size: 28px;
-                margin-top: 6px;
-            }
-
-            #terms .ol1, #terms .ol2 {
-                font-size: 18px;
-                margin: 12px 12px 0 12px;
-            }
         }
 
         </style>

@@ -99,19 +99,32 @@ $conn->close();
     <style>
 
         #startQuiz-container {
-            display: flex; 
+            display: flex;
             justify-content: center;
-            align-items: center;
-            height: calc(100vh - 100px); /* Adjust height to account for header */
             width: 100%;
+            margin: 100px 0 max(220px, 15vw) 0;
         }
 
-        #startQuiz-container img {
+        #startQuiz{
+            width: clamp(22em, 70vw, 34em);
+            height: auto;
+            background-color: white;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 8vh 0;
+            font-family: "Lalezar", system-ui;
+            font-weight: 1000; /* Change the font family */
+            font-size: 20px;
+        }
+
+        #startQuiz img {
             width: 150px;
             height: 150px;
             border: 3px solid #000; /* Black border */
             border-radius: 25px;
-            margin-bottom: 20px; /* Space between the logo and the form */
         }
 
         #button-container {
@@ -119,31 +132,9 @@ $conn->close();
             justify-content: center;
         }
 
-        #startQuiz-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: calc(100vh - 72px); /* Adjust height to account for header */
-            width: 100%;
-        }
-
-        #startQuiz{
-            width: 650px;
-            height: 400px;
-            background-color: white;
-            border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-family: "Lalezar", system-ui;
-            font-weight: 1000; /* Change the font family */
-            font-size: 20px;
-            padding-top: 48px; /* Add padding to the top */
-        }
-
         .start-button {
-            margin-top: 20px;
-            padding: 20px 15px;
+            height: clamp(2.3em, 8vw, 2.8em);
+            width: clamp(7em, 20vw, 8em);
             font-size: 25px;
             border-radius: 15px;
             border: none;
@@ -152,6 +143,7 @@ $conn->close();
             cursor: pointer;
             font-family: "Lalezar", system-ui;
             font-weight: 1000; /* Change the font family */
+            font-size: clamp(1.15em, 4vw, 1.25em);
             align-self: center;
         }
 
@@ -163,6 +155,7 @@ $conn->close();
             font-family: "Lalezar", system-ui;
             font-weight: 1000;
             font-style: normal;
+            font-size: clamp(1.5em, 4vw, 2.2em);
         }
     </style>
 </head>

@@ -29,7 +29,7 @@ if ($conn->connect_error) {
         }
 
         #terms {
-            width: 80%;
+            width: 75vw;
             height: auto;
             margin: 48px 0;
             padding: 12px 20px;
@@ -40,7 +40,7 @@ if ($conn->connect_error) {
 
         #terms h2 {
             font-family: "Lalezar", system-ui;
-            font-size: 36px;
+            font-size: clamp(0.65em, 5.5vw, 2.2em);
             font-weight: 1000;
             font-style: normal;
             margin-top: 12px;
@@ -49,7 +49,7 @@ if ($conn->connect_error) {
 
         #terms .ol1 {
             font-family: "Lalezar", system-ui;
-            font-size: 20px;
+            font-size: clamp(1rem, 3vw, 1.3rem);
             font-weight: 700;
             font-style: normal;
             margin: 12px 24px 0 24px;
@@ -57,7 +57,7 @@ if ($conn->connect_error) {
 
         #terms .ol2 {
             font-family: "Lalezar", system-ui;
-            font-size: 20px;
+            font-size: clamp(1rem, 3vw, 1.3rem);
             font-weight: 700;
             font-style: normal;
             text-align: start;
@@ -85,23 +85,7 @@ if ($conn->connect_error) {
             content: counters(item, ".") ": ";
             counter-increment: item;
         }
-
-        @media (max-width: 768px) {
-            #terms {
-                height: auto;
-                padding: 12px 10px;
-            }
-
-            #terms h2 {
-                font-size: 28px;
-                margin-top: 6px;
-            }
-
-            #terms .ol1, #terms .ol2 {
-                font-size: 18px;
-                margin: 12px 12px 0 12px;
-            }
-        }
+        
         </style>
 </head>
 <body>
