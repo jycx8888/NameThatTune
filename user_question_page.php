@@ -228,6 +228,35 @@
             margin-right: 10px; /* Adjust spacing as needed */
         }
 
+        .next-button-container {
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            margin-top: 20px; /* Add spacing if needed */
+            height: 100px; /* Adjust height as needed */
+        }
+
+        #next-button {
+            background-color: gray;
+            color: white;
+            padding: 15px 30px; /* Increase padding for a larger button */
+            font-size: 18px; /* Increase font size */
+            border: none;
+            border-radius: 10px; /* Slightly round edges */
+            cursor: not-allowed;
+            transition: background-color 0.3s;
+            display: inline-block; /* Ensure button stays inline */
+        }
+
+        #next-button:enabled {
+            background-color: rgb(77, 72, 144);
+            cursor: pointer;
+        }
+
+        #next-button:hover:enabled {
+            background-color: rgb(104, 99, 174);
+        }
+
     </style>
 </head>
 <body>
@@ -258,7 +287,7 @@
             </audio>
 
             <div class="options">
-                <button class="option-button" onclick="selectOption('A')">A. Berlin</button>
+                <button class="option-button" onclick="selectOption('A')">A. See You Again</button>
                 <button class="option-button" onclick="selectOption('B')">B. Madrid</button>
                 <button class="option-button" onclick="selectOption('C')">C. Paris</button>
                 <button class="option-button" onclick="selectOption('D')">D. Rome</button>
@@ -274,6 +303,11 @@
         <div id="fullscreen-control">
             <img id="fullscreen-icon" src="icon/fullscreen.png" alt="Fullscreen Icon" onclick="toggleFullscreen()">
         </div>
+    </div>
+
+    <!-- Add the Next button -->
+    <div class="next-button-container">
+        <button id="next-button" onclick="loadNextQuestion()" disabled>Next</button>
     </div>
 
     <div id="footer">
@@ -303,10 +337,21 @@
         }
 
         const questions = [
-            { number: 1, questionText: "What song is this?", image: "Korean Song Photo/Blackpink.png", audio: "Background Audio/HARU HARU.mp3", options: ["A. Berlin", "B. Madrid", "C. Paris", "D. Rome"], correctAnswer: "C" },
-            { number: 2, questionText: "Who is the artist?", image: "Korean Song Photo/BTS.png", audio: "Background Audio/Dynamite.mp3", options: ["A. BTS", "B. BLACKPINK", "C. EXO", "D. TWICE"], correctAnswer: "A" },
-            { number: 3, questionText: "Which group released 'Butter'?", image: "Korean Song Photo/Butter.png", audio: "Background Audio/Butter.mp3", options: ["A. BTS", "B. BLACKPINK", "C. Stray Kids", "D. Seventeen"], correctAnswer: "A" },
-            // Add 12 more questions here following the same structure
+            { number: 1, questionText: "What is this song?", image: "image1.png", audio: "audio1.mp3", options: ["A. See You Again", "B. Blinding Lights", "C. Darkside", "D. Poker Face"], correctAnswer: "A" },
+            { number: 2, questionText: "What is this song?", image: "image2.png", audio: "audio2.mp3", options: ["A. Let Her Go", "B. Bye Bye Bye", "C. That's What I Like", "D. Wake Me Up"], correctAnswer: "A" },
+            { number: 3, questionText: "What is this song?", image: "image3.png", audio: "audio3.mp3", options: ["A. Blank Space", "B. Light Switch", "C. Hall Of Fame", "D. Natural"], correctAnswer: "A" },
+            { number: 4, questionText: "What is this song?", image: "image4.png", audio: "audio4.mp3", options: ["A. Ghost", "B. All Of Me", "C. The Nights", "D. Better Now"], correctAnswer: "B" },
+            { number: 5, questionText: "What is this song?", image: "image5.png", audio: "audio5.mp3", options: ["A. I'm Yours", "B. All The Stars", "C. HOPE", "D. StarBoy"], correctAnswer: "A" },
+            { number: 6, questionText: "What is this song?", image: "image6.png", audio: "audio6.mp3", options: ["A. Payphone", "B. Night Changes", "C. Talking To The Moon", "D. Wolves"], correctAnswer: "A" },
+            { number: 7, questionText: "What is this song?", image: "image7.png", audio: "audio7.mp3", options: ["A. Counting Stars", "B. Bad Liar", "C. When I Was Your Man", "D. As It Was"], correctAnswer: "A" },
+            { number: 8, questionText: "What is this song?", image: "image8.png", audio: "audio8.mp3", options: ["A. Bad Romance", "B. 24K Magic", "C. Drivers License", "D. Stay"], correctAnswer: "A" },
+            { number: 9, questionText: "What is this song?", image: "image9.png", audio: "audio9.mp3", options: ["A. We Don’t Talk Anymore", "B. Bad Habits", "C. Happier Than Ever", "D. Shallow"], correctAnswer: "A" },
+            { number: 10, questionText: "What is this song?", image: "image10.png", audio: "audio10.mp3", options: ["A. Treat You Better", "B. Levitating", "C. Someone Like You", "D. Sunflower"], correctAnswer: "A" },
+            { number: 11, questionText: "What is this song?", image: "image11.png", audio: "audio11.mp3", options: ["A. Viva La Vida", "B. Self Love", "C. Cold", "D. Unstoppable"], correctAnswer: "A" },
+            { number: 12, questionText: "What is this song?", image: "image12.png", audio: "audio12.mp3", options: ["A. Calling", "B. Peaches", "C. Perfect", "D. Sorry"], correctAnswer: "A" },
+            { number: 13, questionText: "What is this song?", image: "image13.png", audio: "audio13.mp3", options: ["A. Rewrite The Stars", "B. Clocks", "C. Hello", "D. We Will Rock You"], correctAnswer: "A" },
+            { number: 14, questionText: "What is this song?", image: "image14.png", audio: "audio14.mp3", options: ["A. Doja", "B. Closer", "C. Faded", "D. Rockstar"], correctAnswer: "A" },
+            { number: 15, questionText: "What is this song?", image: "image15.png", audio: "audio15.mp3", options: ["A. Humble.", "B. Hotel California", "C. Dusk Till Dawn", "D. Timber"], correctAnswer: "A" }
         ];
 
         let currentQuestionIndex = 0;
@@ -333,6 +378,10 @@
                 button.disabled = false;
             });
 
+            const nextButton = document.getElementById("next-button");
+            nextButton.disabled = true;
+            nextButton.style.backgroundColor = "black";
+
             currentQuestionIndex++;
         }
 
@@ -350,7 +399,9 @@
                 }
             });
 
-            setTimeout(loadNextQuestion, 2000);
+            const nextButton = document.getElementById("next-button");
+            nextButton.disabled = false;
+            nextButton.style.backgroundColor = "rgb(77, 72, 144)";
         }
 
         document.addEventListener("DOMContentLoaded", () => {
