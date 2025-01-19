@@ -356,7 +356,6 @@ $conn->close();
                 <img src="icon/instagram.png" alt="instagram" id="instagram">
             </li>
         </ul>
-        
         <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
     </div>
         

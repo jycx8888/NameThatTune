@@ -71,6 +71,17 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
         }
 
+        .question-image {
+            max-width: 100%; /* Ensure the image doesn't overflow its container */
+            height: auto; /* Maintain aspect ratio */
+            border-radius: 20px; /* Adjust the radius as desired */
+            margin-bottom: 20px; /* Add spacing between the image and the question text */
+            display: block; /* Center the image horizontally */
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); /* Optional: Add shadow for better appearance */
+        }
+
         .question-box h2 {
             font-family: "Lalezar", system-ui;
             font-weight: 1000;
@@ -185,6 +196,13 @@
             cursor: pointer;
         }
 
+        audio {
+            width: 100%; /* Makes the audio bar take the full width of the container */
+            margin: 10px 0; /* Adds some space above and below the audio bar */
+            outline: none; /* Removes the default outline */
+        }
+
+
     </style>
 </head>
 <body>
@@ -200,16 +218,27 @@
     </div>
 
     <div id="main">
-        <div class="question-box">
-            <h2 id="question">What is the capital of France?</h2>
-            <div class="options">
-                <button class="option-button" onclick="selectOption('A')">A. Berlin</button>
-                <button class="option-button" onclick="selectOption('B')">B. Madrid</button>
-                <button class="option-button" onclick="selectOption('C')">C. Paris</button>
-                <button class="option-button" onclick="selectOption('D')">D. Rome</button>
-            </div>
+    <div class="question-box">
+        <!-- Add your image here -->
+        <img src="Korean Song Photo/Blackpink.png" alt="Question Image" class="question-image">
+
+        <h2 id="question">What is the capital of France?</h2>
+
+        <!-- Add the audio bar -->
+        <audio id="question-audio" controls>
+            <source src="Background Audio/HARU HARU.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+
+        <div class="options">
+            <button class="option-button" onclick="selectOption('A')">A. Berlin</button>
+            <button class="option-button" onclick="selectOption('B')">B. Madrid</button>
+            <button class="option-button" onclick="selectOption('C')">C. Paris</button>
+            <button class="option-button" onclick="selectOption('D')">D. Rome</button>
         </div>
     </div>
+</div>
+
 
     <div id="controls">
         <div id="volume-control">
@@ -350,6 +379,11 @@
                 button.disabled = false;
             });
         }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const questionAudio = document.getElementById("question-audio");
+            questionAudio.play();
+        });
 
     </script>
 </body>
