@@ -216,7 +216,9 @@
             </select>
             <input type="text" id="search" placeholder="Search....">
             <button onclick="performSearch()">Search</button>
+            <button onclick="addSong()" style="background-color: grey; color: white;">Add Song</button>
         </div>
+
 
         <!-- Table Section -->
         <table>
