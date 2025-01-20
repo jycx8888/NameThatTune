@@ -1,66 +1,31 @@
+<?php
+// Database connection
+    $server = 'localhost';
+    $user = 'root';
+    $password = '';
+    $database = 'namethattune';
+
+     $connection = mysqli_connect($server, $user, $password, $database);
+
+    if (!$connection) {
+         die("Connection failed: " . mysqli_connect_error());
+    }echo"Connected successfully";
+     // Close connection
+     mysqli_close($connection);
+
+    // Query to fetch quiz data
+    $query = "SELECT quiz_id, name, num_questions, category FROM quizzes";
+    $results = mysqli_query($connection, $query);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="user_header_footer.css">
+    <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        body {
-            background-color: rgb(104, 99, 174);
-        }
-
-        #header {
-            background-color: gray;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 72px;
-        }
-
-        #header h1 {
-            font-family: "Lalezar", system-ui;
-            font-size: 36px;
-            font-weight: 1000;
-            font-style: normal;
-            padding-bottom: 4px;
-            margin-left: 60px;
-        }
-
-        #login {
-            width: 180px;
-            height: 48px;
-            background-color: white;
-            border-radius: 10px;
-            display: flex;
-            justify-content: left;
-            align-items: center;
-            margin-right: 60px;
-        }
-
-        #login img {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            margin-left: 12px;
-        }
-
-        #login p {
-            font-family: "Lalezar", system-ui;
-            font-size: 20px;
-            font-weight: 1000;
-            font-style: normal;
-            margin-left: 12px;
-            padding-bottom: 1px;
-        }
-
         #content {
             background-color: #f4f4f4;
             width: 80%;
@@ -146,51 +111,6 @@
             margin: 1rem auto 0;
             font-size: 0.9rem;
         }
-
-        #footer {
-            background-color: black;
-            color: white;
-            font-family: "Lalezar", system-ui;
-            font-weight: 1000;
-            font-size: 12px;
-            text-align: center;
-            padding: 10px 0;
-            margin-top: auto;
-            width: 100%;
-        }
-
-        #footer ul {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            padding: 0;
-        }
-
-        #footer ul li {
-            display: inline;
-            list-style-type: none;
-            font-size: 12px;
-            padding: 5px 10px;
-            text-align: center;
-        }
-
-        #footer #instagram {
-            width: 20px;
-            height: 20px;
-            vertical-align: middle;
-        }
-
-        #footer #facebook {
-            width: 20px;
-            height: 20px;
-            vertical-align: middle;
-            margin-left: 4px;
-        }
-
-        #footer #copy {
-            font-size: 12px;
-            margin-top: 5px;
-        }
     </style>
 </head>
 <body>
@@ -219,7 +139,6 @@
             <button onclick="addSong()" style="background-color: grey; color: white;">Add Song</button>
         </div>
 
-
         <!-- Table Section -->
         <table>
             <thead>
@@ -232,41 +151,20 @@
                 </tr>
             </thead>
             <tbody id="quizTable">
-                <?php
-                // Database connection
-                $server = 'localhost';
-                $user = 'root';
-                $password = '';
-                $database = 'namethattune';
 
-                $connection = mysqli_connect($server, $user, $password, $database);
+            <?php while ($row = mysqli_fetch_assoc($results)): ?>
+        <tr>
+            <td><?php echo $row['quiz_id']; ?></td>
+            <td><?php echo $row['name']; ?></td>
+            <td><?php echo $row['num_questions']; ?></td>
+            <td><?php echo $row['category']; ?></td>
+            <td class="actions">
+                <a href="edit.php?id=<?php echo $row['quiz_id']; ?>">Edit</a> |
+                <a href="delete.php?id=<?php echo $row['quiz_id']; ?>">Delete</a>
+            </td>
+        </tr>
+    <?php endwhile; ?>
 
-                if (!$connection) {
-                    die("Connection failed: " . mysqli_connect_error());
-                }
-                echo"Connected successfully";
-
-                // Query to fetch quiz data
-                $query = "SELECT quiz_id, name, num_questions, category FROM quizzes";
-                $results = mysqli_query($connection, $query);
-
-                // Display rows dynamically
-                while ($row = mysqli_fetch_assoc($results)) {
-                    echo "<tr>";
-                    echo "<td>{$row['quiz_id']}</td>";
-                    echo "<td>{$row['name']}</td>";
-                    echo "<td>{$row['num_questions']}</td>";
-                    echo "<td>{$row['category']}</td>";
-                    echo "<td class='actions'>
-                            <a href='edit.php?id={$row['quiz_id']}'>Edit</a> |
-                            <a href='delete.php?id={$row['quiz_id']}'>Delete</a>
-                          </td>";
-                    echo "</tr>";
-                }
-
-                // Close connection
-                mysqli_close($connection);
-                ?>
             </tbody>
         </table>
 
