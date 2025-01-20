@@ -32,6 +32,27 @@ if (isset($_GET['quiz_id'])) {
 }
 ?>
 
+<?php
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Retrieve updated data from the form
+    $quiz_name = $_POST['quiz_name'];
+    $category = $_POST['category'];
+    $description = $_POST['description'];
+
+    // Update query
+    $sql = "UPDATE quizzes SET quiz_name='$quiz_name', category='$category', description='$description' WHERE quiz_id='$quiz_id'";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "Quiz updated successfully!";
+        // Optional: Redirect to another page
+        // header("Location: quizzes.php");
+    } else {
+        echo "Error updating quiz: " . $conn->error;
+    }
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
