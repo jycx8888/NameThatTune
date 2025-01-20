@@ -12,7 +12,24 @@ $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
-}echo"Connected successfully";
+}
+echo"Connected successfully";
+?>
+
+<?php
+// Fetch quiz data if 'quiz_id' is provided
+if (isset($_GET['quiz_id'])) {
+    $quiz_id = $_GET['quiz_id'];
+    $sql = "SELECT * FROM quizzes WHERE quiz_id='$quiz_id'";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $quiz = $result->fetch_assoc(); // Fetch data into an array
+    } else {
+        echo "Quiz not found!";
+        exit(); // Exit if no quiz is found
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -21,70 +38,9 @@ if ($conn->connect_error) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NameThatTune</title>
+    <link rel="stylesheet" href="user_header_footer.css">
+    <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        body {
-            background-color: rgb(104, 99, 174);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            font-family: "Lalezar", system-ui;
-        }
-
-        #header {
-            background-color: rgb(104, 99, 174);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            color: white;
-        }
-
-        #header h1 {
-            font-size: 36px;
-            font-weight: 1000;
-            margin-left: 60px;
-        }
-
-        #login {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background-color: rgba(255, 255, 255, 0.9); /* Subtle white background */
-            border-radius: 20px; /* Rounded edges for the container */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add slight shadow */
-            margin-right: 60px; /* Align with the title on the left */
-        }
-
-        #login img {
-            width: 40px; /* Adjust avatar size */
-            height: 40px;
-            border-radius: 50%; /* Circle shape */
-            border: 2px solid rgba(104, 99, 174, 0.8); /* Add a border matching theme */
-        }
-
-        #login p {
-            font-size: 18px;
-            font-weight: 600;
-            color: rgb(104, 99, 174); /* Match the color theme */
-            margin: 0;
-        }
-
-        #content {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
         main {
             flex: 1;
             padding: 20px;
@@ -162,44 +118,6 @@ if ($conn->connect_error) {
         .button-container .confirm {
             background-color: #98FB98;
             color: white;
-        }
-
-        #footer {
-            height: 144px;
-            width: 100%;
-            background-color: black;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-            bottom: 0;
-        }
-
-        #footer ul {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            padding: 0;
-        }
-
-        #footer ul li {
-            list-style-type: none;
-            font-size: 16px;
-            padding: 16px 16px 4px 16px;
-        }
-
-        #footer #instagram, #footer #facebook {
-            width: 30px;
-            height: 30px;
-            vertical-align: middle;
-            margin-left: 4px;
-        }
-
-        #footer #copy {
-            font-size: 16px;
-            text-align: center;
         }
     </style>
 </head>
