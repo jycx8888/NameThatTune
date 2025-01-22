@@ -1,22 +1,29 @@
 <?php
 // Database connection
-    $server = 'localhost';
-    $user = 'root';
-    $password = '';
-    $database = 'namethattune';
+$server = 'localhost';
+$user = 'root';
+$password = '';
+$database = 'namethattune';
 
-     $connection = mysqli_connect($server, $user, $password, $database);
+$connection = mysqli_connect($server, $user, $password, $database);
 
-    if (!$connection) {
-         die("Connection failed: " . mysqli_connect_error());
-    }echo"Connected successfully";
-     // Close connection
-     mysqli_close($connection);
+if (!$connection) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+echo "Connected successfully";
 
-    // Query to fetch quiz data
-    $query = "SELECT quiz_id, name, num_questions, category FROM quizzes";
-    $results = mysqli_query($connection, $query);
+// Query to fetch quiz data
+$query = "SELECT QuizID AS quiz_id, GenreID AS genre_id, CreatedTime AS created_time FROM quiz";
+$results = mysqli_query($connection, $query);
+
+if (!$results) {
+    die("Query failed: " . mysqli_error($connection));
+}
+
+// Close the connection after querying
+mysqli_close($connection);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -127,46 +134,47 @@
         <div class="section-title">Edit Quiz</div>
 
         <!-- Search Filter Section -->
-        <div class="search-bar">
-            <label for="filter">Search by:</label>
-            <select id="filter">
-                <option value="name">Name</option>
-                <option value="id">Quiz ID</option>
-                <option value="category">Category</option>
-            </select>
-            <input type="text" id="search" placeholder="Search....">
-            <button onclick="performSearch()">Search</button>
-            <button onclick="addSong()" style="background-color: grey; color: white;">Add Song</button>
-        </div>
-
+    <div class="search-bar">
+        <label for="filter">Search by:</label>
+        <select id="filter">
+            <option value="id">Quiz ID</option>
+            <option value="genre">Genre ID</option>
+            <option value="time">Created Time</option>
+        </select>
+        <input type="text" id="search" placeholder="Search....">
+        <button onclick="performSearch()">Search</button>
+        <button onclick="addSong()" style="background-color: grey; color: white;">Add Song</button>
+    </div>
         <!-- Table Section -->
         <table>
-            <thead>
-                <tr>
-                    <th>Quiz ID</th>
-                    <th>Name</th>
-                    <th>Number of Questions</th>
-                    <th>Category</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="quizTable">
-
-            <?php while ($row = mysqli_fetch_assoc($results)): ?>
+    <thead>
         <tr>
-            <td><?php echo $row['quiz_id']; ?></td>
-            <td><?php echo $row['name']; ?></td>
-            <td><?php echo $row['num_questions']; ?></td>
-            <td><?php echo $row['category']; ?></td>
-            <td class="actions">
-                <a href="edit.php?id=<?php echo $row['quiz_id']; ?>">Edit</a> |
-                <a href="delete.php?id=<?php echo $row['quiz_id']; ?>">Delete</a>
-            </td>
+            <th>Quiz ID</th>
+            <th>Genre ID</th>
+            <th>Created Time</th>
+            <th>Action</th>
         </tr>
-    <?php endwhile; ?>
-
-            </tbody>
-        </table>
+    </thead>
+    <tbody id="quizTable">
+        <?php if (mysqli_num_rows($results) > 0): ?>
+            <?php while ($row = mysqli_fetch_assoc($results)): ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($row['quiz_id']); ?></td>
+                    <td><?php echo htmlspecialchars($row['genre_id']); ?></td>
+                    <td><?php echo htmlspecialchars($row['created_time']); ?></td>
+                    <td class="actions">
+                        <a href="edit.php?id=<?php echo urlencode($row['quiz_id']); ?>">Edit</a> |
+                        <a href="delete.php?id=<?php echo urlencode($row['quiz_id']); ?>">Delete</a>
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="4">No quizzes found.</td>
+            </tr>
+        <?php endif; ?>
+    </tbody>
+</table>
 
         <!-- Back Button -->
         <a href="#" class="back-button">Back</a>
@@ -189,26 +197,26 @@
     <!-- Script for Search Functionality -->
     <script>
         function performSearch() {
-            const filter = document.getElementById("filter").value;
-            const searchTerm = document.getElementById("search").value.toLowerCase();
-            const table = document.getElementById("quizTable");
-            const rows = table.getElementsByTagName("tr");
+    const filter = document.getElementById("filter").value;
+    const searchTerm = document.getElementById("search").value.toLowerCase();
+    const table = document.getElementById("quizTable");
+    const rows = table.getElementsByTagName("tr");
 
-            for (let row of rows) {
-                const cells = row.getElementsByTagName("td");
-                let shouldDisplay = false;
+    for (let row of rows) {
+        const cells = row.getElementsByTagName("td");
+        let shouldDisplay = false;
 
-                if (filter === "id" && cells[0].textContent.toLowerCase().includes(searchTerm)) {
-                    shouldDisplay = true;
-                } else if (filter === "name" && cells[1].textContent.toLowerCase().includes(searchTerm)) {
-                    shouldDisplay = true;
-                } else if (filter === "category" && cells[3].textContent.toLowerCase().includes(searchTerm)) {
-                    shouldDisplay = true;
-                }
-
-                row.style.display = shouldDisplay ? "table-row" : "none";
-            }
+        if (filter === "id" && cells[0].textContent.toLowerCase().includes(searchTerm)) {
+            shouldDisplay = true;
+        } else if (filter === "genre" && cells[1].textContent.toLowerCase().includes(searchTerm)) {
+            shouldDisplay = true;
+        } else if (filter === "time" && cells[2].textContent.toLowerCase().includes(searchTerm)) {
+            shouldDisplay = true;
         }
+
+        row.style.display = shouldDisplay ? "table-row" : "none";
+    }
+}
     </script>
 </body>
 </html>
