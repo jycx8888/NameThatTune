@@ -9,8 +9,7 @@ $connection = mysqli_connect($server, $user, $password, $database);
 
 if (!$connection) {
     die("Connection failed: " . mysqli_connect_error());
-}
-echo "Connected successfully";
+}echo "Connected successfully";
 
 // Query to fetch quiz data
 $query = "SELECT QuizID AS quiz_id, GenreID AS genre_id, CreatedTime AS created_time FROM quiz";
