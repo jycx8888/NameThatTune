@@ -1,6 +1,12 @@
 <?php
-// database connection 
+// Database connection
 session_start();
+
+if (!isset($_SESSION['username'])) {
+    header("Location: admin_login.php");
+    exit();
+}
+
 $servername = "localhost";
 $dbusername = "root";
 $dbpassword = "";
@@ -13,45 +19,49 @@ $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-echo"Connected successfully";
-?>
+//echo "Connected successfully<br>";
 
-<?php
-// Fetch quiz data if 'quiz_id' is provided
-if (isset($_GET['quiz_id'])) {
-    $quiz_id = $_GET['quiz_id'];
-    $sql = "SELECT * FROM quizzes WHERE quiz_id='$quiz_id'";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        $quiz = $result->fetch_assoc(); // Fetch data into an array
-    } else {
-        echo "Quiz not found!";
-        exit(); // Exit if no quiz is found
-    }
+// Check if 'quiz_id' is provided
+if (!isset($_GET['quiz_id']) || empty($_GET['quiz_id'])) {
+    die("Error: Quiz ID is required.");
 }
-?>
 
-<?php
+// Sanitize and fetch the quiz ID
+$quiz_id = $conn->real_escape_string($_GET['quiz_id']);
+
+// Fetch quiz data
+$sql = "SELECT * FROM quizzes WHERE quiz_id='$quiz_id'";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    $quiz = $result->fetch_assoc(); // Fetch data into an array
+} else {
+    die("Error: Quiz not found.");
+}
+
+// Fetch questions related to this quiz
+$sql_questions = "SELECT * FROM questions WHERE quiz_id='$quiz_id'";
+$result_questions = $conn->query($sql_questions);
+
+// Handle form submission for updating quiz details
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Retrieve updated data from the form
-    $quiz_name = $_POST['quiz_name'];
-    $category = $_POST['category'];
-    $description = $_POST['description'];
+    $genre_id = $conn->real_escape_string($_POST['genre_id']);
+    $created_time = $conn->real_escape_string($_POST['created_time']);
 
     // Update query
-    $sql = "UPDATE quizzes SET quiz_name='$quiz_name', category='$category', description='$description' WHERE quiz_id='$quiz_id'";
+    $update_sql = "UPDATE quizzes SET genre_id='$genre_id', created_time='$created_time' WHERE quiz_id='$quiz_id'";
 
-    if ($conn->query($sql) === TRUE) {
-        echo "Quiz updated successfully!";
-        // Optional: Redirect to another page
-        // header("Location: quizzes.php");
+    if ($conn->query($update_sql) === TRUE) {
+        echo "Quiz updated successfully!<br>";
+        // Reload the page to reflect changes
+        header("Location: edit_quiz.php?quiz_id=$quiz_id");
+        exit();
     } else {
         echo "Error updating quiz: " . $conn->error;
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -155,47 +165,66 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Main Content Section -->
     <main>
-        <h2 class="edit-quiz-header">Edit Quiz</h2>
-        <div class="form-group">
-            <label for="quiz-id">Quiz ID</label>
-            <input type="text" id="quiz-id" value="Q001">
-        </div>
-        <div class="form-group">
-            <label for="quiz-name">Name</label>
-            <input type="text" id="quiz-name" value="90s Classics">
-        </div>
-        <div class="form-group">
-            <label for="category">Category</label>
-            <input type="text" id="category" value="English">
-        </div>
+        <form method="POST">
+            <h2 class="edit-quiz-header">Edit Quiz</h2>
+            <div class="form-group">
+                <label for="quiz-id">Quiz ID</label>
+                <input type="text" id="quiz-id" value="Q001">
+            </div>
+            <div class="form-group">
+                <label for="quiz-name">Name</label>
+                <input type="text" id="quiz-name" value="90s Classics">
+            </div>
+            <div class="form-group">
+                <label for="category">Category</label>
+                <input type="text" id="category" value="English">
+            </div>
+
+            <div class="form-group">
+                <label for="genre-id">Genre</label>
+                <select id="genre-id" name="genre_id">
+                    <option value="1" <?php if ($quiz['genre_id'] == '1') echo 'selected'; ?>>English</option>
+                    <option value="2" <?php if ($quiz['genre_id'] == '2') echo 'selected'; ?>>Korean</option>
+                    <option value="3" <?php if ($quiz['genre_id'] == '3') echo 'selected'; ?>>Japanese</option>
+                    <!-- Add more genres as needed -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="created-time">Created Time</label>
+                <input type="datetime-local" id="created-time" name="created_time" value="<?php echo date('Y-m-d\TH:i:s', strtotime($quiz['created_time'])); ?>">
+            </div>
 
         <!-- Table Section -->
-        <table class="question-table">
-            <thead>
-                <tr>
-                    <th>Question ID</th>
-                    <th>Options</th>
-                    <th>Answer</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Q001</td>
-                    <td>Never Gonna Give You Up, Niggas in Paris, Blank Space, YMCA</td>
-                    <td>Never Gonna Give You Up</td>
-                    <td class="actions">
-                        <a href="#">Edit</a> | <a href="#">Delete</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <h3>Questions</h3>
+<table class="question-table">
+    <thead>
+        <tr>
+            <th>Question ID</th>
+            <th>Question</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php while ($question = $result_questions->fetch_assoc()) { ?>
+            <tr>
+                <td><?php echo $question['question_id']; ?></td>
+                <td><?php echo $question['question_text']; ?></td>
+                <td class="actions">
+                    <a href="edit_question.php?question_id=<?php echo $question['question_id']; ?>">Edit</a> |
+                    <a href="delete_question.php?question_id=<?php echo $question['question_id']; ?>">Delete</a>
+                </td>
+            </tr>
+        <?php } ?>
+    </tbody>
+</table>
 
         <!-- Buttons -->
         <div class="button-container">
-            <button class="cancel">Cancel</button>
-            <button class="confirm">Confirm</button>
+            <button type="button" class="cancel" onclick="window.location.href='quizzes.php';">Cancel</button>
+            <button type="submit" class="confirm">Save Changes</button>
         </div>
+        </form>
     </main>
 
     <!-- Footer Section -->
