@@ -590,10 +590,15 @@ $conn->close();
 
         document.getElementById('start-button').addEventListener('click', function () {
             const selectedCategory = document.getElementById('category-dropdown').value;
+
             if (selectedCategory === 'Category List') {
                 showWarning('Please select a category first!');
-            } else {
-                window.location.href = 'user_question_page.php';
+            } else if (selectedCategory === 'English') {
+                window.location.href = 'user_question_page_english.php';
+            } else if (selectedCategory === 'Japanese') {
+                window.location.href = 'user_question_page_japanese.php';
+            } else if (selectedCategory === 'Korean') {
+                window.location.href = 'user_question_page_korean.php';
             }
         });
 

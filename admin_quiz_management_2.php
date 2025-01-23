@@ -1,6 +1,12 @@
 <?php
 // Database connection
 session_start();
+
+if (!isset($_SESSION['username'])) {
+    header("Location: admin_login.php");
+    exit();
+}
+
 $servername = "localhost";
 $dbusername = "root";
 $dbpassword = "";
