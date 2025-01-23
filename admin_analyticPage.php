@@ -47,16 +47,17 @@ $conn->close();
         background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        margin: 20px auto;
+        padding: 50px;
+        margin: 20px auto -30% auto;
         width: 90%;
         max-width: 800px;
     }
         table {
-            border-collapse: collapse;
-            width: 80%;
-            margin: 20px auto;
-        }
+        border-collapse: collapse;
+        width: 80%;
+        margin: 20px auto -200px auto; /* Reduced bottom margin */
+    }
+
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
@@ -67,7 +68,23 @@ $conn->close();
         }
         canvas {
             display: block;
-            margin: 20px auto;
+            margin: 1px auto;
+            width: 70%;
+        }
+        .back-button {
+            display: block;
+            width: 200px;
+            margin: 70px auto;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .back-button:hover {
+            background-color: #45a049;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -77,31 +94,39 @@ $conn->close();
 <div id="header">
         <h1>NameThatTune</h1>
         <div id="login" onclick="">
-            <img src="\Icon\account.png" alt="avatar">
+            <img src="Icon\account.png" alt="avatar">
             <p>Username</p>
         </div>
     </div>
 
-    
-    <!-- Step 3: Display Data in a Table -->
-    <div class="container">
+
+<div class="container">
     <h1>Guess Song Quiz Analytics</h1>
     <table>
-        <tr>
-            <th>Quiz ID</th>
-            <th>Total Attempts</th>
-            <th>Total Correct</th>
-            <th>Total Incorrect</th>
-        </tr>
-        <?php foreach ($data as $row): ?>
-        <tr>
-            <td><?php echo $row['QuizID']; ?></td>
-            <td><?php echo $row['TotalAttempts']; ?></td>
-            <td><?php echo $row['TotalCorrect']; ?></td>
-            <td><?php echo $row['TotalIncorrect']; ?></td>
-        </tr>
-        <?php endforeach; ?>
+        <thead>
+            <tr>
+                <th>Quiz ID</th>
+                <th>Total Attempts</th>
+                <th>Total Correct</th>
+                <th>Total Incorrect</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($data as $row): ?>
+                <tr>
+                    <td><?php echo $row['QuizID']; ?></td>
+                    <td><?php echo $row['TotalAttempts']; ?></td>
+                    <td><?php echo $row['TotalCorrect']; ?></td>
+                    <td><?php echo $row['TotalIncorrect']; ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
     </table>
+    <canvas id="myChart"></canvas>
+    <!-- Step 4: Add Chart -->
+    <canvas id="quizChart" width="400" height="200"></canvas>
+    <a href="admin_adminDashboard.php" class="back-button">Back to Dashboard</a>
+</div>
 
     <!-- Step 4: Add Chart -->
     <canvas id="quizChart" width="400" height="200"></canvas>
