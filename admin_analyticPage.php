@@ -1,4 +1,11 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['username'])) {
+    header("Location: admin_login.php");
+    exit();
+}
+
 // Step 1: Database Connection
 $servername = "localhost";
 $username = "root"; // Replace with your MySQL username
