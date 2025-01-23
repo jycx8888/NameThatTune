@@ -13,7 +13,7 @@ $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-echo "Connected successfully<br>";
+//echo "Connected successfully<br>";
 
 // Check if 'quiz_id' is provided
 if (!isset($_GET['quiz_id']) || empty($_GET['quiz_id'])) {
