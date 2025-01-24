@@ -30,7 +30,7 @@ if (!isset($_GET['quiz_id']) || empty($_GET['quiz_id'])) {
 $quiz_id = $conn->real_escape_string($_GET['quiz_id']);
 
 // Fetch quiz data
-$sql = "SELECT * FROM quizzes WHERE quiz_id='$quiz_id'";
+$sql = "SELECT quiz_id, genre_id, created_time FROM quizzes WHERE quiz_id='$quiz_id'";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
@@ -169,55 +169,52 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <h2 class="edit-quiz-header">Edit Quiz</h2>
             <div class="form-group">
                 <label for="quiz-id">Quiz ID</label>
-                <input type="text" id="quiz-id" value="Q001">
+                <input type="text" id="quiz-id" name="quiz_id" value="<?php echo $quiz['quiz_id']; ?>" readonly>
             </div>
-            <div class="form-group">
-                <label for="quiz-name">Name</label>
-                <input type="text" id="quiz-name" value="90s Classics">
-            </div>
-            <div class="form-group">
-                <label for="category">Category</label>
-                <input type="text" id="category" value="English">
-            </div>
-
+            
             <div class="form-group">
                 <label for="genre-id">Genre</label>
                 <select id="genre-id" name="genre_id">
                     <option value="1" <?php if ($quiz['genre_id'] == '1') echo 'selected'; ?>>English</option>
                     <option value="2" <?php if ($quiz['genre_id'] == '2') echo 'selected'; ?>>Korean</option>
                     <option value="3" <?php if ($quiz['genre_id'] == '3') echo 'selected'; ?>>Japanese</option>
-                    <!-- Add more genres as needed -->
                 </select>
             </div>
-
             <div class="form-group">
                 <label for="created-time">Created Time</label>
-                <input type="datetime-local" id="created-time" name="created_time" value="<?php echo date('Y-m-d\TH:i:s', strtotime($quiz['created_time'])); ?>">
+                <input type="datetime-local" id="created-time" name="created_time" 
+                    value="<?php echo date('Y-m-d\TH:i:s', strtotime($quiz['created_time'])); ?>">
             </div>
 
         <!-- Table Section -->
         <h3>Questions</h3>
-<table class="question-table">
-    <thead>
-        <tr>
-            <th>Question ID</th>
-            <th>Question</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php while ($question = $result_questions->fetch_assoc()) { ?>
-            <tr>
-                <td><?php echo $question['question_id']; ?></td>
-                <td><?php echo $question['question_text']; ?></td>
-                <td class="actions">
-                    <a href="edit_question.php?question_id=<?php echo $question['question_id']; ?>">Edit</a> |
-                    <a href="delete_question.php?question_id=<?php echo $question['question_id']; ?>">Delete</a>
-                </td>
-            </tr>
-        <?php } ?>
-    </tbody>
-</table>
+        <table class="question-table">
+            <thead>
+                <tr>
+                    <th>Question ID</th>
+                    <th>Question</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ($result_questions->num_rows > 0): ?>
+                    <?php while ($question = $result_questions->fetch_assoc()): ?>
+                        <tr>
+                            <td><?php echo $question['question_id']; ?></td>
+                            <td><?php echo $question['question_text']; ?></td>
+                            <td class="actions">
+                                <a href="edit_question.php?question_id=<?php echo $question['question_id']; ?>">Edit</a> |
+                                <a href="delete_question.php?question_id=<?php echo $question['question_id']; ?>">Delete</a>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="3">No questions found for this quiz.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
 
         <!-- Buttons -->
         <div class="button-container">
