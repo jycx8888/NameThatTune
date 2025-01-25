@@ -163,5 +163,61 @@
         </ul>
         <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
     </div>
+
+    <script>
+        const songPhotoInput = document.getElementById('song-photo');
+        const songPhotoDisplay = document.getElementById('song-photo-display');
+        const songMp3Input = document.getElementById('song-mp3');
+        const mp3Display = document.getElementById('mp3-display');
+        const correctIcons = document.querySelectorAll('.correct-icon');
+
+        // Handle song photo selection
+        songPhotoInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    songPhotoDisplay.innerHTML = `
+                        <img src="${e.target.result}" alt="Song Photo" style="max-width: 200px;">
+                        <button id="delete-photo">Delete Photo</button>
+                    `;
+                    document.getElementById('delete-photo').addEventListener('click', () => {
+                        songPhotoDisplay.innerHTML = '';
+                        songPhotoInput.value = '';
+                    });
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert("Please select a valid image file.");
+            }
+        });
+
+        // Handle MP3 file selection
+        songMp3Input.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file && file.type === "audio/mpeg") {
+                const fileURL = URL.createObjectURL(file);
+                mp3Display.innerHTML = `
+                    <p>Selected MP3: ${file.name}</p>
+                    <audio controls src="${fileURL}"></audio>
+                    <button id="delete-mp3">Delete</button>
+                `;
+                document.getElementById('delete-mp3').addEventListener('click', () => {
+                    mp3Display.innerHTML = '';
+                    songMp3Input.value = '';
+                });
+            } else {
+                alert("Please select a valid MP3 file.");
+            }
+        });
+
+        // Handle selecting the correct answer option
+        correctIcons.forEach(icon => {
+            icon.addEventListener('click', () => {
+                correctIcons.forEach(icon => icon.classList.remove('selected'));
+                icon.classList.add('selected');
+            });
+        });
+    </script>
 </body>
 </html>
