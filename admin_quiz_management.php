@@ -141,6 +141,11 @@ mysqli_close($connection);
             font-size: 0.9rem;
         }
     </style>
+    <script>
+        function addSong() {
+                    window.location.href = 'admin_quiz_management_2.php';
+                }
+    </script>
 </head>
 <body>
     <div id="header">
@@ -150,6 +155,11 @@ mysqli_close($connection);
             <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>
+    
+    <div>
+    <!-- Add Song Button -->
+    <button onclick="addSong()">Add Song</button>
+</div>
 
     <!-- Content -->
     <div id="content">
@@ -176,6 +186,22 @@ mysqli_close($connection);
             <th>Created Time</th>
             <th>Action</th>
         </tr>
+        <?php
+        // for edit, delete function
+        $connection = mysqli_connect('localhost', 'root', '', 'namethattune');
+        $result = mysqli_query($connection, "SELECT * FROM quiz");
+        while($row = mysqli_fetch_assoc($result)) {
+            echo "<tr>";
+            echo "<td>" . $row['QuizID'] . "</td>";
+            echo "<td>" . $row['genre'] . "</td>";
+            echo "<td>" . $row['time'] . "</td>";
+            echo "<td>
+                    <a href='edit.php?id=" . $row['QuizID'] . "'>Edit</a> | 
+                    <a href='delete.php?id=" . $row['QuizID'] . "'>Delete</a>
+                </td>";
+            echo "</tr>";
+        }
+        ?>
     </thead>
     <tbody id="quizTable">
         <?php if (mysqli_num_rows($results) > 0): ?>
@@ -428,6 +454,7 @@ mysqli_close($connection);
         }
 
         row.style.display = shouldDisplay ? "table-row" : "none";
+        
     }
 }
     </script>
