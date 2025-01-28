@@ -190,17 +190,14 @@ mysqli_close($connection);
         // for edit, delete function
         $connection = mysqli_connect('localhost', 'root', '', 'namethattune');
         $result = mysqli_query($connection, "SELECT * FROM quiz");
-        while($row = mysqli_fetch_assoc($result)) {
+        while ($row = mysqli_fetch_assoc($result)) {
             echo "<tr>";
-            echo "<td>" . $row['QuizID'] . "</td>";
-            echo "<td>" . $row['genre'] . "</td>";
-            echo "<td>" . $row['time'] . "</td>";
-            echo "<td>
-                    <a href='edit.php?id=" . $row['QuizID'] . "'>Edit</a> | 
-                    <a href='delete.php?id=" . $row['QuizID'] . "'>Delete</a>
-                </td>";
+            echo "<td>" . (isset($row['id']) ? $row['id'] : 'N/A') . "</td>";  
+            echo "<td>" . (isset($row['name']) ? $row['name'] : 'N/A') . "</td>";  
+            echo "<td>" . (isset($row['genre']) ? $row['genre'] : 'No Genre') . "</td>";  
+            echo "<td>" . (isset($row['time']) ? $row['time'] : 'No Time') . "</td>";  
             echo "</tr>";
-        }
+        }        
         ?>
     </thead>
     <tbody id="quizTable">
