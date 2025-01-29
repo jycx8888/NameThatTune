@@ -46,6 +46,35 @@ if (!$results) {
 mysqli_close($connection);
 ?>
 
+<?php
+// Database connection
+$connection = new mysqli('localhost', 'root', '', 'namethattune');
+
+// Check if delete action is requested
+if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
+    $quiz_id = $_GET['id'];
+
+    // Validate input: Ensure it's a numeric value
+    if (!is_numeric($quiz_id)) {
+        die("Invalid Quiz ID.");
+    }
+
+    // Use a prepared statement to prevent SQL injection
+    $stmt = $connection->prepare("DELETE FROM quiz WHERE QuizID = ?");
+    $stmt->bind_param("i", $quiz_id);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Quiz deleted successfully!'); window.location.href='admin_quiz_management.php';</script>";
+    } else {
+        echo "<script>alert('Error deleting quiz.');</script>";
+    }
+
+    $stmt->close();
+    exit(); // Prevent further script execution
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -140,6 +169,11 @@ mysqli_close($connection);
             margin: 1rem auto 0;
             font-size: 0.9rem;
         }
+        .back-button:hover{
+            text-decoration: underline;
+            background-color: #E39FF6;
+        }
+
     </style>
     <script>
         function addSong() {
@@ -155,11 +189,6 @@ mysqli_close($connection);
             <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>
-    
-    <div>
-    <!-- Add Song Button -->
-    <button onclick="addSong()">Add Song</button>
-</div>
 
     <!-- Content -->
     <div id="content">
@@ -188,14 +217,12 @@ mysqli_close($connection);
         </tr>
         <?php
         // for edit, delete function
-        $connection = mysqli_connect('localhost', 'root', '', 'namethattune');
         $result = mysqli_query($connection, "SELECT * FROM quiz");
         while ($row = mysqli_fetch_assoc($result)) {
             echo "<tr>";
-            echo "<td>" . (isset($row['id']) ? $row['id'] : 'N/A') . "</td>";  
-            echo "<td>" . (isset($row['name']) ? $row['name'] : 'N/A') . "</td>";  
-            echo "<td>" . (isset($row['genre']) ? $row['genre'] : 'No Genre') . "</td>";  
-            echo "<td>" . (isset($row['time']) ? $row['time'] : 'No Time') . "</td>";  
+            echo "<td>" . (isset($row['quiz_id']) ? $row['quiz_id'] : 'N/A') . "</td>";  
+            echo "<td>" . (isset($row['genre_id']) ? $row['genre_id'] : 'N/A') . "</td>";  
+            echo "<td>" . (isset($row['created_time']) ? $row['created_time'] : 'No Time') . "</td>";  
             echo "</tr>";
         }        
         ?>
@@ -209,7 +236,7 @@ mysqli_close($connection);
                     <td><?php echo htmlspecialchars($row['created_time']); ?></td>
                     <td class="actions">
                         <a href="edit.php?id=<?php echo urlencode($row['quiz_id']); ?>">Edit</a> |
-                        <a href="delete.php?id=<?php echo urlencode($row['quiz_id']); ?>">Delete</a>
+                        <a href="admin_quiz_management.php?action=delete&id=<?php echo urlencode($row['quiz_id']); ?>" onclick="return confirm('Are you sure you want to delete this quiz?');">Delete</a>
                     </td>
                 </tr>
             <?php endwhile; ?>
@@ -222,9 +249,10 @@ mysqli_close($connection);
 </table>
 
         <!-- Back Button -->
-        <a href="#" class="back-button">Back</a>
-    </div>
+      <!-- Back Button -->
+    <button onclick="window.history.back()" class="back-button">Back</button>
 
+    </div>
     <div id="footer">
         <ul class="nav">
             <li>About Us</li>
