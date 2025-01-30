@@ -1,6 +1,8 @@
 <?php
 // Database connection
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (!isset($_SESSION['username'])) {
     header("Location: admin_login.php");
@@ -27,11 +29,12 @@ if (!isset($_GET['quiz_id']) || empty($_GET['quiz_id'])) {
 }
 
 // Sanitize and fetch the quiz ID
-$quiz_id = $conn->real_escape_string($_GET['quiz_id']);
+$quiz_id = $_GET['quiz_id'];
 
-// Fetch quiz data
-$sql = "SELECT quiz_id, genre_id, created_time FROM quizzes WHERE quiz_id='$quiz_id'";
-$result = $conn->query($sql);
+$stmt = $conn->prepare("SELECT quiz_id, genre_id, created_time FROM quizzes WHERE quiz_id=?");
+$stmt->bind_param("i", $quiz_id); // "i" means integer
+$stmt->execute();
+$result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $quiz = $result->fetch_assoc(); // Fetch data into an array
@@ -165,7 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Main Content Section -->
     <main>
-        <form method="POST">
+        <form method="POST" action="edit_quiz.php?quiz_id=<?php echo $quiz_id; ?>">
             <h2 class="edit-quiz-header">Edit Quiz</h2>
             <div class="form-group">
                 <label for="quiz-id">Quiz ID</label>
@@ -183,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="form-group">
                 <label for="created-time">Created Time</label>
                 <input type="datetime-local" id="created-time" name="created_time" 
-                    value="<?php echo date('Y-m-d\TH:i:s', strtotime($quiz['created_time'])); ?>">
+                    value="<?php echo !empty($quiz['created_time']) ? date('Y-m-d\TH:i:s', strtotime($quiz['created_time'])) : ''; ?>"
             </div>
 
         <!-- Table Section -->
@@ -201,7 +204,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <?php while ($question = $result_questions->fetch_assoc()): ?>
                         <tr>
                             <td><?php echo $question['question_id']; ?></td>
-                            <td><?php echo $question['question_text']; ?></td>
+                            <td><?php echo isset($question['question_text']) ? htmlspecialchars($question['question_text']) : 'No question text'; ?></td>
                             <td class="actions">
                                 <a href="edit_question.php?question_id=<?php echo $question['question_id']; ?>">Edit</a> |
                                 <a href="delete_question.php?question_id=<?php echo $question['question_id']; ?>">Delete</a>
