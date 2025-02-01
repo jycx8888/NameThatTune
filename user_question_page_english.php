@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+// Enable error reporting for debugging
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Redirect if the user is not logged in
 if (!isset($_SESSION['username'])) {
     header("Location: user_login.php");
@@ -15,15 +20,15 @@ $dbname = "namethattune";
 
 $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
-// Check connection
+// Check database connection
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    die("Database connection failed: " . $conn->connect_error);
 }
 
 $username = $_SESSION['username'];
 
-// Fetch user profile picture
-$stmt = $conn->prepare("SELECT ProfilePicture FROM user WHERE Username = ?");
+// Fetch user profile picture and UserID
+$stmt = $conn->prepare("SELECT ProfilePicture, UserID FROM user WHERE Username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -31,27 +36,38 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $profile_picture_path = $row['ProfilePicture'];
+    $userID = $row['UserID']; // Fetch UserID from the database
 } else {
     $profile_picture_path = 'Icon/account.png'; // Default profile picture
+    $userID = null; // Handle case where UserID is not found
 }
 
 $stmt->close();
 
 // Handle POST request to save quiz details
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['save_record'])) {
-    $timeUserID = $_POST['TimeUserID']; // User ID
-    $quizID = $_POST['QuizID']; // Quiz ID
-    $result = $_POST['Result']; // Result
-    $recordID = uniqid("rec_"); // Generate unique RecordID
+    $quizID = $_POST['QuizID'] ?? null;
+    $result = $_POST['Result'] ?? null;
+    $recordID = uniqid("rec_");
+    $currentTime = date("Y-m-d H:i:s"); // Capture the current timestamp
+
+    // Validate incoming data
+    if (!$userID || !$quizID || $result === null) {
+        die("Error: Missing data. UserID: $userID, QuizID: $quizID, Result: $result");
+    }
 
     // Insert data into the 'record' table
-    $stmt = $conn->prepare("INSERT INTO record (RecordID, Result, TimeUserID, QuizID) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("ssss", $recordID, $result, $timeUserID, $quizID);
+    $stmt = $conn->prepare("INSERT INTO record (RecordID, Result, Time, UserID, QuizID) VALUES (?, ?, ?, ?, ?)");
+    if (!$stmt) {
+        die("Error preparing statement: " . $conn->error);
+    }
+
+    $stmt->bind_param("sssss", $recordID, $result, $currentTime, $userID, $quizID);
 
     if ($stmt->execute()) {
         echo "Record saved successfully!";
     } else {
-        echo "Error saving record: " . $stmt->error;
+        die("Error saving record: " . $stmt->error);
     }
 
     $stmt->close();
