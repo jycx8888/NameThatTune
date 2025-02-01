@@ -185,6 +185,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <div id="header">
         <h1>NameThatTune</h1>
+        <link rel="icon" href="icon/logo.jpg" type="image/png">
         <div id="login" onclick="redirectToLogin()">
             <p>Login/Sign Up</p>
         </div>
