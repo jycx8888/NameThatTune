@@ -1,17 +1,18 @@
 <?php
 session_start();
 
+// Redirect if the user is not logged in
 if (!isset($_SESSION['username'])) {
     header("Location: user_login.php");
     exit();
 }
 
+// Database connection
 $servername = "localhost";
-$dbusername = "root"; // Database username
-$dbpassword = ""; // Database password
+$dbusername = "root";
+$dbpassword = "";
 $dbname = "namethattune";
 
-// Create connection
 $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
 // Check connection
@@ -21,7 +22,7 @@ if ($conn->connect_error) {
 
 $username = $_SESSION['username'];
 
-// Fetch user data from the database
+// Fetch user profile picture
 $stmt = $conn->prepare("SELECT ProfilePicture FROM user WHERE Username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
@@ -31,64 +32,32 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $profile_picture_path = $row['ProfilePicture'];
 } else {
-    // Handle case where user data is not found
     $profile_picture_path = 'Icon/account.png'; // Default profile picture
 }
 
 $stmt->close();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['update_username'])) {
-        $new_username = $_POST['newUsername'];
+// Handle POST request to save quiz details
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['save_record'])) {
+    $timeUserID = $_POST['TimeUserID']; // User ID
+    $quizID = $_POST['QuizID']; // Quiz ID
+    $result = $_POST['Result']; // Result
+    $recordID = uniqid("rec_"); // Generate unique RecordID
 
-        $stmt = $conn->prepare("UPDATE user SET Username = ? WHERE Username = ?");
-        $stmt->bind_param("ss", $new_username, $username);
-        if ($stmt->execute()) {
-            $_SESSION['username'] = $new_username;
-            $username = $new_username;
-        } else {
-            echo "Error updating username.";
-        }
+    // Insert data into the 'record' table
+    $stmt = $conn->prepare("INSERT INTO record (RecordID, Result, TimeUserID, QuizID) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $recordID, $result, $timeUserID, $quizID);
 
-        $stmt->close();
+    if ($stmt->execute()) {
+        echo "Record saved successfully!";
+    } else {
+        echo "Error saving record: " . $stmt->error;
     }
 
-    if (isset($_POST['update_password'])) {
-        $new_password =$_POST['newPassword'];
-        $stmt = $conn->prepare("UPDATE user SET Password = ? WHERE Username = ?");
-        $stmt->bind_param("ss", $new_password, $username);
-        if ($stmt->execute()) {
-        } else {
-            echo "Error updating password.";
-        }
-        $stmt->close();
-    }
-
-    if (isset($_POST['update_profile'])) {
-        $profile_picture = $_FILES['ProfilePicture']['name'];
-        $target_dir = "uploads/";
-        $target_file = $target_dir . basename($profile_picture);
-
-        if (move_uploaded_file($_FILES['ProfilePicture']['tmp_name'], $target_file)) {
-            $stmt = $conn->prepare("UPDATE user SET ProfilePicture = ? WHERE Username = ?");
-            $stmt->bind_param("ss", $target_file, $username);
-            if ($stmt->execute()) {
-                $profile_picture_path = $target_file;
-            } else {
-                echo "Error updating profile picture.";
-            }
-
-            $stmt->close();
-        } else {
-            echo "Error uploading file.";
-        }
-    }
-
-    // Redirect to avoid form resubmission
-    header("Location: user_mainPage.php");
-    exit();
+    $stmt->close();
 }
 
+// Close database connection
 $conn->close();
 ?>
 
@@ -362,7 +331,7 @@ $conn->close();
         <button id="backButton" onclick="goBack()">Back</button>
         <div id="loginOrRegister" onclick="">
             <img src="icon/account.png" alt="avatar">
-            <span id="username">Username</span>
+            <span id="username"><?= htmlspecialchars($username) ?></span>
         </div>
     </div>
 
@@ -482,8 +451,26 @@ $conn->close();
 
         function selectOption(selectedOption) {
             const currentQuestion = questions[currentQuestionIndex - 1];
-            const buttons = document.querySelectorAll(".option-button");
+            const isCorrect = selectedOption === currentQuestion.correctAnswer ? "Correct" : "Incorrect";
 
+            const data = new URLSearchParams();
+            data.append("save_record", "1");
+            data.append("TimeUserID", "user123"); // Replace with the actual user ID
+            data.append("QuizID", currentQuestionIndex.toString());
+            data.append("Result", isCorrect);
+
+            fetch("your_php_file.php", {
+                method: "POST",
+                body: data,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+            })
+                .then((response) => response.text())
+                .then((data) => console.log(data))
+                .catch((error) => console.error("Error:", error));
+
+            const buttons = document.querySelectorAll(".option-button");
             buttons.forEach((button) => {
                 button.disabled = true;
                 if (button.textContent.trim().startsWith(currentQuestion.correctAnswer)) {
