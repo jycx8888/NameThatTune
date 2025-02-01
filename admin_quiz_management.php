@@ -42,14 +42,6 @@ if (!$results) {
     die("Query failed: " . mysqli_error($connection));
 }
 
-// Close the connection after querying
-mysqli_close($connection);
-?>
-
-<?php
-// Database connection
-$connection = new mysqli('localhost', 'root', '', 'namethattune');
-
 // Check if delete action is requested
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $quiz_id = $_GET['id'];
@@ -235,7 +227,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
                     <td><?php echo htmlspecialchars($row['genre_id']); ?></td>
                     <td><?php echo htmlspecialchars($row['created_time']); ?></td>
                     <td class="actions">
-                        <a href="edit.php?id=<?php echo urlencode($row['quiz_id']); ?>">Edit</a> |
+                    <a href="admin_quiz_management_2.php?quiz_id=<?php echo urlencode($row['quiz_id']); ?>">Edit</a>                   
                         <a href="admin_quiz_management.php?action=delete&id=<?php echo urlencode($row['quiz_id']); ?>" onclick="return confirm('Are you sure you want to delete this quiz?');">Delete</a>
                     </td>
                 </tr>
@@ -469,7 +461,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     for (let row of rows) {
         const cells = row.getElementsByTagName("td");
         let shouldDisplay = false;
-
         if (filter === "id" && cells[0].textContent.toLowerCase().includes(searchTerm)) {
             shouldDisplay = true;
         } else if (filter === "genre" && cells[1].textContent.toLowerCase().includes(searchTerm)) {
@@ -483,5 +474,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     }
 }
     </script>
+    
+     <?php 
+    // Close database connection at the very end of the page
+    mysqli_close($connection);
+    ?>
 </body>
 </html>

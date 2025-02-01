@@ -1,21 +1,19 @@
 <?php
 // Database connection
-if (session_status() === PHP_SESSION_NONE) {
     session_start();
-}
 
 if (!isset($_SESSION['username'])) {
     header("Location: admin_login.php");
     exit();
 }
 
-$servername = "localhost";
-$dbusername = "root";
-$dbpassword = "";
-$dbname = "namethattune";
+$server = "localhost";
+$username = "root";
+$password = "";
+$database = "namethattune";
 
 // Create connection
-$conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
+$conn = new mysqli($server, $username, $password, $database);
 
 // Check connection
 if ($conn->connect_error) {
@@ -26,6 +24,8 @@ if ($conn->connect_error) {
 // Check if 'quiz_id' is provided
 if (!isset($_GET['quiz_id']) || empty($_GET['quiz_id'])) {
     die("Error: Quiz ID is required.");
+} else {
+    echo "Debug: Quiz ID received - " . htmlspecialchars($_GET['quiz_id']);
 }
 
 // Sanitize and fetch the quiz ID
@@ -168,7 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Main Content Section -->
     <main>
-        <form method="POST" action="edit_quiz.php?quiz_id=<?php echo $quiz_id; ?>">
+        <form method="POST" action="admin_quiz_management_2.php?quiz_id=<?php echo $quiz_id; ?>">
             <h2 class="edit-quiz-header">Edit Quiz</h2>
             <div class="form-group">
                 <label for="quiz-id">Quiz ID</label>
@@ -186,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="form-group">
                 <label for="created-time">Created Time</label>
                 <input type="datetime-local" id="created-time" name="created_time" 
-                    value="<?php echo !empty($quiz['created_time']) ? date('Y-m-d\TH:i:s', strtotime($quiz['created_time'])) : ''; ?>"
+                    value="<?php echo !empty($quiz['created_time']) ? date('Y-m-d\TH:i:s', strtotime($quiz['created_time'])) : ''; ?>">
             </div>
 
         <!-- Table Section -->
