@@ -287,10 +287,10 @@
             </audio>
 
             <div class="options">
-                <button class="option-button" onclick="selectOption('A')">A. See You Again</button>
-                <button class="option-button" onclick="selectOption('B')">B. Madrid</button>
-                <button class="option-button" onclick="selectOption('C')">C. Paris</button>
-                <button class="option-button" onclick="selectOption('D')">D. Rome</button>
+                <button class="option-button" onclick="selectOption('A')"></button>
+                <button class="option-button" onclick="selectOption('B')"></button>
+                <button class="option-button" onclick="selectOption('C')"></button>
+                <button class="option-button" onclick="selectOption('D')"></button>
             </div>
         </div>
     </div>
@@ -337,21 +337,21 @@
         }
 
         const questions = [
-            { number: 1, questionText: "What is this song?", image: "image1.png", audio: "audio1.mp3", options: ["A. See You Again", "B. Blinding Lights", "C. Darkside", "D. Poker Face"], correctAnswer: "A" },
-            { number: 2, questionText: "What is this song?", image: "image2.png", audio: "audio2.mp3", options: ["A. Let Her Go", "B. Bye Bye Bye", "C. That's What I Like", "D. Wake Me Up"], correctAnswer: "A" },
-            { number: 3, questionText: "What is this song?", image: "image3.png", audio: "audio3.mp3", options: ["A. Blank Space", "B. Light Switch", "C. Hall Of Fame", "D. Natural"], correctAnswer: "A" },
-            { number: 4, questionText: "What is this song?", image: "image4.png", audio: "audio4.mp3", options: ["A. Ghost", "B. All Of Me", "C. The Nights", "D. Better Now"], correctAnswer: "B" },
-            { number: 5, questionText: "What is this song?", image: "image5.png", audio: "audio5.mp3", options: ["A. I'm Yours", "B. All The Stars", "C. HOPE", "D. StarBoy"], correctAnswer: "A" },
-            { number: 6, questionText: "What is this song?", image: "image6.png", audio: "audio6.mp3", options: ["A. Payphone", "B. Night Changes", "C. Talking To The Moon", "D. Wolves"], correctAnswer: "A" },
-            { number: 7, questionText: "What is this song?", image: "image7.png", audio: "audio7.mp3", options: ["A. Counting Stars", "B. Bad Liar", "C. When I Was Your Man", "D. As It Was"], correctAnswer: "A" },
-            { number: 8, questionText: "What is this song?", image: "image8.png", audio: "audio8.mp3", options: ["A. Bad Romance", "B. 24K Magic", "C. Drivers License", "D. Stay"], correctAnswer: "A" },
-            { number: 9, questionText: "What is this song?", image: "image9.png", audio: "audio9.mp3", options: ["A. We Don’t Talk Anymore", "B. Bad Habits", "C. Happier Than Ever", "D. Shallow"], correctAnswer: "A" },
-            { number: 10, questionText: "What is this song?", image: "image10.png", audio: "audio10.mp3", options: ["A. Treat You Better", "B. Levitating", "C. Someone Like You", "D. Sunflower"], correctAnswer: "A" },
-            { number: 11, questionText: "What is this song?", image: "image11.png", audio: "audio11.mp3", options: ["A. Viva La Vida", "B. Self Love", "C. Cold", "D. Unstoppable"], correctAnswer: "A" },
-            { number: 12, questionText: "What is this song?", image: "image12.png", audio: "audio12.mp3", options: ["A. Calling", "B. Peaches", "C. Perfect", "D. Sorry"], correctAnswer: "A" },
-            { number: 13, questionText: "What is this song?", image: "image13.png", audio: "audio13.mp3", options: ["A. Rewrite The Stars", "B. Clocks", "C. Hello", "D. We Will Rock You"], correctAnswer: "A" },
-            { number: 14, questionText: "What is this song?", image: "image14.png", audio: "audio14.mp3", options: ["A. Doja", "B. Closer", "C. Faded", "D. Rockstar"], correctAnswer: "A" },
-            { number: 15, questionText: "What is this song?", image: "image15.png", audio: "audio15.mp3", options: ["A. Humble.", "B. Hotel California", "C. Dusk Till Dawn", "D. Timber"], correctAnswer: "A" }
+            { number: 1, questionText: "What is this song?", image: "image121.png", audio: "audio121.mp3", options: ["A. Tomboy", "B. Butter", "C. Dynamite", "D. Permission to Dance"], correctAnswer: "A" },
+            { number: 2, questionText: "What is this song?", image: "image122.png", audio: "audio122.mp3", options: ["A. Supernova", "B. Spring Day", "C. Fake Love", "D. TT"], correctAnswer: "A" },
+            { number: 3, questionText: "What is this song?", image: "image123.png", audio: "audio123.mp3", options: ["A. FOREVER", "B. What is Love", "C. Fancy", "D. Cheer Up"], correctAnswer: "A" },
+            { number: 4, questionText: "What is this song?", image: "image124.png", audio: "audio124.mp3", options: ["A. I GOT YOU", "B. POP!", "C. Feel My Rhythm", "D. Psycho"], correctAnswer: "A" },
+            { number: 5, questionText: "What is this song?", image: "image125.png", audio: "audio125.mp3", options: ["A. SHEESH", "B. Red Flavor", "C. Love Dive", "D. After LIKE"], correctAnswer: "A" },
+            { number: 6, questionText: "What is this song?", image: "image126.png", audio: "audio126.mp3", options: ["A. Trouble Maker", "B. Eleven", "C. Nxde", "D. TOMBOY"], correctAnswer: "A" },
+            { number: 7, questionText: "What is this song?", image: "image127.png", audio: "audio127.mp3", options: ["A. Super Shy", "B. Queencard", "C. ZOOM", "D. That That"], correctAnswer: "A" },
+            { number: 8, questionText: "What is this song?", image: "image128.png", audio: "audio128.mp3", options: ["A. Loser", "B. Gentleman", "C. Gangnam Style", "D. VIBE"], correctAnswer: "A" },
+            { number: 9, questionText: "What is this song?", image: "image129.png", audio: "audio129.mp3", options: ["A. APT", "B. Eyes, Nose, Lips", "C. Hype Boy", "D. Attention"], correctAnswer: "A" },
+            { number: 10, questionText: "What is this song?", image: "image130.png", audio: "audio130.mp3", options: ["A. How You Like That", "B. OMG", "C. Antifragile", "D. FEARLESS"], correctAnswer: "A" },
+            { number: 11, questionText: "What is this song?", image: "image131.png", audio: "audio131.mp3", options: ["A. Armageddon", "B. Stay Alive", "C. Euphoria", "D. Daechwita"], correctAnswer: "A" },
+            { number: 12, questionText: "What is this song?", image: "image132.png", audio: "audio132.mp3", options: ["A. DASH", "B. Blue & Grey", "C. Stray Kids", "D. Thunderous"], correctAnswer: "A" },
+            { number: 13, questionText: "What is this song?", image: "image133.png", audio: "audio133.mp3", options: ["A. Magnetic", "B. God's Menu", "C. Maniac", "D. Runaway"], correctAnswer: "A" },
+            { number: 14, questionText: "What is this song?", image: "image134.png", audio: "audio134.mp3", options: ["A. Ditto", "B. CROWN", "C. Blue Hour", "D. Drunk-Dazed"], correctAnswer: "A" },
+            { number: 15, questionText: "What is this song?", image: "image135.png", audio: "audio135.mp3", options: ["A. Hype Boy", "B. Given-Taken", "C. Polaroid Love", "D. Can't You See Me?"], correctAnswer: "A" }
         ];
 
         let currentQuestionIndex = 0;

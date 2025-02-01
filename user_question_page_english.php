@@ -287,10 +287,10 @@
             </audio>
 
             <div class="options">
-                <button class="option-button" onclick="selectOption('A')">A. See You Again</button>
-                <button class="option-button" onclick="selectOption('B')">B. Madrid</button>
-                <button class="option-button" onclick="selectOption('C')">C. Paris</button>
-                <button class="option-button" onclick="selectOption('D')">D. Rome</button>
+                <button class="option-button" onclick="selectOption('A')"></button>
+                <button class="option-button" onclick="selectOption('B')"></button>
+                <button class="option-button" onclick="selectOption('C')"></button>
+                <button class="option-button" onclick="selectOption('D')"></button>
             </div>
         </div>
     </div>
