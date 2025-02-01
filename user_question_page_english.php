@@ -6,6 +6,7 @@
     <title>NameThatTune</title>
     <link rel="icon" href="icon/logo.jpg" type="image/png">
     <link rel="stylesheet" href="user_header_footer.css">
+    <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
 
         #loading {
@@ -460,7 +461,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateCountdown();
         });
-
+        
     </script>
 </body>
 </html>
