@@ -337,21 +337,21 @@
         }
 
         const questions = [
-            { number: 1, questionText: "What is this song?", image: "image1.png", audio: "audio1.mp3", options: ["A. Mixed Nuts", "B. First Love", "C. Jidai", "D. Heavy Rotation"], correctAnswer: "D" },
-            { number: 2, questionText: "What is this song?", image: "image2.png", audio: "audio2.mp3", options: ["A. Lemon", "B. Sparkle", "C. Can You Celebrate", "D. My Dearest"], correctAnswer: "A" },
-            { number: 3, questionText: "What is this song?", image: "image3.png", audio: "audio3.mp3", options: ["A. Gurenge", "B. PONPONPON", "C. Sorairo Days", "D. Polyrhythm"], correctAnswer: "A" },
+            { number: 1, questionText: "What is this song?", image: "image1.png", audio: "audio1.mp3", options: ["A. Heavy Rotation", "B. First Love", "C. Mixed Nuts", "D. Jidai"], correctAnswer: "A" },
+            { number: 2, questionText: "What is this song?", image: "image2.png", audio: "audio2.mp3", options: ["A. Lemon", "B. Can You Celebrate", "C. Sparkle", "D. My Dearest"], correctAnswer: "A" },
+            { number: 3, questionText: "What is this song?", image: "image3.png", audio: "audio3.mp3", options: ["A. Sorairo Days", "B. Gurenge", "C. Polyrhythm", "D. PONPONPON"], correctAnswer: "B" },
             { number: 4, questionText: "What is this song?", image: "image4.png", audio: "audio4.mp3", options: ["A. Koi", "B. Rising Hope", "C. Best Friend", "D. Odoru Ponpokorin"], correctAnswer: "A" },
-            { number: 5, questionText: "What is this song?", image: "image5.png", audio: "audio5.mp3", options: ["A. Pretender", "B. Sekai wa Koi ni Ochiteiru", "C. Kaze wa Fuiteiru", "D. Every Heart"], correctAnswer: "A" },
-            { number: 6, questionText: "What is this song?", image: "image6.png", audio: "audio6.mp3", options: ["A. CRY FOR ME", "B. Kimagure Romantic", "C. Piano Man", "D. Orion"], correctAnswer: "A" },
-            { number: 7, questionText: "What is this song?", image: "image7.png", audio: "audio7.mp3", options: ["A. Shinunoga E-Wa", "B. TOMORROW", "C. Plastic Love", "D. Ride on Time"], correctAnswer: "A" },
-            { number: 8, questionText: "What is this song?", image: "image8.png", audio: "audio8.mp3", options: ["A. BLUE BIRD", "B. Stay With Me", "C. Shiki no Uta", "D. Little Glee Monster"], correctAnswer: "A" },
-            { number: 9, questionText: "What is this song?", image: "image9.png", audio: "audio9.mp3", options: ["A. Unravel", "B. Aitakatta", "C. Gekkou", "D. Sakura"], correctAnswer: "A" },
-            { number: 10, questionText: "What is this song?", image: "image10.png", audio: "audio10.mp3", options: ["A. Zenzenzense", "B. For You", "C. Orange", "D. Koi wa Sensou"], correctAnswer: "A" },
-            { number: 11, questionText: "What is this song?", image: "image11.png", audio: "audio11.mp3", options: ["A. Silhouette", "B. Fireworks", "C. Yume wo Kanaete Doraemon", "D. Kawaranai Mono"], correctAnswer: "A" },
+            { number: 5, questionText: "What is this song?", image: "image5.png", audio: "audio5.mp3", options: ["A. Kaze wa Fuiteiru", "B. Every Heart", "C. Pretender", "D. Sekai wa Koi ni Ochiteiru"], correctAnswer: "C" },
+            { number: 6, questionText: "What is this song?", image: "image6.png", audio: "audio6.mp3", options: ["A. Piano Man", "B. Orion", "C. CRY FOR ME", "D. Kimagure Romantic"], correctAnswer: "C" },
+            { number: 7, questionText: "What is this song?", image: "image7.png", audio: "audio7.mp3", options: ["A. TOMORROW", "B. Plastic Love", "C. Shinunoga E-Wa", "D. Ride on Time"], correctAnswer: "C" },
+            { number: 8, questionText: "What is this song?", image: "image8.png", audio: "audio8.mp3", options: ["A. Stay With Me", "B. BLUE BIRD", "C. Little Glee Monster", "D. Shiki no Uta"], correctAnswer: "B" },
+            { number: 9, questionText: "What is this song?", image: "image9.png", audio: "audio9.mp3", options: ["A. Aitakatta", "B. Gekkou", "C. Unravel", "D. Sakura"], correctAnswer: "C" },
+            { number: 10, questionText: "What is this song?", image: "image10.png", audio: "audio10.mp3", options: ["A. Orange", "B. For You", "C. Zenzenzense", "D. Koi wa Sensou"], correctAnswer: "C" },
+            { number: 11, questionText: "What is this song?", image: "image11.png", audio: "audio11.mp3", options: ["A. Kawaranai Mono", "B. Fireworks", "C. Yume wo Kanaete Doraemon", "D. Silhouette"], correctAnswer: "D" },
             { number: 12, questionText: "What is this song?", image: "image12.png", audio: "audio12.mp3", options: ["A. Flamingo", "B. Hikaru Nara", "C. Butterfly", "D. Hero"], correctAnswer: "A" },
-            { number: 13, questionText: "What is this song?", image: "image13.png", audio: "audio13.mp3", options: ["A. Homura", "B. A Cruel Angel's Thesis", "C. Moonlight Densetsu", "D. Dreamin' On"], correctAnswer: "A" },
-            { number: 14, questionText: "What is this song?", image: "image14.png", audio: "audio14.mp3", options: ["A. Kaikaikitan", "B. Life Goes On", "C. Stay", "D. Dearest"], correctAnswer: "A" },
-            { number: 15, questionText: "What is this song?", image: "image15.png", audio: "audio15.mp3", options: ["A. Gunjo", "B. Eikou no Kakehashi", "C. RPG", "D. No.1"], correctAnswer: "A" }
+            { number: 13, questionText: "What is this song?", image: "image13.png", audio: "audio13.mp3", options: ["A. Moonlight Densetsu", "B. Homura", "C. A Cruel Angel's Thesis", "D. Dreamin' On"], correctAnswer: "B" },
+            { number: 14, questionText: "What is this song?", image: "image14.png", audio: "audio14.mp3", options: ["A. Dearest", "B. Stay", "C. Life Goes On", "D. Kaikaikitan"], correctAnswer: "D" },
+            { number: 15, questionText: "What is this song?", image: "image15.png", audio: "audio15.mp3", options: ["A. No.1", "B. Eikou no Kakehashi", "C. Gunjo", "D. RPG"], correctAnswer: "C" }
         ];
 
         let currentQuestionIndex = 0;
