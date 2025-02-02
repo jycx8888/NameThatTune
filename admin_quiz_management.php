@@ -453,24 +453,51 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     <!-- Script for Search Functionality -->
     <script>
         function performSearch() {
+    const searchInput = document.getElementById("search");
+    if (!searchInput) {
+        console.error("Error: Search input not found!");
+        return;
+    }
+    console.log("Searching for: " + searchInput.value);
+
     const filter = document.getElementById("filter").value;
-    const searchTerm = document.getElementById("search").value.toLowerCase();
+    const searchTerm = searchInput.value.toLowerCase();
     const table = document.getElementById("quizTable");
+    if (!table) {
+        console.error("Error: Quiz table not found!");
+        return;
+    }
+
     const rows = table.getElementsByTagName("tr");
+    let found = false;
 
     for (let row of rows) {
         const cells = row.getElementsByTagName("td");
+        if (cells.length === 0) continue;
+
         let shouldDisplay = false;
-        if (filter === "id" && cells[0].textContent.toLowerCase().includes(searchTerm)) {
+        if (filter === "id" && cells[0] && cells[0].textContent.toLowerCase().includes(searchTerm)) {
             shouldDisplay = true;
-        } else if (filter === "genre" && cells[1].textContent.toLowerCase().includes(searchTerm)) {
+        } else if (filter === "genre" && cells[1] && cells[1].textContent.toLowerCase().includes(searchTerm)) {
             shouldDisplay = true;
-        } else if (filter === "time" && cells[2].textContent.toLowerCase().includes(searchTerm)) {
+        } else if (filter === "time" && cells[2] && cells[2].textContent.toLowerCase().includes(searchTerm)) {
             shouldDisplay = true;
         }
 
-        row.style.display = shouldDisplay ? "table-row" : "none";
-        
+        row.style.display = shouldDisplay ? "" : "none";
+        if (shouldDisplay) found = true;
+    }
+
+    let noResultsRow = document.getElementById("noResultsRow");
+    if (!found) {
+        if (!noResultsRow) {
+            noResultsRow = document.createElement("tr");
+            noResultsRow.id = "noResultsRow";
+            noResultsRow.innerHTML = `<td colspan="4" style="text-align:center;">No matching quizzes found.</td>`;
+            table.appendChild(noResultsRow);
+        }
+    } else if (noResultsRow) {
+        noResultsRow.remove();
     }
 }
     </script>
