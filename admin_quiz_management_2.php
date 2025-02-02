@@ -31,7 +31,7 @@ if (!isset($_GET['quiz_id']) || empty($_GET['quiz_id'])) {
 // Sanitize and fetch the quiz ID
 $quiz_id = $_GET['quiz_id'];
 
-$stmt = $conn->prepare("SELECT quiz_id, genre_id, created_time FROM quizzes WHERE quiz_id=?");
+$stmt = $conn->prepare("SELECT QuizID, GenreID, CreatedTime FROM quiz WHERE QuizID=?");
 $stmt->bind_param("i", $quiz_id); // "i" means integer
 $stmt->execute();
 $result = $stmt->get_result();
@@ -43,7 +43,7 @@ if ($result->num_rows > 0) {
 }
 
 // Fetch questions related to this quiz
-$sql_questions = "SELECT * FROM questions WHERE quiz_id='$quiz_id'";
+$sql_questions = "SELECT * FROM questions WHERE QuizID='$QuizID'";
 $result_questions = $conn->query($sql_questions);
 
 // Handle form submission for updating quiz details
