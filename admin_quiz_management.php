@@ -73,7 +73,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="user_header_footer.css">
+    <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
         #content {
@@ -244,19 +244,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
       <!-- Back Button -->
     <button onclick="window.history.back()" class="back-button">Back</button>
 
-    </div>
-    <div id="footer">
-        <ul class="nav">
-            <li>About Us</li>
-            <li>Terms and Conditions</li>
-            <li>Privacy Policy</li>
-            <li>Contact Us
-                <img src="Icon/facebook.png" alt="facebook" id="facebook">&nbsp;
-                <img src="Icon/instagram.png" alt="instagram" id="instagram">
-            </li>
-        </ul>
-        
-        <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
     </div>
 
     <div id="hamburger-menu">

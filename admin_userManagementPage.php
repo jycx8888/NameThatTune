@@ -107,7 +107,7 @@ if (isset($_GET['search'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NameThatTune - User Information</title>
-    <link rel="stylesheet" href="user_header_footer.css">
+    <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
         main {
@@ -313,21 +313,6 @@ if (isset($_GET['search'])) {
     <button onclick="goBackToDashboard()" class="back-button">Back to Dashboard</button>
 </div>
 </main>
-
-    
-
-    <div id="footer">
-        <ul class="nav">
-            <li>About Us</li>
-            <li>Terms and Conditions</li>
-            <li>Privacy Policy</li>
-            <li>Contact Us
-                <img src="Icon/facebook.png" alt="facebook" id="facebook">
-                <img src="Icon/instagram.png" alt="instagram" id="instagram">
-            </li>
-        </ul>
-        <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
-    </div>
 
     <!-- edit pop-up page-->
     <div id="editPopUpPage" class="editPopUpPage">

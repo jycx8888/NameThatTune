@@ -52,7 +52,8 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NameThatTune</title>
     <link rel="icon" href="icon/logo.jpg" type="image/png">
-    <link rel="stylesheet" href="user_header_footer.css">
+    <link rel="stylesheet" href="user_header.css">
+    <link rel="stylesheet" href="user_footer.css">
     <style>
         #login-container {
             display: flex;

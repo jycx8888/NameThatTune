@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Management</title>
     <link rel="stylesheet" href="user_hamburger_menu.css">
-    <link rel="stylesheet" href="user_header_footer.css">
+    <link rel="stylesheet" href="user_header.css">
     <style>
         #container {
             display: flex;
@@ -148,20 +148,6 @@
                 <button type="submit" class="submit-button">Confirm</button>
             </form>
         </div>
-    </div>
-
-    <!-- Footer Section -->
-    <div id="footer">
-        <ul>
-            <li>About Us</li>
-            <li>Terms and Conditions</li>
-            <li>Privacy Policy</li>
-            <li>Contact Us
-                <img src="Icon/facebook.png" alt="Facebook" id="facebook">
-                <img src="Icon/instagram.png" alt="Instagram" id="instagram">
-            </li>
-        </ul>
-        <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
     </div>
 
     <script>

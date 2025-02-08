@@ -1,4 +1,11 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['username'])) {
+    header("Location: admin_login.php");
+    exit();
+}
+
 // Step 1: Database Connection
 $servername = "localhost";
 $username = "root"; // Replace with your MySQL username
@@ -10,6 +17,22 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
+}
+
+$username = $_SESSION['username'];
+
+// Fetch user data from the database
+$stmt = $conn->prepare("SELECT ProfilePicture FROM admin WHERE Username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $profile_picture_path = $row['ProfilePicture'];
+} else {
+    // Handle case where user data is not found
+    $profile_picture_path = 'Icon/account.png'; // Default profile picture
 }
 
 // Step 2: Fetch Data for Analytics
@@ -27,13 +50,14 @@ if ($result->num_rows > 0) {
 }
 
 // Close the database connection
+$stmt->close();
 $conn->close();
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Guess Song Quiz Analytics</title>
-    <link rel="stylesheet" href="user_header_footer.css">
+    <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
         body {
@@ -91,14 +115,14 @@ $conn->close();
 </head>
 <body>
 
-<div id="header">
+   <!-- Header Section -->
+   <div id="header">
         <h1>NameThatTune</h1>
         <div id="login" onclick="">
-            <img src="Icon\account.png" alt="avatar">
-            <p>Username</p>
+            <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
+            <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>
-
 
 <div class="container">
     <h1>Guess Song Quiz Analytics</h1>
@@ -195,18 +219,5 @@ $conn->close();
     </script>
     </div>
 
-    <div id="footer">
-            <ul class="nav">
-                <li>About Us</li>
-                <li>Terms and Conditions</li>
-                <li>Privacy Policy</li>
-                <li>Contact Us
-                    <img src="Icon\facebook.png" alt="facebook" id="facebook">&nbsp;
-                    <img src="Icon\instagram.png" alt="instagram" id="instagram">
-                </li>
-            </ul>
-
-            <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
-        </div>
     </body>
 </html>
