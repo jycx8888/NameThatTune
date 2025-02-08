@@ -23,9 +23,9 @@ if ($conn->connect_error) {
 
 // Check if 'quiz_id' is provided
 if (!isset($_GET['quiz_id']) || empty($_GET['quiz_id'])) {
-    die("Error: Quiz ID is required.");
+    die("Error: Quiz ID is required. Debug Info: " . print_r($_GET, true));
 } else {
-    echo "Debug: Quiz ID received - " . htmlspecialchars($_GET['quiz_id']);
+    echo "Debug: Quiz ID received - " . htmlspecialchars($_GET['quiz_id']) . "<br>";
 }
 
 // Sanitize and fetch the quiz ID
@@ -43,7 +43,7 @@ if ($result->num_rows > 0) {
 }
 
 // Fetch questions related to this quiz
-$sql_questions = "SELECT * FROM questions WHERE QuizID='$QuizID'";
+$sql_questions = "SELECT * FROM question WHERE QuizID='$quiz_id'";
 $result_questions = $conn->query($sql_questions);
 
 // Handle form submission for updating quiz details
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $created_time = $conn->real_escape_string($_POST['created_time']);
 
     // Update query
-    $update_sql = "UPDATE quizzes SET genre_id='$genre_id', created_time='$created_time' WHERE quiz_id='$quiz_id'";
+    $update_sql = "UPDATE quiz SET GenreID='$genre_id', CreatedTime='$created_time' WHERE QuizID='$quiz_id'";
 
     if ($conn->query($update_sql) === TRUE) {
         echo "Quiz updated successfully!<br>";
@@ -172,7 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <h2 class="edit-quiz-header">Edit Quiz</h2>
             <div class="form-group">
                 <label for="quiz-id">Quiz ID</label>
-                <input type="text" id="quiz-id" name="quiz_id" value="<?php echo $quiz['quiz_id']; ?>" readonly>
+                <input type="text" id="quiz-id" name="quiz_id" value="<?php echo $quiz['QuizID']; ?>" readonly>
             </div>
             
             <div class="form-group">
