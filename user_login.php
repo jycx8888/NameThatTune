@@ -87,7 +87,7 @@ $conn->close();
             border-radius: 5px;
             cursor: pointer;
             font-family: "Lalezar", system-ui;
-            font-weight: 700;
+            font-weight: 900;
             font-size: 18px;
         }
 
@@ -234,13 +234,10 @@ $conn->close();
 
     <div id="footer">
         <ul class="nav">
-            <li>About Us</li>
-            <li>Terms and Conditions</li>
-            <li>Privacy Policy</li>
-            <li>Contact Us
-                <img src="Icon/facebook.png" alt="facebook" id="facebook">&nbsp;
-                <img src="Icon/instagram.png" alt="instagram" id="instagram">
-            </li>
+            <li><a href="user_about_us.php">About Us</a></li>
+            <li><a href="user_terms_and_conditions.php">Terms and Conditions</a></li>
+            <li><a href="user_privacy_policy.php">Privacy Policy</a></li>
+            <li><a href="user_contact_us.php">Contact Us</a></li>
         </ul>
         
         <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
