@@ -16,7 +16,7 @@ $connection = mysqli_connect($server, $user, $password, $database);
 
 if (!$connection) {
     die("Connection failed: " . mysqli_connect_error());
-}//echo "Connected successfully";
+}echo "Connected successfully";
 
 $username = $_SESSION['username'];
 
@@ -207,17 +207,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
             <th>Created Time</th>
             <th>Action</th>
         </tr>
-        <?php
-        // for edit, delete function
-        $result = mysqli_query($connection, "SELECT * FROM quiz");
-        while ($row = mysqli_fetch_assoc($result)) {
-            echo "<tr>";
-            echo "<td>" . (isset($row['quiz_id']) ? $row['quiz_id'] : 'N/A') . "</td>";  
-            echo "<td>" . (isset($row['genre_id']) ? $row['genre_id'] : 'N/A') . "</td>";  
-            echo "<td>" . (isset($row['created_time']) ? $row['created_time'] : 'No Time') . "</td>";  
-            echo "</tr>";
-        }        
-        ?>
+       
     </thead>
     <tbody id="quizTable">
         <?php if (mysqli_num_rows($results) > 0): ?>
