@@ -21,6 +21,12 @@ if ($conn->connect_error) {
 }
 //echo "Connected successfully<br>";
 
+// Fetch user data from the database
+$stmt = $connection->prepare("SELECT ProfilePicture FROM admin WHERE Username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $profile_picture_path = $row['ProfilePicture'];
