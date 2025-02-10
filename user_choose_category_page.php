@@ -541,6 +541,16 @@ $conn->close();
             const selectedCategory = this.value;
             let songsToShow = [];
 
+             // Clear the gallery and reset the button behavior if "Select a Category..." is selected
+            if (selectedCategory === 'Category List') {
+                const gallery = document.getElementById('quiz-gallery');
+                gallery.innerHTML = ''; // Clear gallery content
+                const audioElement = document.getElementById('background-audio');
+                audioElement.pause(); // Stop any playing audio
+                audioElement.src = ''; // Clear audio source
+                return; // Exit early since no category is selected
+            }
+
             if (selectedCategory === 'English') {
                 songsToShow = englishSongs;
             } else if (selectedCategory === 'Japanese') {
@@ -593,11 +603,13 @@ $conn->close();
         }
 
 
+        // "Click to Start" button behavior
         document.getElementById('start-button').addEventListener('click', function () {
             const selectedCategory = document.getElementById('category-dropdown').value;
 
             if (selectedCategory === 'Category List') {
                 showWarning('Please select a category first!');
+                return; // Exit if no category is selected
             } else if (selectedCategory === 'English') {
                 window.location.href = 'user_question_page_english.php';
             } else if (selectedCategory === 'Japanese') {
