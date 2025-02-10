@@ -124,7 +124,7 @@ $conn->close();
         </div>
     </div>
 
-<div class="container">
+    <div class="container">
     <h1>Guess Song Quiz Analytics</h1>
     <table>
         <thead>
@@ -149,75 +149,71 @@ $conn->close();
     <canvas id="myChart"></canvas>
     <!-- Step 4: Add Chart -->
     <canvas id="quizChart" width="400" height="200"></canvas>
-    <a href="admin_adminDashboard.php" class="back-button">Back to Dashboard</a>
+    <a href="admin_adminDashboard.php" class="back-button">Back to Admin Dashboard</a>
 </div>
 
-    <!-- Step 4: Add Chart -->
-    <canvas id="quizChart" width="400" height="200"></canvas>
-    <script>
-        // Prepare data for the chart
-        const labels = <?php echo json_encode(array_column($data, 'QuizID')); ?>;
-        const totalAttempts = <?php echo json_encode(array_column($data, 'TotalAttempts')); ?>;
-        const totalCorrect = <?php echo json_encode(array_column($data, 'TotalCorrect')); ?>;
-        const totalIncorrect = <?php echo json_encode(array_column($data, 'TotalIncorrect')); ?>;
+<script>
+    // Prepare data for the chart
+    const labels = <?php echo json_encode(array_column($data, 'QuizID')); ?>;
+    const totalAttempts = <?php echo json_encode(array_column($data, 'TotalAttempts')); ?>;
+    const totalCorrect = <?php echo json_encode(array_column($data, 'TotalCorrect')); ?>;
+    const totalIncorrect = <?php echo json_encode(array_column($data, 'TotalIncorrect')); ?>;
 
-        // Configure the chart
-        const data = {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Total Attempts',
-                    data: totalAttempts,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
+    // Configure the chart
+    const data = {
+        labels: labels,
+        datasets: [
+            {
+                label: 'Total Attempts',
+                data: totalAttempts,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            },
+            {
+                label: 'Total Correct',
+                data: totalCorrect,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            },
+            {
+                label: 'Total Incorrect',
+                data: totalIncorrect,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }
+        ]
+    };
+
+    const config = {
+        type: 'bar',
+        data: data,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
                 },
-                {
-                    label: 'Total Correct',
-                    data: totalCorrect,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Total Incorrect',
-                    data: totalIncorrect,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
+                title: {
+                    display: true,
+                    text: 'Quiz Performance Overview'
                 }
-            ]
-        };
-
-        const config = {
-            type: 'bar',
-            data: data,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Quiz Performance Overview'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
                 }
             }
-        };
+        }
+    };
 
-        // Render the chart
-        const quizChart = new Chart(
-            document.getElementById('quizChart'),
-            config
-        );
-    </script>
-    </div>
-
-    </body>
+    // Render the chart
+    const quizChart = new Chart(
+        document.getElementById('quizChart'),
+        config
+    );
+</script>
+</body>
 </html>
