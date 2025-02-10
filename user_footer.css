@@ -1,0 +1,47 @@
+#footer {
+    clear: both;
+    height: 144px;
+    width: 100%;
+    background-color: black;
+    color: white;
+    display:inline-block;
+    position: relative;
+    bottom: 0;
+    font-family: "Lalezar", system-ui;
+    font-weight: 1000;
+    font-size: 16px;
+    justify-content: space-between;
+}
+
+#footer ul {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 0;
+}
+
+#footer ul li {
+    display: inline;
+    list-style-type: none;
+    font-size: clamp(1rem, 2.5vw, 1.18rem);
+    padding: 16px 16px 4px 16px;
+    text-align: center;
+}
+
+#footer #instagram {
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+}
+
+#footer #facebook {
+    width: 26px;
+    height: 26px;
+    vertical-align: middle;
+    margin-left: 4px;
+}
+
+#footer #copy {
+    text-align: center;
+    font-size: clamp(1rem, 2.5vw, 1.18rem);
+}

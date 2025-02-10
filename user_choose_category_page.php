@@ -99,7 +99,8 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NameThatTune</title>
     <link rel="icon" href="icon/logo.jpg" type="image/png">
-    <link rel="stylesheet" href="user_header_footer.css">
+    <link rel="stylesheet" href="user_header.css">
+    <link rel="stylesheet" href="user_footer.css">
     <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
         #main {
@@ -190,11 +191,18 @@ $conn->close();
 
         .quiz-card span {
             display: block;
-            padding: 10px 5px; /* Increase padding at the top */
-            font-size: 1.3rem;
+            padding: 8px 5px; /* Reduce padding */
+            font-size: 1.1rem; /* Adjust font size */
             background-color: rgba(0, 0, 0, 0.6);
             position: relative;
-            top: 5px; /* Move the text down */
+            top: 5px; /* Maintain slight downward position */
+        }
+
+        @media (max-width: 600px) {
+            .quiz-card span {
+                font-size: 0.9rem; /* Smaller text for mobile */
+                padding: 5px; /* Adjust padding */
+            }
         }
 
         .quiz-card:hover {
@@ -348,13 +356,10 @@ $conn->close();
 
     <div id="footer">
         <ul class="nav">
-            <li>About Us</li>
-            <li>Terms and Conditions</li>
-            <li>Privacy Policy</li>
-            <li>Contact Us
-                <img src="icon/facebook.png" alt="facebook" id="facebook">&nbsp;
-                <img src="icon/instagram.png" alt="instagram" id="instagram">
-            </li>
+            <li><a href="user_about_us.php">About Us</a></li>
+            <li><a href="user_terms_and_conditions.php">Terms and Conditions</a></li>
+            <li><a href="user_privacy_policy.php">Privacy Policy</a></li>
+            <li><a href="user_contact_us.php">Contact Us</a></li>
         </ul>
         <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
     </div>
@@ -494,27 +499,27 @@ $conn->close();
         }
 
         const englishSongs = [
-            { image: 'English Song Photo/Doja.jpg', name: 'Doja' },
-            { image: 'English Song Photo/Rewrite The Stars.jpg', name: 'Rewrite The Stars' },
-            { image: 'English Song Photo/Viva La Vida.jpg', name: 'Viva La Vida' },
-            { image: 'English Song Photo/We Dont Talk Anymore.jpg', name: 'We Dont Talk Anymore' },
-            { image: "English Song Photo/I'm Yours.png", name: "I'm Yours" }
+            { image: 'English Song Photo/24k Magic.jpg', name: '24k Magic' },
+            { image: 'English Song Photo/Starboy.jpg', name: 'Starboy' },
+            { image: 'English Song Photo/Stay.png', name: 'Stay' },
+            { image: 'English Song Photo/Sunflower.jpg', name: 'Sunflower' },
+            { image: "English Song Photo/Talking to the moon.jpg", name: "Talking to the moon" }
         ];
 
         const japaneseSongs = [
-            { image: 'Japanese Song Photo/BLUE BIRD.jpg', name: 'BLUE BIRD' },
-            { image: 'Japanese Song Photo/CRY FOR ME.jpeg', name: 'CRY FOR ME' },
-            { image: 'Japanese Song Photo/Flamingo.png', name: 'Flamingo' },
-            { image: 'Japanese Song Photo/Gunjo.jpeg', name: 'Gunjo' },
-            { image: 'Japanese Song Photo/Gurenge.jpg', name: 'Gurenge' },
+            { image: 'Japanese Song Photo/Heavy rotation.jpg', name: 'Heavy rotation' },
+            { image: 'Japanese Song Photo/Hikaru Nara.jpg', name: 'Hikaru Nara' },
+            { image: 'Japanese Song Photo/Moonlight Densetsu.jpg', name: 'Moonlight Densetsu' },
+            { image: 'Japanese Song Photo/My Dearest.jpg', name: 'My Dearest' },
+            { image: 'Japanese Song Photo/Sakura.jpg', name: 'Sakura' },
         ];
 
         const koreanSongs = [
-            { image: 'Korean Song Photo/Blackpink.png', name: 'How You Like That' },
-            { image: 'Korean Song Photo/G-IDLE.jpg', name: 'Tomboy' },
-            { image: 'Korean Song Photo/ILLIT.webp', name: 'Magnetic' },
-            { image: 'Korean Song Photo/New Jeans.jpg', name: 'Ditto' },
-            { image: 'Korean Song Photo/TWICE.jpg', name: 'I GOT YOU' },
+            { image: 'Korean Song Photo/Fake Love.jpg', name: 'Fake Love' },
+            { image: 'Korean Song Photo/Fearless.png', name: 'Fearless' },
+            { image: 'Korean Song Photo/Gangnam Style.jpg', name: 'Gangnam Style' },
+            { image: 'Korean Song Photo/TT.jpg', name: 'TT' },
+            { image: 'Korean Song Photo/What is love song.jpg', name: 'What is love song' },
         ];
 
         const audioElement = document.getElementById('background-audio');
@@ -590,10 +595,15 @@ $conn->close();
 
         document.getElementById('start-button').addEventListener('click', function () {
             const selectedCategory = document.getElementById('category-dropdown').value;
+
             if (selectedCategory === 'Category List') {
                 showWarning('Please select a category first!');
-            } else {
-                window.location.href = 'user_question_page.php';
+            } else if (selectedCategory === 'English') {
+                window.location.href = 'user_question_page_english.php';
+            } else if (selectedCategory === 'Japanese') {
+                window.location.href = 'user_question_page_japanese.php';
+            } else if (selectedCategory === 'Korean') {
+                window.location.href = 'user_question_page_korean.php';
             }
         });
 

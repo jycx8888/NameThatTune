@@ -50,7 +50,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="user_header_footer.css">
+    <link rel="stylesheet" href="user_header.css">
     <style>
         #login-container {
             display: flex;
@@ -209,20 +209,6 @@ $conn->close();
                 ?>
                 </form>
         </div>
-    </div>
-
-    <div id="footer">
-        <ul class="nav">
-            <li>About Us</li>
-            <li>Terms and Conditions</li>
-            <li>Privacy Policy</li>
-            <li>Contact Us
-                <img src="Icon/facebook.png" alt="facebook" id="facebook">&nbsp;
-                <img src="Icon/instagram.png" alt="instagram" id="instagram">
-            </li>
-        </ul>
-        
-        <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
     </div>
 
     <div id="warningPopup" class="overlay">

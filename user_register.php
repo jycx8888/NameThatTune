@@ -17,12 +17,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
     $dateJoined = date("Y-m-d");
     $answerCorrectRate = 0; // Default value
-    $profilePicture = 'Icon/account.png'; // Path to the default profile picture
+    $profilePicture = 'uploads/avatar.png'; // Path to the default profile picture
  
     // Generate UserID
-    $result = $conn->query("SELECT COUNT(*) AS count FROM user");
+    $result = $conn->query("SELECT UserID FROM user ORDER BY UserID DESC LIMIT 1");
     $row = $result->fetch_assoc();
-    $userCount = $row['count'] + 1;
+
+    $lastUserID = $row ? $row['UserID'] : 'U000';
+    $userCount = (int)substr($lastUserID, 1) +1;
     $userID = 'U' . str_pad($userCount, 3, '0', STR_PAD_LEFT);
  
     // Insert user into the database
@@ -44,7 +46,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="user_header_footer.css">
+    <link rel="stylesheet" href="user_header.css">
+    <link rel="stylesheet" href="user_footer.css">
     <style>
         #register-container {
             display: flex;
@@ -78,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border-radius: 5px;
             cursor: pointer;
             font-family: "Lalezar", system-ui;
-            font-weight: 700;
+            font-weight: 900;
             font-size: 18px;
         }
 
@@ -185,6 +188,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <div id="header">
         <h1>NameThatTune</h1>
+        <link rel="icon" href="icon/logo.jpg" type="image/png">
         <div id="login" onclick="redirectToLogin()">
             <p>Login/Sign Up</p>
         </div>
@@ -204,7 +208,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <img src="Icon/hide.png" class="toggle-password" onclick="togglePasswordVisibility('ConfirmPassword', this)">
                 </div>
                 <input type="checkbox" id="Terms" name="T&C" value="T&C">
-                <span class="terms">I have read and accept the <a href="terms_and_conditions.html" target="_blank">Terms and Conditions</a></span><br>           
+                <span class="terms">I have read and accept the <a href="user_terms_and_conditions.php" target="_blank">Terms and Conditions</a></span><br>           
                 <div id="button-container">
                     <input type="submit" class="submit-button" value="Register">
                 </div>
@@ -214,13 +218,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div id="footer">
         <ul class="nav">
-            <li>About Us</li>
-            <li>Terms and Conditions</li>
-            <li>Privacy Policy</li>
-            <li>Contact Us
-                <img src="Icon/facebook.png" alt="facebook" id="facebook">&nbsp;
-                <img src="Icon/instagram.png" alt="instagram" id="instagram">
-            </li>
+            <li><a href="user_about_us.php">About Us</a></li>
+            <li><a href="user_terms_and_conditions.php">Terms and Conditions</a></li>
+            <li><a href="user_privacy_policy.php">Privacy Policy</a></li>
+            <li><a href="user_contact_us.php">Contact Us</a></li>
         </ul>
         
         <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>

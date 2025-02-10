@@ -83,10 +83,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "Error uploading file.";
         }
     }
-
-    // Redirect to avoid form resubmission
-    header("Location: user_mainPage.php");
-    exit();
 }
 
 $conn->close();
@@ -100,81 +96,41 @@ $conn->close();
     <title>Document</title>
     <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_footer.css">
-    <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
-        
         #content {
             height: 100%;
             display: flex;
             justify-content: center;
+            margin-bottom: 5vw;
         }
 
-        #leaderboard {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        #content div {
             background-color: white;
-            width: fit-content;
-            height: fit-content;
-            margin-top: 48px;
-            padding: clamp(28px, 8vw, 40px);
+            width: 65vw;
+            height: auto;
+            margin: 48px 0 180px 0 ;
             border-radius: 10px;
+            overflow: auto;
         }
 
-        #leaderboard h1 {
+        #content h2 {
             font-family: "Lalezar", system-ui;
-            font-size: clamp(32px, 5vw, 40px);
+            font-size: clamp(0.65em, 5.5vw, 2.2em);
             font-weight: 1000;
             font-style: normal;
-            margin: 0 0 24px 0;
+            margin: 0;
+            padding-top: clamp(0.8em, 6vw, 1em);
+            text-align: center;
         }
 
-        .record {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: clamp(48px, 12vw, 68px);
-            width: clamp(20em, 50vw, 30em);
-            min-width: 240px;
-            margin-top: 12px;
-            background-color: grey;
-            border-radius: 10px;
-        }
-
-        .record h3 {
-            text-align: left;
+        #content p {
             font-family: "Lalezar", system-ui;
-            font-size: clamp(20px, 4vw, 26px);
-            font-weight: 1000;
+            font-size: clamp(1em, 3vw, 1.3em);
+            font-weight: 700;
             font-style: normal;
-        }
-
-        .circle {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 45px;
-            height: 45px;
-            background-color: white;
-            border-radius: 50%;
-            margin-left: 8px;
-        }
-
-        .circle h2 {
-            font-family: "Lalezar", system-ui;
-            font-size: clamp(20px, 4vw, 26px);
-            font-weight: 1000;
-            font-style: normal;
-        }
-        
-        .result {
-            justify-content: right;
-            font-family: "Lalezar", system-ui;
-            font-size: clamp(20px, 4vw, 26px);
-            font-weight: 1000;
-            font-style: normal;
-            margin-right: 8px;
+            margin: 0 10%;
+            padding: 24px 0 48px 0;
+            text-align: justify;
         }
 
         </style>
@@ -183,58 +139,27 @@ $conn->close();
     <div id="header">
         <h1>NameThatTune</h1>
         <div id="login" onclick="">
-            <img src="\Icon\account.png" alt="avatar">
-            <p>Username</p>
+            <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
+            <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>
 
     <div id="content">
-        <div id="leaderboard">
-            <h1>Leaderboard</h1>
-            <div class="record">
-                <div class="circle">
-                    <h2>1</h2>
-                </div>
-                <h3>kumkum</h3>
-                <div class="result">5/5(1s)</div>
-            </div>
-            <div class="record">
-                <div class="circle">
-                    <h2>2</h2>
-                </div>
-                <h3>Diddy</h3>
-                <div class="result">5/5(2s)</div>
-            </div>
-            <div class="record">
-                <div class="circle">
-                    <h2>3</h2>
-                </div>
-                <h3>Mervin Ooi</h3>
-                <div class="result">5/5(3s)</div>
-            </div>
-            <div class="record">
-                <div class="circle">
-                    <h2>4</h2>
-                </div>
-                <h3>player</h3>
-                <div class="result">5/5(4s)</div>
-            </div>
-            <div class="record">
-                <div class="circle">
-                    <h2>5</h2>
-                </div>
-                <h3>Username2</h3>
-                <div class="result">5/5(5s)</div>
-            </div>
-            <div class="record">
-                <div class="circle">
-                    <h2>10</h2>
-                </div>
-                <h3>Hehe(You)</h3>
-                <div class="result">5/5(10s)</div>
-            </div>
+        <div>
+            <h2>About Us</h2>
+            <p>At NameThatTune, we bring the excitement and passion of music to life with engaging, interactive games crafted for music lovers of all kinds. Since our launch, we have dedicated ourselves to creating a platform where music fans can test their skills, learn new tunes, and share memorable experiences. In 2024, we are proud to introduce an upgraded gaming experience, complete with new challenges, modes, and ways to connect with friends. Whether you’re a seasoned music expert or a casual listener, you’ll find daily quizzes, song identification games, and challenges that push the limits of your musical knowledge. Dive into the world of music, compete with others, and explore your favorite songs like never before.</p>
         </div>
     </div>
     
+    <div id="footer">
+        <ul class="nav">
+            <li><a href="user_about_us.php">About Us</a></li>
+            <li><a href="user_terms_and_conditions.php">Terms and Conditions</a></li>
+            <li><a href="user_privacy_policy.php">Privacy Policy</a></li>
+            <li><a href="user_contact_us.php">Contact Us</a></li>
+        </ul>
+        
+        <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
+    </div>
 </body>
 </html>

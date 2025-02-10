@@ -4,59 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Management</title>
+    <link rel="stylesheet" href="user_hamburger_menu.css">
+    <link rel="stylesheet" href="user_header.css">
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-        }
-
-        body {
-            background-color: rgb(104, 99, 174);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        #header {
-            background-color: gray;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 72px;
-            padding: 0 20px;
-        }
-
-        #header h1 {
-            font-family: "Lalezar", system-ui;
-            font-size: 36px;
-            font-weight: 1000;
-            color: white;
-        }
-
-        #login {
-            display: flex;
-            align-items: center;
-            background-color: white;
-            border-radius: 10px;
-            padding: 5px 10px;
-        }
-
-        #login img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid rgba(104, 99, 174, 0.8);
-        }
-
-        #login p {
-            font-family: "Lalezar", system-ui;
-            font-size: 18px;
-            font-weight: 600;
-            margin-left: 10px;
-            color: rgb(104, 99, 174);
-        }
-
         #container {
             display: flex;
             justify-content: center;
@@ -141,50 +91,6 @@
         .submit-button:hover {
             background-color: #CBC3E3;
         }
-
-        #footer {
-            height: 72px;
-            width: 100%;
-            background-color: black;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: "Lalezar", system-ui;
-            font-weight: 1000;
-            font-size: small;
-            padding-top: 10px;
-        }
-
-        #footer ul {
-            display: flex;
-            justify-content: center;
-            padding: 0;
-            margin: 0;
-        }
-
-        #footer ul li {
-            display: inline;
-            list-style-type: none;
-            font-size: 16px;
-            padding: 16px;
-            text-align: center;
-        }
-
-        #footer #instagram, #footer #facebook {
-            width: 30px;
-            height: 30px;
-            vertical-align: middle;
-        }
-
-        #footer #facebook {
-            margin-left: 4px;
-        }
-
-        #footer #copy {
-            text-align: center;
-            font-size: 16px;
-        }
     </style>
 </head>
 <body>
@@ -244,26 +150,12 @@
         </div>
     </div>
 
-    <!-- Footer Section -->
-    <div id="footer">
-        <ul>
-            <li>About Us</li>
-            <li>Terms and Conditions</li>
-            <li>Privacy Policy</li>
-            <li>Contact Us
-                <img src="Icon/facebook.png" alt="Facebook" id="facebook">
-                <img src="Icon/instagram.png" alt="Instagram" id="instagram">
-            </li>
-        </ul>
-        <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
-    </div>
-
     <script>
         const songPhotoInput = document.getElementById('song-photo');
         const songPhotoDisplay = document.getElementById('song-photo-display');
         const songMp3Input = document.getElementById('song-mp3');
         const mp3Display = document.getElementById('mp3-display');
-        let audioElement;
+        const correctIcons = document.querySelectorAll('.correct-icon');
 
         // Handle song photo selection
         songPhotoInput.addEventListener('change', (event) => {
@@ -275,10 +167,9 @@
                         <img src="${e.target.result}" alt="Song Photo" style="max-width: 200px;">
                         <button id="delete-photo">Delete Photo</button>
                     `;
-                    // Delete the photo when the button is clicked
                     document.getElementById('delete-photo').addEventListener('click', () => {
                         songPhotoDisplay.innerHTML = '';
-                        songPhotoInput.value = ''; // Clear input
+                        songPhotoInput.value = '';
                     });
                 };
                 reader.readAsDataURL(file);
@@ -290,58 +181,27 @@
         // Handle MP3 file selection
         songMp3Input.addEventListener('change', (event) => {
             const file = event.target.files[0];
-
-            // Ensure a file is selected and is an MP3
             if (file && file.type === "audio/mpeg") {
-                const fileURL = URL.createObjectURL(file); // Create a temporary URL for the file
-
-                // Display the selected MP3 file with controls
+                const fileURL = URL.createObjectURL(file);
                 mp3Display.innerHTML = `
                     <p>Selected MP3: ${file.name}</p>
-                    <audio id="audio-player" src="${fileURL}" controls></audio>
-                    <div style="margin-top: 10px;">
-                        <button id="delete-mp3">Delete</button>
-                    </div>
+                    <audio controls src="${fileURL}"></audio>
+                    <button id="delete-mp3">Delete</button>
                 `;
-
-                // Set up delete functionality
                 document.getElementById('delete-mp3').addEventListener('click', () => {
-                    mp3Display.innerHTML = ''; // Clear display
-                    songMp3Input.value = ''; // Clear file input
-                    if (audioElement) {
-                        audioElement.pause(); // Stop playback
-                        audioElement = null; // Reset audio element
-                    }
+                    mp3Display.innerHTML = '';
+                    songMp3Input.value = '';
                 });
-
-                // Handle audio length and other properties
-                const audioPlayer = document.getElementById('audio-player');
-                audioPlayer.addEventListener('loadedmetadata', () => {
-                    const duration = audioPlayer.duration; // Get the duration of the song in seconds
-                    const formattedDuration = formatTime(duration);
-                    const info = document.createElement('p');
-                    info.innerHTML = `Song Length: ${formattedDuration}`;
-                    mp3Display.appendChild(info);
-                });
-            } else if (file) {
-                // Reset file input if it's not an MP3
-                songMp3Input.value = '';
+            } else {
+                alert("Please select a valid MP3 file.");
             }
         });
 
-        // Format time helper function
-        function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        }
-
-        // Select the correct option
-        const correctIcons = document.querySelectorAll('.correct-icon');
+        // Handle selecting the correct answer option
         correctIcons.forEach(icon => {
             icon.addEventListener('click', () => {
-                correctIcons.forEach(icon => icon.classList.remove('selected'));  // Deselect all
-                icon.classList.add('selected');  // Select the clicked icon
+                correctIcons.forEach(icon => icon.classList.remove('selected'));
+                icon.classList.add('selected');
             });
         });
     </script>
