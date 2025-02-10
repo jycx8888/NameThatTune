@@ -22,8 +22,8 @@ if ($conn->connect_error) {
 //echo "Connected successfully<br>";
 
 // Fetch user data from the database
-$stmt = $connection->prepare("SELECT ProfilePicture FROM admin WHERE Username = ?");
-$stmt->bind_param("s", $username);
+$stmt = $conn->prepare("SELECT ProfilePicture FROM admin WHERE Username = ?");
+$stmt->bind_param("s", $_SESSION['username']);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -487,7 +487,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <?php 
     // Close database connection at the very end of the page
-    mysqli_close($connection);
+    mysqli_close($conn);
     ?>
 
 </body>
