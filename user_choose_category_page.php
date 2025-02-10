@@ -191,11 +191,18 @@ $conn->close();
 
         .quiz-card span {
             display: block;
-            padding: 10px 5px; /* Increase padding at the top */
-            font-size: 1.3rem;
+            padding: 8px 5px; /* Reduce padding */
+            font-size: 1.1rem; /* Adjust font size */
             background-color: rgba(0, 0, 0, 0.6);
             position: relative;
-            top: 5px; /* Move the text down */
+            top: 5px; /* Maintain slight downward position */
+        }
+
+        @media (max-width: 600px) {
+            .quiz-card span {
+                font-size: 0.9rem; /* Smaller text for mobile */
+                padding: 5px; /* Adjust padding */
+            }
         }
 
         .quiz-card:hover {
