@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['edit_user_id'])) {
 
     // Handle profile picture upload
     if ($edit_profile_picture['error'] == UPLOAD_ERR_OK) {
-        $target_dir = "";
+        $target_dir = "uploads/";
         $target_file = $target_dir . basename($edit_profile_picture["name"]);
         move_uploaded_file($edit_profile_picture["tmp_name"], $target_file);
 
