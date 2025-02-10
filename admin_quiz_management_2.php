@@ -8,18 +8,20 @@ if (!isset($_SESSION['username'])) {
 }
 
 $server = "localhost";
-$username = "root";
+$user = "root";
 $password = "";
 $database = "namethattune";
 
 // Create connection
-$conn = new mysqli($server, $username, $password, $database);
+$conn = new mysqli($server, $user, $password, $database);
 
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-//echo "Connected successfully<br>";
+
+$username = $_SESSION['username'];
+
 
 // Fetch user data from the database
 $stmt = $conn->prepare("SELECT ProfilePicture FROM admin WHERE Username = ?");
