@@ -110,134 +110,73 @@ if (isset($_GET['search'])) {
     <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
-        main {
-            font-family: "Lalezar", system-ui;
-            font-size: 20px;
-            font-weight: 1000;
-            font-style: normal;
-            margin: 20px;
-            margin-right: auto;
-            margin-left: auto;
-            padding: 20px;
-            background-color: #e7e3e2;
-            border-radius: 8px;
-            width: 80%;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            min-height: 82vh; /* Ensures proper spacing */
-        }
+    main {
+        font-family: "Lalezar", system-ui;
+        font-size: 20px;
+        font-weight: 1000;
+        font-style: normal;
+        margin: 20px;
+        margin-right: auto;
+        margin-left: auto;
+        padding: 20px;
+        background-color: #e7e3e2;
+        border-radius: 8px;
+        width: 80%;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        min-height: 82vh; /* Ensures proper spacing */
+    }
 
-        .table {
-            font-family: "Lalezar", system-ui;
-            font-size: 18px;
-            font-weight: 700;
-            font-style: normal;
-            margin: 0;
-            width: 100%;
-            border-collapse: collapse;
-        }
+    .table {
+        font-family: "Lalezar", system-ui;
+        font-size: 18px;
+        font-weight: 700;
+        font-style: normal;
+        margin: 0;
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-        .table th, .table td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: left;
-        }
+    .table th, .table td {
+        border: 1px solid #ccc;
+        padding: 10px;
+        text-align: left;
+    }
 
-        .table th {
-            background-color: #bfb5b3;
-        }
+    .table th {
+        background-color: #bfb5b3;
+    }
 
-        .action-button {
-            padding: 6px 12px;
-            background-color: #ff5c5c;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .action-button:hover {
-            background-color: #e04a4a;
-        }
-
-        .edit-button {
-            padding: 6px 12px;
-            background-color: #5c85ff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .edit-button:hover {
-            background-color: #4a6fe0;
-        }
-
-        .back-button {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 8px 16px;
-            background-color: #ccc;
-            color: black;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-
-        .back-button:hover {
-            background-color: #b0b0b0;
-        }
-
-        .search-bar {
-            margin-bottom: 30px;
-            width: 52%; /* Make the search bar larger */
-            max-width: 800px; /* Set a maximum width */
-            padding: 10px; /* Add padding for better appearance */
-            font-size: 16px; /* Increase font size */
-            border: 2px solid #ccc; /* Add border */
-            border-radius: 10px; /* Add border radius */
-        }
-
-        /* Pop-Up styles */
-        .editPopUpPage {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
-            padding-top: 60px;
-        }
-
-        .editPopUpPage-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-            border-radius: 10px;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-    .close:focus {
-        color: black;
-        text-decoration: none;
+    .action-button {
+        padding: 6px 12px;
+        background-color: #ff5c5c;
+        color: white;
+        border: none;
+        border-radius: 4px;
         cursor: pointer;
     }
 
+    .action-button:hover {
+        background-color: #e04a4a;
+    }
+
+    .edit-button {
+        padding: 6px 12px;
+        background-color: #5c85ff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .edit-button:hover {
+        background-color: #4a6fe0;
+    }
+
     .back-button {
-        padding: 6px 12px; /* Same padding as the delete button */
-        font-size: 12px; /* Match font size */
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 24px; /* Increased padding */
+        font-size: 16px; /* Increased font size */
         background-color: #4CAF50; /* Green background */
         color: white; /* White text */
         border: none; /* Remove borders */
@@ -246,6 +185,8 @@ if (isset($_GET['search'])) {
         text-decoration: none; /* No underline */
         display: inline-block; /* Inline-block for button-like behavior */
         box-shadow: 0 2px #999; /* Subtle shadow effect */
+        width: 250px; /* Increased width */
+        text-align: center; /* Center text */
     }
 
     .back-button:hover {
@@ -258,9 +199,95 @@ if (isset($_GET['search'])) {
         transform: translateY(2px); /* Slight button press effect */
     }
 
+    .search-bar {
+        margin-bottom: 30px;
+        width: 100%; /* Make the search bar larger */
+        max-width: 1000px; /* Set a maximum width */
+        padding: 10px; /* Add padding for better appearance */
+        font-size: 16px; /* Increase font size */
+        border: 2px solid #ccc; /* Add border */
+        border-radius: 10px; /* Add border radius */
+    }
+
+    .search-bar input[type="text"] {
+        width: 80%; /* Increase width */
+        padding: 15px; /* Increase padding */
+        font-size: 18px; /* Increase font size */
+        border: 1px solid #ccc; /* Add border */
+        border-radius: 4px; /* Add border radius */
+    }
+
+    .search-bar button {
+        padding: 15px 20px; /* Increase padding */
+        font-size: 18px; /* Increase font size */
+        background-color: #4CAF50; /* Green background */
+        color: white; /* White text */
+        border: none; /* Remove borders */
+        border-radius: 4px; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor */
+    }
+
+    .search-bar button:hover {
+        background-color: #45a049; /* Slightly darker green on hover */
+    }
+
+    /* Pop-Up styles */
+    .editPopUpPage {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4);
+        padding-top: 60px;
+    }
+
+    .editPopUpPage-content {
+        background-color: #fefefe;
+        margin: 5% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        border-radius: 10px;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
     .center-align {
         text-align: center;
         margin-top: 20px;
+    }
+
+    .pagination-button {
+        padding: 15px 30px; /* Increase padding */
+        font-size: 18px; /* Increase font size */
+        background-color: #4CAF50; /* Green background */
+        color: white; /* White text */
+        border: none; /* Remove borders */
+        border-radius: 4px; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor */
+        margin: 5px; /* Add margin for spacing */
+    }
+
+    .pagination-button:hover {
+        background-color: #45a049; /* Slightly darker green on hover */
     }
 </style>
 </head>
@@ -299,8 +326,8 @@ if (isset($_GET['search'])) {
     </table>
 </div>
 <div id="pagination-controls" style="margin-top: 20px; text-align: center;">
-    <button onclick="previousPage()" id="prev-btn" style="display: none;">Previous</button>
-    <button onclick="nextPage()" id="next-btn" style="display: none;">Next</button>
+    <button onclick="previousPage()" id="prev-btn" class="pagination-button" style="display: none;">Previous</button>
+    <button onclick="nextPage()" id="next-btn" class="pagination-button" style="display: none;">Next</button>
 </div>
 
 <!-- Back to First Page Button -->
@@ -562,8 +589,8 @@ if (isset($_GET['search'])) {
         echo json_encode($users);
     ?>;
 
-// Function to render the table and manage button visibility
-function renderTable() {
+    // Function to render the table and manage button visibility
+    function renderTable() {
     const tableBody = document.getElementById('table-body');
     const backToFirstPageButton = document.getElementById('back-to-first-page');
 
@@ -607,14 +634,14 @@ function renderTable() {
         }
 
 
-// Function to fetch the original users without any search filter
-async function fetchOriginalUsers() {
-    const response = await fetch(window.location.href.split('?')[0] + "?reset=1");
-    if (!response.ok) {
-        throw new Error("Failed to fetch the original user list.");
+    // Function to fetch the original users without any search filter
+    async function fetchOriginalUsers() {
+        const response = await fetch(window.location.href.split('?')[0] + "?reset=1");
+        if (!response.ok) {
+            throw new Error("Failed to fetch the original user list.");
+        }
+        return response.json();
     }
-    return response.json();
-}
 
 
 

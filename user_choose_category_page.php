@@ -191,11 +191,18 @@ $conn->close();
 
         .quiz-card span {
             display: block;
-            padding: 10px 5px; /* Increase padding at the top */
-            font-size: 1.3rem;
+            padding: 8px 5px; /* Reduce padding */
+            font-size: 1.1rem; /* Adjust font size */
             background-color: rgba(0, 0, 0, 0.6);
             position: relative;
-            top: 5px; /* Move the text down */
+            top: 5px; /* Maintain slight downward position */
+        }
+
+        @media (max-width: 600px) {
+            .quiz-card span {
+                font-size: 0.9rem; /* Smaller text for mobile */
+                padding: 5px; /* Adjust padding */
+            }
         }
 
         .quiz-card:hover {
@@ -492,27 +499,27 @@ $conn->close();
         }
 
         const englishSongs = [
-            { image: 'English Song Photo/Doja.jpg', name: 'Doja' },
-            { image: 'English Song Photo/Rewrite The Stars.jpg', name: 'Rewrite The Stars' },
-            { image: 'English Song Photo/Viva La Vida.jpg', name: 'Viva La Vida' },
-            { image: 'English Song Photo/We Dont Talk Anymore.jpg', name: 'We Dont Talk Anymore' },
-            { image: "English Song Photo/I'm Yours.png", name: "I'm Yours" }
+            { image: 'English Song Photo/24k Magic.jpg', name: '24k Magic' },
+            { image: 'English Song Photo/Starboy.jpg', name: 'Starboy' },
+            { image: 'English Song Photo/Stay.png', name: 'Stay' },
+            { image: 'English Song Photo/Sunflower.jpg', name: 'Sunflower' },
+            { image: "English Song Photo/Talking to the moon.jpg", name: "Talking to the moon" }
         ];
 
         const japaneseSongs = [
-            { image: 'Japanese Song Photo/BLUE BIRD.jpg', name: 'BLUE BIRD' },
-            { image: 'Japanese Song Photo/CRY FOR ME.jpeg', name: 'CRY FOR ME' },
-            { image: 'Japanese Song Photo/Flamingo.png', name: 'Flamingo' },
-            { image: 'Japanese Song Photo/Gunjo.jpeg', name: 'Gunjo' },
-            { image: 'Japanese Song Photo/Gurenge.jpg', name: 'Gurenge' },
+            { image: 'Japanese Song Photo/Heavy rotation.jpg', name: 'Heavy rotation' },
+            { image: 'Japanese Song Photo/Hikaru Nara.jpg', name: 'Hikaru Nara' },
+            { image: 'Japanese Song Photo/Moonlight Densetsu.jpg', name: 'Moonlight Densetsu' },
+            { image: 'Japanese Song Photo/My Dearest.jpg', name: 'My Dearest' },
+            { image: 'Japanese Song Photo/Sakura.jpg', name: 'Sakura' },
         ];
 
         const koreanSongs = [
-            { image: 'Korean Song Photo/Blackpink.png', name: 'How You Like That' },
-            { image: 'Korean Song Photo/G-IDLE.jpg', name: 'Tomboy' },
-            { image: 'Korean Song Photo/ILLIT.webp', name: 'Magnetic' },
-            { image: 'Korean Song Photo/New Jeans.jpg', name: 'Ditto' },
-            { image: 'Korean Song Photo/TWICE.jpg', name: 'I GOT YOU' },
+            { image: 'Korean Song Photo/Fake Love.jpg', name: 'Fake Love' },
+            { image: 'Korean Song Photo/Fearless.png', name: 'Fearless' },
+            { image: 'Korean Song Photo/Gangnam Style.jpg', name: 'Gangnam Style' },
+            { image: 'Korean Song Photo/TT.jpg', name: 'TT' },
+            { image: 'Korean Song Photo/What is love song.jpg', name: 'What is love song' },
         ];
 
         const audioElement = document.getElementById('background-audio');
@@ -533,6 +540,16 @@ $conn->close();
         document.getElementById('category-dropdown').addEventListener('change', function () {
             const selectedCategory = this.value;
             let songsToShow = [];
+
+             // Clear the gallery and reset the button behavior if "Select a Category..." is selected
+            if (selectedCategory === 'Category List') {
+                const gallery = document.getElementById('quiz-gallery');
+                gallery.innerHTML = ''; // Clear gallery content
+                const audioElement = document.getElementById('background-audio');
+                audioElement.pause(); // Stop any playing audio
+                audioElement.src = ''; // Clear audio source
+                return; // Exit early since no category is selected
+            }
 
             if (selectedCategory === 'English') {
                 songsToShow = englishSongs;
@@ -586,11 +603,13 @@ $conn->close();
         }
 
 
+        // "Click to Start" button behavior
         document.getElementById('start-button').addEventListener('click', function () {
             const selectedCategory = document.getElementById('category-dropdown').value;
 
             if (selectedCategory === 'Category List') {
                 showWarning('Please select a category first!');
+                return; // Exit if no category is selected
             } else if (selectedCategory === 'English') {
                 window.location.href = 'user_question_page_english.php';
             } else if (selectedCategory === 'Japanese') {
