@@ -602,7 +602,6 @@ $conn->close();
             gallery.style.animation = `scroll-left ${totalWidth / 100}s linear infinite`; // Set duration based on total width
         }
 
-
         // "Click to Start" button behavior
         document.getElementById('start-button').addEventListener('click', function () {
             const selectedCategory = document.getElementById('category-dropdown').value;
