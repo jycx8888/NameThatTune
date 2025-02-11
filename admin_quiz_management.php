@@ -197,7 +197,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
         </select>
         <input type="text" id="search" placeholder="Search....">
         <button onclick="performSearch()">Search</button>
-        <button id="addSongBtn" style="background-color: grey; color: white;">Add Song</button>
+        <button id="addSongBtn" onclick="moveToAddSong()" style="background-color: grey; color: white;">Add Song</button>
 
     </div>
         <!-- Table Section -->
@@ -446,53 +446,57 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     <!-- Script for Search Functionality -->
     <script>
         function performSearch() {
-    const searchInput = document.getElementById("search");
-    if (!searchInput) {
-        console.error("Error: Search input not found!");
-        return;
-    }
-    console.log("Searching for: " + searchInput.value);
-
-    const filter = document.getElementById("filter").value;
-    const searchTerm = searchInput.value.toLowerCase();
-    const table = document.getElementById("quizTable");
-    if (!table) {
-        console.error("Error: Quiz table not found!");
-        return;
-    }
-
-    const rows = table.getElementsByTagName("tr");
-    let found = false;
-
-    for (let row of rows) {
-        const cells = row.getElementsByTagName("td");
-        if (cells.length === 0) continue;
-
-        let shouldDisplay = false;
-        if (filter === "id" && cells[0] && cells[0].textContent.toLowerCase().includes(searchTerm)) {
-            shouldDisplay = true;
-        } else if (filter === "genre" && cells[1] && cells[1].textContent.toLowerCase().includes(searchTerm)) {
-            shouldDisplay = true;
-        } else if (filter === "time" && cells[2] && cells[2].textContent.toLowerCase().includes(searchTerm)) {
-            shouldDisplay = true;
+            const searchInput = document.getElementById("search");
+            if (!searchInput) {
+                console.error("Error: Search input not found!");
+                return;
+            }
+            console.log("Searching for: " + searchInput.value);
+        
+            const filter = document.getElementById("filter").value;
+            const searchTerm = searchInput.value.toLowerCase();
+            const table = document.getElementById("quizTable");
+            if (!table) {
+                console.error("Error: Quiz table not found!");
+                return;
+            }
+        
+            const rows = table.getElementsByTagName("tr");
+            let found = false;
+        
+            for (let row of rows) {
+                const cells = row.getElementsByTagName("td");
+                if (cells.length === 0) continue;
+        
+                let shouldDisplay = false;
+                if (filter === "id" && cells[0] && cells[0].textContent.toLowerCase().includes(searchTerm)) {
+                    shouldDisplay = true;
+                } else if (filter === "genre" && cells[1] && cells[1].textContent.toLowerCase().includes(searchTerm)) {
+                    shouldDisplay = true;
+                } else if (filter === "time" && cells[2] && cells[2].textContent.toLowerCase().includes(searchTerm)) {
+                    shouldDisplay = true;
+                }
+        
+                row.style.display = shouldDisplay ? "" : "none";
+                if (shouldDisplay) found = true;
+            }
+        
+            let noResultsRow = document.getElementById("noResultsRow");
+            if (!found) {
+                if (!noResultsRow) {
+                    noResultsRow = document.createElement("tr");
+                    noResultsRow.id = "noResultsRow";
+                    noResultsRow.innerHTML = `<td colspan="4" style="text-align:center;">No matching quizzes found.</td>`;
+                    table.appendChild(noResultsRow);
+                }
+            } else if (noResultsRow) {
+                noResultsRow.remove();
+            }
         }
 
-        row.style.display = shouldDisplay ? "" : "none";
-        if (shouldDisplay) found = true;
-    }
-
-    let noResultsRow = document.getElementById("noResultsRow");
-    if (!found) {
-        if (!noResultsRow) {
-            noResultsRow = document.createElement("tr");
-            noResultsRow.id = "noResultsRow";
-            noResultsRow.innerHTML = `<td colspan="4" style="text-align:center;">No matching quizzes found.</td>`;
-            table.appendChild(noResultsRow);
+        function moveToAddSong() {
+            window.location.href = 'admin_quiz_management_3.php';
         }
-    } else if (noResultsRow) {
-        noResultsRow.remove();
-    }
-}
     </script>
     
      <?php 
