@@ -254,28 +254,7 @@ $conn->close();
             <p id="warningMessage"></p>
         </div>
     </div>
-
-    <div id="startQuiz-container">
-        <div id="startQuiz">
-            <img src="Icon/logo.jpg" alt="logo">
-            <h1>NameThatTune</h1>
-            <div id="button-container" onclick="directToChooseCategory()">
-                <input type="submit" class="start-button" value="Start Quiz">
-            </div>
-        </div>
-    </div>
     
-    <div id="footer">
-         <ul class="nav">
-            <li><a href="user_about_us.php">About Us</a></li>
-            <li><a href="user_terms_and_conditions.php">Terms and Conditions</a></li>
-            <li><a href="user_privacy_policy.php">Privacy Policy</a></li>
-            <li><a href="user_contact_us.php">Contact Us</a></li>
-        </ul>
-        
-        <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
-    </div>
-
     <div id="logoutOverlay" class="overlay">
         <div class="popup" id="logoutPopup">
             <p>Do you want to log out?</p>
