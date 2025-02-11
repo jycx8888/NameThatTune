@@ -38,15 +38,18 @@ if ($result->num_rows > 0) {
 }
 
 // Check if 'quiz_id' is provided
-if (!isset($_GET['quiz_id']) || empty($_GET['quiz_id'])) {
-    die("Error: Quiz ID is required. Debug Info: " . print_r($_GET, true));
+if (isset($_GET['quiz_id'])) {
+    $quiz_id = intval($_GET['quiz_id']); // Get from URL
 } else {
-    echo "Debug: Quiz ID received - " . htmlspecialchars($_GET['quiz_id']) . "<br>";
+    // Default to the latest quiz
+    $latest_quiz = $conn->query("SELECT QuizID FROM quiz ORDER BY CreatedTime DESC LIMIT 1");
+    $quiz_id = ($latest_quiz->num_rows > 0) ? $latest_quiz->fetch_assoc()['QuizID'] : null;
 }
 
-
-// Sanitize and fetch the quiz ID
-$quiz_id = $_GET['quiz_id'];
+// If no quiz is found, handle it gracefully
+if (!$quiz_id) {
+    die("No quiz available.");
+}
 
 $stmt = $conn->prepare("SELECT QuizID, GenreID, CreatedTime FROM quiz WHERE QuizID=?");
 $stmt->bind_param("i", $quiz_id); // "i" means integer
@@ -185,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Main Content Section -->
     <main>
-        <form method="POST" action="admin_quiz_management_2.php?quiz_id=<?php echo $quiz_id; ?>">
+        <form method="POST" action="admin_quiz_management_2.php">
             <h2 class="edit-quiz-header">Edit Quiz</h2>
             <div class="form-group">
                 <label for="quiz-id">Quiz ID</label>
