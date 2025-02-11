@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
 
     // Prepare and bind
-    $stmt = $conn->prepare("SELECT * FROM user WHERE Username = ?");
+    $stmt = $conn->prepare("SELECT * FROM admin WHERE Username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Login successful
             $_SESSION['username'] = $username;
             $login_success = true;
-            header("Location: user_mainPage.php");
+            header("Location: admin_adminDashboard.php");
             exit();
         } else {
             // Login failed
