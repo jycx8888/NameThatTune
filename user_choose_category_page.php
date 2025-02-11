@@ -536,37 +536,40 @@ $conn->close();
             gallery.style.animation = `scroll-left ${totalWidth / 100}s linear infinite`; // Set duration based on total width
         }
 
-        // "Click to Start" button behavior
-        document.getElementById('start-button').addEventListener('click', function () {
-            const selectedCategory = document.getElementById('category-dropdown').value;
+        document.addEventListener("DOMContentLoaded", function () {
+            const startButton = document.getElementById("start-button");
+            const hoverSound = new Audio("Sound Effect/hover_sound_effect.mp3"); 
+            const clickSound = new Audio("Sound Effect/click_sound_effect.wav");
 
-            if (selectedCategory === 'Category List') {
-                showWarning('Please select a category first!');
-                return; // Exit if no category is selected
-            } else if (selectedCategory === 'English') {
-                window.location.href = 'user_question_page_english.php';
-            } else if (selectedCategory === 'Japanese') {
-                window.location.href = 'user_question_page_japanese.php';
-            } else if (selectedCategory === 'Korean') {
-                window.location.href = 'user_question_page_korean.php';
-            }
+            // Ensure audio loads properly
+            hoverSound.preload = "auto";
+            clickSound.preload = "auto";
+
+            // Hover sound effect
+            startButton.addEventListener("mouseover", () => {
+                hoverSound.currentTime = 0; // Reset time so it plays every time
+                hoverSound.play().catch(error => console.error("Hover sound error:", error));
+            });
+
+            // Click sound effect with autoplay fix
+            startButton.addEventListener("click", () => {
+                clickSound.currentTime = 0; // Reset time so it plays every time
+                clickSound.play().catch(error => console.error("Click sound error:", error));
+
+                // Redirect based on selected category
+                const selectedCategory = document.getElementById("category-dropdown").value;
+
+                if (selectedCategory === "Category List") {
+                    showWarning("Please select a category first!");
+                } else if (selectedCategory === "English") {
+                    window.location.href = "user_question_page_english.php";
+                } else if (selectedCategory === "Japanese") {
+                    window.location.href = "user_question_page_japanese.php";
+                } else if (selectedCategory === "Korean") {
+                    window.location.href = "user_question_page_korean.php";
+                }
+            });
         });
-
-        // Add a hover sound effect
-        const startButton = document.getElementById('start-button');
-        const hoverSound = new Audio('Sound Effect/hover_sound_effect.mp3'); // Replace with the actual path
-        const clickSound = new Audio('Sound Effect/click_sound_effect.wav'); // Replace with the actual path
-
-        // Play hover sound
-        startButton.addEventListener('mouseover', () => {
-            hoverSound.play();
-        });
-
-        // Play click sound
-        startButton.addEventListener('click', () => {
-            clickSound.play();
-        });
-        
         
         function validateNewUsername() {
             const username = document.getElementById('usernameInput').value;
