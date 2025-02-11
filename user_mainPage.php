@@ -177,6 +177,7 @@ $conn->close();
             <img src="Icon/pencil.png" alt="Edit" class="edit-icon" style="width: 60px; height: 60px;" onclick="showPopup('profilePopup')">
         </div>
         <div class="username" id="username"><?php echo htmlspecialchars($username); ?></div>
+        <div class="menu-item" onclick="directToHistory()">History</div>
         <div class="menu-item" onclick="showPopup('usernamePopup')">Change Username</div>
         <div class="menu-item" onclick="showPopup('passwordPopup')">Change Password</div>
         <div class="menu-item" onclick="toggleSubmenu('settings-submenu')">Settings</div>
@@ -383,6 +384,10 @@ $conn->close();
 
         function directToChooseCategory() {
             window.location.href = 'user_choose_category_page.php';
+        }
+
+        function directToHistory() {
+            window.location.href = 'user_history.php';
         }
     </script>
 </body>
