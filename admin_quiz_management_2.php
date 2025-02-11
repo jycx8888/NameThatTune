@@ -37,18 +37,29 @@ if ($result->num_rows > 0) {
     $profile_picture_path = 'Icon/account.png'; // Default profile picture
 }
 
-// Check if 'quiz_id' is provided
+// Check if 'quiz_id' is provided for editing
 if (isset($_GET['quiz_id'])) {
     $quiz_id = intval($_GET['quiz_id']); // Get from URL
-} else {
-    // Default to the latest quiz
-    $latest_quiz = $conn->query("SELECT QuizID FROM quiz ORDER BY CreatedTime DESC LIMIT 1");
-    $quiz_id = ($latest_quiz->num_rows > 0) ? $latest_quiz->fetch_assoc()['QuizID'] : null;
-}
 
-// If no quiz is found, handle it gracefully
-if (!$quiz_id) {
-    die("No quiz available.");
+    // Fetch quiz data for editing
+    $stmt = $conn->prepare("SELECT QuizID, GenreID, CreatedTime FROM quiz WHERE QuizID = ?");
+    $stmt->bind_param("i", $quiz_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $quiz = $result->fetch_assoc(); // Fetch data into an array
+    } else {
+        die("Error: Quiz not found.");
+    }
+
+    // Fetch questions related to this quiz
+    $sql_questions = "SELECT * FROM question WHERE QuizID = '$quiz_id'";
+    $result_questions = $conn->query($sql_questions);
+} else {
+    // No quiz_id provided, meaning the user is adding a new song
+    $quiz = null;
+    $result_questions = null;
 }
 
 $stmt = $conn->prepare("SELECT QuizID, GenreID, CreatedTime FROM quiz WHERE QuizID=?");
@@ -188,28 +199,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Main Content Section -->
     <main>
-        <form method="POST" action="admin_quiz_management_2.php">
-            <h2 class="edit-quiz-header">Edit Quiz</h2>
-            <div class="form-group">
-                <label for="quiz-id">Quiz ID</label>
-                <input type="text" id="quiz-id" name="quiz_id" value="<?php echo $quiz['QuizID']; ?>" readonly>
-            </div>
-            
-            <div class="form-group">
-                <label for="genre-id">Genre</label>
-                <select id="genre-id" name="genre_id">
-                    <option value="1" <?php if ($quiz['genre_id'] == '1') echo 'selected'; ?>>English</option>
-                    <option value="2" <?php if ($quiz['genre_id'] == '2') echo 'selected'; ?>>Korean</option>
-                    <option value="3" <?php if ($quiz['genre_id'] == '3') echo 'selected'; ?>>Japanese</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="created-time">Created Time</label>
-                <input type="datetime-local" id="created-time" name="created_time" 
-                    value="<?php echo !empty($quiz['created_time']) ? date('Y-m-d\TH:i:s', strtotime($quiz['created_time'])) : ''; ?>">
-            </div>
+    <form method="POST" action="admin_quiz_management_2.php">
+    <h2 class="edit-quiz-header"><?php echo isset($quiz) ? 'Edit Quiz' : 'Add Song'; ?></h2>
+    
+    <?php if (isset($quiz)): ?>
+        <input type="hidden" name="quiz_id" value="<?php echo $quiz['QuizID']; ?>">
+    <?php endif; ?>
 
-        <!-- Table Section -->
+    <div class="form-group">
+        <label for="genre-id">Genre</label>
+        <select id="genre-id" name="genre_id">
+            <option value="1" <?php if (isset($quiz) && $quiz['GenreID'] == '1') echo 'selected'; ?>>English</option>
+            <option value="2" <?php if (isset($quiz) && $quiz['GenreID'] == '2') echo 'selected'; ?>>Korean</option>
+            <option value="3" <?php if (isset($quiz) && $quiz['GenreID'] == '3') echo 'selected'; ?>>Japanese</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="created-time">Created Time</label>
+        <input type="datetime-local" id="created-time" name="created_time" 
+            value="<?php echo isset($quiz) ? date('Y-m-d\TH:i:s', strtotime($quiz['CreatedTime'])) : ''; ?>">
+    </div>
+
+    <!-- Table Section for Questions (only in edit mode) -->
+    <?php if (isset($quiz)): ?>
         <h3>Questions</h3>
         <table class="question-table">
             <thead>
@@ -238,13 +251,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <?php endif; ?>
             </tbody>
         </table>
+    <?php endif; ?>
 
-        <!-- Buttons -->
-        <div class="button-container">
-            <button type="button" class="cancel" onclick="window.location.href='quizzes.php';">Cancel</button>
-            <button type="submit" class="confirm">Save Changes</button>
-        </div>
-        </form>
+    <!-- Buttons -->
+    <div class="button-container">
+        <button type="button" class="cancel" onclick="window.location.href='quizzes.php';">Cancel</button>
+        <button type="submit" class="confirm"><?php echo isset($quiz) ? 'Save Changes' : 'Add Song'; ?></button>
+    </div>
+</form>
     </main>
 
     <div id="hamburger-menu">
