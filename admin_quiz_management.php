@@ -168,12 +168,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
 
     </style>
     <script>
-        function addSong(quizId) {
-    if (quizId) {
-        window.location.href = 'admin_quiz_management_2.php?quiz_id=' + quizId;
-    } else {
-        alert('Please select a quiz to add a song.');
-    }
+        function addSong() {
+    window.location.href = 'admin_quiz_management_2.php';
 }
     </script>
 </head>
