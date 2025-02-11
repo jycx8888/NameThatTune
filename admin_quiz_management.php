@@ -169,6 +169,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     </style>
     <script>
         function addSong() {
+    console.log("Add Song button clicked!"); // Debugging
     window.location.href = 'admin_quiz_management_2.php';
 }
     </script>
@@ -196,7 +197,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
         </select>
         <input type="text" id="search" placeholder="Search....">
         <button onclick="performSearch()">Search</button>
-        <button onclick="addSong()" style="background-color: grey; color: white;">Add Song</button>
+        <button id="addSongBtn" style="background-color: grey; color: white;">Add Song</button>
+
     </div>
         <!-- Table Section -->
         <table>
@@ -207,7 +209,21 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
             <th>Created Time</th>
             <th>Action</th>
         </tr>
-       
+        
+<script>
+        document.addEventListener("DOMContentLoaded", function() {
+    var button = document.getElementById("addSong");
+    if (button) {
+        button.addEventListener("click", function() {
+            console.log("Redirecting to admin_quiz_management_2.php");
+            window.location.href = 'admin_quiz_management_2.php';
+        });
+    } else {
+        console.log("Button not found.");
+    }
+});
+</script>
+
     </thead>
     <tbody id="quizTable">
         <?php if (mysqli_num_rows($results) > 0): ?>
