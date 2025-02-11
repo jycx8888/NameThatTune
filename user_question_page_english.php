@@ -1,82 +1,3 @@
-<?php
-session_start();
-
-// Enable error reporting for debugging
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// Redirect if the user is not logged in
-if (!isset($_SESSION['username'])) {
-    header("Location: user_login.php");
-    exit();
-}
-
-// Database connection
-$servername = "localhost";
-$dbusername = "root";
-$dbpassword = "";
-$dbname = "namethattune";
-
-$conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
-
-// Check database connection
-if ($conn->connect_error) {
-    die("Database connection failed: " . $conn->connect_error);
-}
-
-$username = $_SESSION['username'];
-
-// Fetch user profile picture and UserID
-$stmt = $conn->prepare("SELECT ProfilePicture, UserID FROM user WHERE Username = ?");
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $profile_picture_path = $row['ProfilePicture'];
-    $userID = $row['UserID']; // Fetch UserID from the database
-} else {
-    $profile_picture_path = 'Icon/account.png'; // Default profile picture
-    $userID = null; // Handle case where UserID is not found
-}
-
-$stmt->close();
-
-// Handle POST request to save quiz details
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['save_record'])) {
-    $quizID = $_POST['QuizID'] ?? null;
-    $result = $_POST['Result'] ?? null;
-    $recordID = uniqid("rec_");
-    $currentTime = date("Y-m-d H:i:s"); // Capture the current timestamp
-
-    // Validate incoming data
-    if (!$userID || !$quizID || $result === null) {
-        die("Error: Missing data. UserID: $userID, QuizID: $quizID, Result: $result");
-    }
-
-    // Insert data into the 'record' table
-    $stmt = $conn->prepare("INSERT INTO record (RecordID, Result, Time, UserID, QuizID) VALUES (?, ?, ?, ?, ?)");
-    if (!$stmt) {
-        die("Error preparing statement: " . $conn->error);
-    }
-
-    $stmt->bind_param("sssss", $recordID, $result, $currentTime, $userID, $quizID);
-
-    if ($stmt->execute()) {
-        echo "Record saved successfully!";
-    } else {
-        die("Error saving record: " . $stmt->error);
-    }
-
-    $stmt->close();
-}
-
-// Close database connection
-$conn->close();
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -348,7 +269,7 @@ $conn->close();
         <button id="backButton" onclick="goBack()">Back</button>
         <div id="loginOrRegister" onclick="">
             <img src="icon/account.png" alt="avatar">
-            <span id="username"><?= htmlspecialchars($username) ?></span>
+            <span id="username">Username</span>
         </div>
     </div>
 
@@ -408,8 +329,13 @@ $conn->close();
     <script>
 
         function goBack() {
-            sessionStorage.removeItem("selectedCategory"); // Remove stored category selection
-            window.location.href = "user_choose_category_page.php"; // Ensure it redirects correctly
+            if (window.history.length > 1) {
+                // Go back if there's history
+                window.history.back();
+            } else {
+                // Fallback to a default page if no history exists
+                window.location.href = 'user_choose_category_page.php'; // Replace with your fallback URL
+            }
         }
 
         const questions = [
@@ -463,26 +389,8 @@ $conn->close();
 
         function selectOption(selectedOption) {
             const currentQuestion = questions[currentQuestionIndex - 1];
-            const isCorrect = selectedOption === currentQuestion.correctAnswer ? "Correct" : "Incorrect";
-
-            const data = new URLSearchParams();
-            data.append("save_record", "1");
-            data.append("TimeUserID", "user123"); // Replace with the actual user ID
-            data.append("QuizID", currentQuestionIndex.toString());
-            data.append("Result", isCorrect);
-
-            fetch("your_php_file.php", {
-                method: "POST",
-                body: data,
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-            })
-                .then((response) => response.text())
-                .then((data) => console.log(data))
-                .catch((error) => console.error("Error:", error));
-
             const buttons = document.querySelectorAll(".option-button");
+
             buttons.forEach((button) => {
                 button.disabled = true;
                 if (button.textContent.trim().startsWith(currentQuestion.correctAnswer)) {
@@ -526,7 +434,6 @@ $conn->close();
 
         // Add the sound effect for hovering over the buttons
         const hoverSound = new Audio('Sound Effect/hover_sound_effect.mp3');  // Replace with the actual path to your sound file
-        const clickSound = new Audio('Sound Effect/click_sound_effect.wav'); // Replace with the actual path
 
         // Add event listener to play sound on hover
         document.querySelectorAll('.option-button').forEach(button => {
