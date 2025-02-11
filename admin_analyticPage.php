@@ -116,14 +116,19 @@ $conn->close();
         .search-bar {
             text-align: center;
             margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px; /* Adds space between the search input and buttons */
         }
+        
         .search-bar input[type="text"] {
-            width: 80%;
+            width: 60%; /* Adjust width to fit the buttons */
             padding: 10px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+        
         .search-bar button {
             padding: 10px 20px;
             font-size: 16px;
@@ -133,13 +138,28 @@ $conn->close();
             border-radius: 4px;
             cursor: pointer;
         }
+        
         .search-bar button:hover {
             background-color: #45a049;
         }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
+        
+        .refresh-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #f44336; /* Red color for the refresh button */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .refresh-button:hover {
+            background-color: #e53935; /* Darker red on hover */
+        }
+            </style>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        </head>
+        <body>
    <!-- Header Section -->
    <div id="header">
         <h1>NameThatTune</h1>
@@ -154,6 +174,7 @@ $conn->close();
         <div class="search-bar">
             <input type="text" id="searchInput" placeholder="Search by Quiz ID">
             <button onclick="filterTableAndChart()">Search</button>
+            <button class="refresh-button" onclick="refreshTableAndChart()">Refresh</button>
         </div>
         <table>
             <thead>
@@ -376,6 +397,24 @@ $conn->close();
 
         function directToHistory() {
             window.location.href = 'user_history.php';
+        }
+
+        function refreshTableAndChart() {
+            document.getElementById('searchInput').value = '';
+            const tableBody = document.getElementById('table-body');
+            const rows = tableBody.getElementsByTagName('tr');
+
+            // Show all table rows
+            for (let i = 0; i < rows.length; i++) {
+                rows[i].style.display = '';
+            }
+        
+            // Reset chart data
+            quizChart.data.labels = labels;
+            quizChart.data.datasets[0].data = totalAttempts;
+            quizChart.data.datasets[1].data = totalCorrect;
+            quizChart.data.datasets[2].data = totalIncorrect;
+            quizChart.update();
         }
     </script>
 
