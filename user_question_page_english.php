@@ -526,6 +526,7 @@ $conn->close();
 
         // Add the sound effect for hovering over the buttons
         const hoverSound = new Audio('Sound Effect/hover_sound_effect.mp3');  // Replace with the actual path to your sound file
+        const clickSound = new Audio('Sound Effect/click_sound_effect.wav'); // Replace with the actual path
 
         // Add event listener to play sound on hover
         document.querySelectorAll('.option-button').forEach(button => {
