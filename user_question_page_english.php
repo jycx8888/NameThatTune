@@ -408,13 +408,8 @@ $conn->close();
     <script>
 
         function goBack() {
-            if (window.history.length > 1) {
-                // Go back if there's history
-                window.history.back();
-            } else {
-                // Fallback to a default page if no history exists
-                window.location.href = 'user_choose_category_page.php'; // Replace with your fallback URL
-            }
+            sessionStorage.removeItem("selectedCategory"); // Remove stored category selection
+            window.location.href = "user_choose_category_page.php"; // Ensure it redirects correctly
         }
 
         const questions = [

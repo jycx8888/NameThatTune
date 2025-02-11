@@ -567,6 +567,7 @@ $conn->close();
             clickSound.play();
         });
         
+        
         function validateNewUsername() {
             const username = document.getElementById('usernameInput').value;
             
@@ -577,6 +578,26 @@ $conn->close();
 
             return true;
         }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const dropdown = document.getElementById("category-dropdown");
+
+            // Always reset the dropdown when the page loads
+            dropdown.value = "Category List";
+            sessionStorage.removeItem("selectedCategory"); // Ensure the selection is cleared
+
+            dropdown.addEventListener("change", function () {
+                sessionStorage.setItem("selectedCategory", this.value);
+            });
+
+            // Ensure dropdown resets when back button is used
+            window.addEventListener("pageshow", function (event) {
+                if (event.persisted || performance.navigation.type === 2) {
+                    dropdown.value = "Category List"; 
+                    sessionStorage.removeItem("selectedCategory"); // Ensure reset
+                }
+            });
+        });
 
         function validateNewPassword() {
             const password = document.getElementById('newPasswordInput').value;
