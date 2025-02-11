@@ -555,7 +555,7 @@ $conn->close();
         // Add a hover sound effect
         const startButton = document.getElementById('start-button');
         const hoverSound = new Audio('Sound Effect/hover_sound_effect.mp3'); // Replace with the actual path
-        const clickSound = new Audio('Sound Effect/click_sound_effect.mp3'); // Replace with the actual path
+        const clickSound = new Audio('Sound Effect/click_sound_effect.wav'); // Replace with the actual path
 
         // Play hover sound
         startButton.addEventListener('mouseover', () => {
