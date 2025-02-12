@@ -89,6 +89,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 
+if (isset($_GET['genreID'])) {
+    $genreID = $_GET['genreID'];
+
+    $sql = "SELECT QuizID, QuizName FROM quiz WHERE GenreID = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $genreID);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $quizzes = [];
+    while ($row = $result->fetch_assoc()) {
+        $quizzes[] = $row;
+    }
+
+    $stmt->close();
+    echo json_encode($quizzes);
+    exit();
+}
+
 $conn->close();
 ?>
 
@@ -151,8 +170,7 @@ $conn->close();
 
         #quiz-gallery {
             display: flex;
-            gap: 10px;
-            animation: scroll-left 20s linear infinite;
+            gap: 50px;
             white-space: nowrap;
         }
 
@@ -165,49 +183,47 @@ $conn->close();
             }
         }
 
-        .quiz-card {
-            font-family: "Lalezar", system-ui;
-            font-weight: 1000;
-            font-size: small;
-            display: inline-block;
-            min-width: 180px;
-            height: 240px;
-            background-color: #444;
-            color: white;
-            text-align: center;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-            cursor: pointer;
-            overflow: hidden;
-            margin: 10px;
-            transition: transform 0.3s ease;
-        }
+        .quiz-box {
+    font-family: "Lalezar", system-ui;
+    font-weight: 1000;
+    font-size: small;
+    display: inline-block;
+    width: 200px;
+    height: 200px;
+    background-color: rgb(72, 87, 227);
+    color: white;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    overflow: hidden;
+    margin: 30px;
+    transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+}
 
-        .quiz-card img {
-            width: 100%;
-            height: 75%;
-            object-fit: cover;
-        }
+.quiz-box span {
+    display: block;
+    padding: 8px 5px; /* Reduce padding */
+    font-size: 1.1rem; /* Adjust font size */
+    background-color: rgba(0, 0, 0, 0.6);
+    position: relative;
+    top: 5px; /* Maintain slight downward position */
+}
 
-        .quiz-card span {
-            display: block;
-            padding: 8px 5px; /* Reduce padding */
-            font-size: 1.1rem; /* Adjust font size */
-            background-color: rgba(0, 0, 0, 0.6);
-            position: relative;
-            top: 5px; /* Maintain slight downward position */
-        }
+@media (max-width: 600px) {
+    .quiz-box span {
+        font-size: 0.9rem; /* Smaller text for mobile */
+        padding: 5px; /* Adjust padding */
+    }
+}
 
-        @media (max-width: 600px) {
-            .quiz-card span {
-                font-size: 0.9rem; /* Smaller text for mobile */
-                padding: 5px; /* Adjust padding */
-            }
-        }
+.quiz-box:hover {
+    transform: scale(1.1); /* Slightly enlarge the box */
+}
 
-        .quiz-card:hover {
-            transform: scale(1.1);
-        }
+.quiz-box.selected {
+    transform: scale(1.1); /* Slightly enlarge the box */
+}
 
         #start-button {
             margin-top: 20px;
@@ -296,9 +312,9 @@ $conn->close();
     <div id="main">
         <select class="category-dropdown" id="category-dropdown">
             <option value="Category List">Select a Category...</option>
-            <option value="English">English</option>
-            <option value="Japanese">Japanese</option>
-            <option value="Korean">Korean</option>
+            <option value="G001">English</option>
+            <option value="G002">Japanese</option>
+            <option value="G003">Korean</option>
         </select>
 
         <div id="quiz-gallery-container">
@@ -414,13 +430,11 @@ $conn->close();
 
     <script>
         function toggleVolumeSlider() {
-            let volumeSlider = document.getElementById("volume-slider");
-            volumeSlider.style.display = volumeSlider.style.display === "block" ? "none" : "block";
+            volumeSlider.style.display = volumeSlider.style.display === 'block' ? 'none' : 'block';
         }
 
         function adjustVolume(value) {
-            let audioElement = document.getElementById("background-audio");
-            audioElement.volume = value / 100; // Adjust volume based on slider value
+            AudioElement.volume = value / 100; // Adjust the audio volume
         }
 
         // Fullscreen Toggle
@@ -434,36 +448,12 @@ $conn->close();
             }
         }
 
-        const englishSongs = [
-            { image: 'English Song Photo/24k Magic.jpg', name: '24k Magic' },
-            { image: 'English Song Photo/Starboy.jpg', name: 'Starboy' },
-            { image: 'English Song Photo/Stay.png', name: 'Stay' },
-            { image: 'English Song Photo/Sunflower.jpg', name: 'Sunflower' },
-            { image: "English Song Photo/Talking to the moon.jpg", name: "Talking to the moon" }
-        ];
-
-        const japaneseSongs = [
-            { image: 'Japanese Song Photo/Heavy rotation.jpg', name: 'Heavy rotation' },
-            { image: 'Japanese Song Photo/Hikaru Nara.jpg', name: 'Hikaru Nara' },
-            { image: 'Japanese Song Photo/Moonlight Densetsu.jpg', name: 'Moonlight Densetsu' },
-            { image: 'Japanese Song Photo/My Dearest.jpg', name: 'My Dearest' },
-            { image: 'Japanese Song Photo/Sakura.jpg', name: 'Sakura' },
-        ];
-
-        const koreanSongs = [
-            { image: 'Korean Song Photo/Fake Love.jpg', name: 'Fake Love' },
-            { image: 'Korean Song Photo/Fearless.png', name: 'Fearless' },
-            { image: 'Korean Song Photo/Gangnam Style.jpg', name: 'Gangnam Style' },
-            { image: 'Korean Song Photo/TT.jpg', name: 'TT' },
-            { image: 'Korean Song Photo/What is love song.jpg', name: 'What is love song' },
-        ];
-
         const audioElement = document.getElementById('background-audio');
 
         const audioSources = {
-            English: 'Background Audio/Glad You Came.mp3',
-            Japanese: 'Background Audio/SPECIALZ.mp3',
-            Korean: 'Background Audio/HARU HARU.mp3',
+            G001: 'Background Audio/Glad You Came.mp3',
+            G002: 'Background Audio/SPECIALZ.mp3',
+            G003: 'Background Audio/HARU HARU.mp3',
         };
 
         function changeAudio(category) {
@@ -475,9 +465,6 @@ $conn->close();
 
         document.getElementById('category-dropdown').addEventListener('change', function () {
             const selectedCategory = this.value;
-            let songsToShow = [];
-
-             // Clear the gallery and reset the button behavior if "Select a Category..." is selected
             if (selectedCategory === 'Category List') {
                 const gallery = document.getElementById('quiz-gallery');
                 gallery.innerHTML = ''; // Clear gallery content
@@ -486,52 +473,65 @@ $conn->close();
                 audioElement.src = ''; // Clear audio source
                 return; // Exit early since no category is selected
             }
-
-            if (selectedCategory === 'English') {
-                songsToShow = englishSongs;
-            } else if (selectedCategory === 'Japanese') {
-                songsToShow = japaneseSongs;
-            } else if (selectedCategory === 'Korean') {
-                songsToShow = koreanSongs;
-            }
-
-            const gallery = document.getElementById('quiz-gallery');
-            gallery.innerHTML = '';  // Clear the existing gallery
-
-            songsToShow.forEach(song => {
-                const card = document.createElement('div');
-                card.classList.add('quiz-card');
-                card.innerHTML = `
-                    <img src="${song.image}" alt="${song.name}">
-                    <span>${song.name}</span>
-                `;
-                gallery.appendChild(card);
-            });
-
-            setupContinuousScrolling();
-
+        
+            fetchQuizzes(selectedCategory);
             changeAudio(selectedCategory);
+        });
+
+        function fetchQuizzes(genreID) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', `user_choose_category_new.php?genreID=${genreID}`, true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    const quizzes = JSON.parse(xhr.responseText);
+                    const gallery = document.getElementById('quiz-gallery');
+                    gallery.innerHTML = ''; // Clear existing content
+        
+                    quizzes.forEach(quiz => {
+                        const box = document.createElement('div');
+                        box.classList.add('quiz-box');
+                        box.innerHTML = `
+                            <span>${quiz.QuizName}</span>
+                        `;
+                        box.addEventListener('click', function () {
+                            document.querySelectorAll('.quiz-box').forEach(b => b.classList.remove('selected'));
+                            box.classList.add('selected');
+                            box.dataset.quizId = quiz.QuizID;
+                        });
+                        gallery.appendChild(box);
+                    });
+                }
+            };
+            xhr.send();
+        }
+        
+        document.getElementById('start-button').addEventListener('click', function () {
+            const selectedBox = document.querySelector('.quiz-box.selected');
+            if (selectedBox) {
+                const quizId = selectedBox.dataset.quizId;
+                window.location.href = `user_question_page_new.php?quizId=${quizId}`;
+            }
         });
 
         function setupContinuousScrolling() {
             const gallery = document.getElementById('quiz-gallery');
-            const cards = Array.from(gallery.children);
-
-            // Clone cards until the gallery width exceeds the container width
+            const boxes = Array.from(gallery.children);
+        
+            // Clone boxes until the gallery width exceeds the container width
             const galleryContainer = document.getElementById('quiz-gallery-container');
             let totalWidth = 0;
-
+        
             while (totalWidth < galleryContainer.offsetWidth * 2) {
-                cards.forEach(card => {
-                    const clone = card.cloneNode(true);
+                boxes.forEach(box => {
+                    const clone = box.cloneNode(true);
                     gallery.appendChild(clone);
-                    totalWidth += card.offsetWidth + parseFloat(getComputedStyle(card).marginRight);
+                    totalWidth += box.offsetWidth + parseFloat(getComputedStyle(box).marginRight);
                 });
             }
-
+        
             // Set the gallery width dynamically
             gallery.style.width = `${totalWidth}px`;
-
+        
             // Reset and reapply animation
             gallery.style.animation = 'none'; // Stop animation temporarily
             gallery.offsetHeight; // Trigger reflow
@@ -558,19 +558,18 @@ $conn->close();
                 clickSound.currentTime = 0; // Reset time so it plays every time
                 clickSound.play().catch(error => console.error("Click sound error:", error));
 
-                // Redirect based on selected category
-                const selectedCategory = document.getElementById("category-dropdown").value;
-
-                if (selectedCategory === "Category List") {
-                    showWarning("Please select a category first!");
-                } else if (selectedCategory === "English") {
-                    window.location.href = "user_question_page_english.php";
-                } else if (selectedCategory === "Japanese") {
-                    window.location.href = "user_question_page_japanese.php";
-                } else if (selectedCategory === "Korean") {
-                    window.location.href = "user_question_page_korean.php";
+                // Redirect based on selected quiz
+                const selectedBox = document.querySelector('.quiz-box.selected');
+                if (selectedBox) {
+                    const quizId = selectedBox.dataset.quizId;
+                    window.location.href = `user_question_page_new.php?quizId=${quizId}`;
+                } else {
+                    showWarning('Please select a quiz first!');
                 }
             });
+
+            fetchQuizzes(selectedCategory);
+            changeAudio(selectedCategory);
         });
         
         function validateNewUsername() {
