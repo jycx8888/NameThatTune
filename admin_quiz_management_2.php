@@ -69,6 +69,7 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $quiz = $result->fetch_assoc(); // Fetch data into an array
+    print_r($quiz); // Debugging output
 } else {
     die("Error: Quiz not found.");
 }
@@ -201,6 +202,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <main>
     <form method="POST" action="admin_quiz_management_2.php">
     <h2 class="edit-quiz-header"><?php echo isset($quiz) ? 'Edit Quiz' : 'Add Song'; ?></h2>
+
+     <!-- Display Quiz ID -->
+     <p>Quiz ID: <?= isset($quiz['QuizID']) && !empty($quiz['QuizID']) ? htmlspecialchars($quiz['QuizID']) : 'No Quiz Found'; ?></p>
     
     <?php if (isset($quiz)): ?>
         <input type="hidden" name="quiz_id" value="<?php echo $quiz['QuizID']; ?>">
