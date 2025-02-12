@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+
 $servername = "localhost";
 $dbusername = "root"; // Database username
 $dbpassword = ""; // Database password
@@ -14,6 +15,25 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+
+if (isset($_SESSION['username'])) {
+    $username = $_SESSION['username'];
+
+    // Fetch user data from the database
+$stmt = $conn->prepare("SELECT ProfilePicture FROM user WHERE Username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $profile_picture_path = $row['ProfilePicture'];
+} else {
+    // Handle case where user data is not found
+    $profile_picture_path = 'Icon/account.png'; // Default profile picture
+}
+
+$stmt->close();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['update_username'])) {
@@ -62,6 +82,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 }
+}
+
+
 
 $conn->close();
 ?>
@@ -154,12 +177,13 @@ $conn->close();
             if (isset($_SESSION['username'])) {
                 $profile_picture_path = htmlspecialchars($profile_picture_path);
                 $username = htmlspecialchars($username);
-                echo "<img src='$profile_picture_path'>";
-                echo "<p>$username</p>";
+                echo "<div id='login'>
+                <img src='$profile_picture_path'>
+                <p>$username</p>";
             } else {
-                echo "<div id='login' onclick='redirectToRegister()'>";
-                echo "<p>Login/Sign Up</p>";
-                echo "</div>";
+                echo "<div id='login' onclick='redirectToLogin()'>
+                <p>Login</p>
+                </div>";
             }
             ?>
         </div>
@@ -279,4 +303,15 @@ $conn->close();
         <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
     </div>
 </body>
+
+<script>
+    function redirectToLogin() {
+    window.location.href = "user_login.php";
+    }
+
+    document.getElementById('login').addEventListener('click', function() {
+            document.getElementById('hamburger-menu').classList.toggle('open');
+        });
+</script>
+
 </html>

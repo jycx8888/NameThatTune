@@ -152,12 +152,13 @@ $conn->close();
             if (isset($_SESSION['username'])) {
                 $profile_picture_path = htmlspecialchars($profile_picture_path);
                 $username = htmlspecialchars($username);
-                echo "<img src='$profile_picture_path'>";
-                echo "<p>$username</p>";
+                echo "<div id='login'>
+                <img src='$profile_picture_path'>
+                <p>$username</p>";
             } else {
                 echo "<div id='login' onclick='redirectToLogin()'>
-                 <p>Login</p>
-                 </div>";
+                <p>Login</p>
+                </div>";
             }
             ?>
         </div>
@@ -261,4 +262,5 @@ $conn->close();
     window.location.href = "user_login.php";
     }
 </script>
+
 </html>
