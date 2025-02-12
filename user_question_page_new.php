@@ -1,3 +1,62 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['username'])) {
+    header("Location: user_login.php");
+    exit();
+}
+
+$servername = "localhost";
+$dbusername = "root"; // Database username
+$dbpassword = ""; // Database password
+$dbname = "namethattune";
+
+// Create connection
+$conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$quizId = $_GET['quizId'];
+
+// Fetch questions for the selected quiz
+$stmt = $conn->prepare("SELECT * FROM question WHERE QuizID = ?");
+$stmt->bind_param("s", $quizId);
+$stmt->execute();
+$questionsResult = $stmt->get_result();
+
+$questions = [];
+while ($row = $questionsResult->fetch_assoc()) {
+    // Fetch song details for each question
+    $songStmt = $conn->prepare("SELECT * FROM song WHERE QuestionID = ?");
+    $songStmt->bind_param("s", $row['QuestionID']);
+    $songStmt->execute();
+    $songResult = $songStmt->get_result();
+    $song = $songResult->fetch_assoc();
+    $songStmt->close();
+
+    // Fetch options for each question
+    $optionStmt = $conn->prepare("SELECT * FROM option WHERE QuestionID = ?");
+    $optionStmt->bind_param("s", $row['QuestionID']);
+    $optionStmt->execute();
+    $optionsResult = $optionStmt->get_result();
+    $options = [];
+    while ($optionRow = $optionsResult->fetch_assoc()) {
+        $options[] = $optionRow;
+    }
+    $optionStmt->close();
+
+    $row['song'] = $song;
+    $row['options'] = $options;
+    $questions[] = $row;
+}
+
+$stmt->close();
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -277,14 +336,14 @@
         <div class="question-box">
             <div class="question-header">
                 <span id="question-number">1</span>
-                <span id="current-question">1/15</span>
+                <span id="current-question">1/5</span>
             </div>
-            <img id="question-image" src="Korean Song Photo/Blackpink.png" alt="Question Image" class="question-image">
+            <img id="question-image" src="" alt="Question Image" class="question-image">
             <h2 id="question">What song is this?</h2>
 
             <!-- Add the audio bar -->
             <audio id="question-audio" controls autoplay>
-                <source id="audio-source" src="Background Audio/HARU HARU.mp3" type="audio/mpeg">
+                <source id="audio-source" src="" type="audio/mpeg">
                 Your browser does not support the audio element.
             </audio>
 
@@ -327,35 +386,17 @@
     </div>
 
     <script>
-
         function goBack() {
             if (window.history.length > 1) {
                 // Go back if there's history
                 window.history.back();
             } else {
                 // Fallback to a default page if no history exists
-                window.location.href = 'user_choose_category_page.php'; // Replace with your fallback URL
+                window.location.href = 'user_choose_category_new.php'; // Replace with your fallback URL
             }
         }
 
-        const questions = [
-            { number: 1, questionText: "What is this song?", image: "image1.png", audio: "audio1.mp3", options: ["A. Blinding Lights", "B. See You Again", "C. Poker Face", "D. Darkside"], correctAnswer: "B" },
-            { number: 2, questionText: "What is this song?", image: "image2.png", audio: "audio2.mp3", options: ["A. Bye Bye Bye", "B. Wake Me Up", "C. Let Her Go", "D. That's What I Like"], correctAnswer: "C" },
-            { number: 3, questionText: "What is this song?", image: "image3.png", audio: "audio3.mp3", options: ["A. Blank Space", "B. Hall Of Fame", "C. Natural", "D. Light Switch"], correctAnswer: "A" },
-            { number: 4, questionText: "What is this song?", image: "image4.png", audio: "audio4.mp3", options: ["A. All Of Me", "B. Ghost", "C. The Nights", "D. Better Now"], correctAnswer: "A" },
-            { number: 5, questionText: "What is this song?", image: "image5.png", audio: "audio5.mp3", options: ["A. StarBoy", "B. All The Stars", "C. HOPE", "D. I'm Yours"], correctAnswer: "D" },
-            { number: 6, questionText: "What is this song?", image: "image6.png", audio: "audio6.mp3", options: ["A. Payphone", "B. Night Changes", "C. Talking To The Moon", "D. Wolves"], correctAnswer: "A" },
-            { number: 7, questionText: "What is this song?", image: "image7.png", audio: "audio7.mp3", options: ["A. When I Was Your Man", "B. Bad Liar", "C. As It Was", "D. Counting Stars"], correctAnswer: "D" },
-            { number: 8, questionText: "What is this song?", image: "image8.png", audio: "audio8.mp3", options: ["A. Stay", "B. Drivers License", "C. 24K Magic", "D. Bad Romance"], correctAnswer: "D" },
-            { number: 9, questionText: "What is this song?", image: "image9.png", audio: "audio9.mp3", options: ["A. Shallow", "B. Happier Than Ever", "C. We Don’t Talk Anymore", "D. Bad Habits"], correctAnswer: "C" },
-            { number: 10, questionText: "What is this song?", image: "image10.png", audio: "audio10.mp3", options: ["A. Sunflower", "B. Someone Like You", "C. Treat You Better", "D. Levitating"], correctAnswer: "C" },
-            { number: 11, questionText: "What is this song?", image: "image11.png", audio: "audio11.mp3", options: ["A. Viva La Vida", "B. Self Love", "C. Unstoppable", "D. Cold"], correctAnswer: "A" },
-            { number: 12, questionText: "What is this song?", image: "image12.png", audio: "audio12.mp3", options: ["A. Calling", "B. Peaches", "C. Sorry", "D. Perfect"], correctAnswer: "A" },
-            { number: 13, questionText: "What is this song?", image: "image13.png", audio: "audio13.mp3", options: ["A. Hello", "B. Rewrite The Stars", "C. We Will Rock You", "D. Clocks"], correctAnswer: "B" },
-            { number: 14, questionText: "What is this song?", image: "image14.png", audio: "audio14.mp3", options: ["A. Closer", "B. Faded", "C. Rockstar", "D. Doja"], correctAnswer: "D" },
-            { number: 15, questionText: "What is this song?", image: "image15.png", audio: "audio15.mp3", options: ["A. Humble.", "B. Hotel California", "C. Timber", "D. Dusk Till Dawn"], correctAnswer: "A" }
-        ];
-
+        const questions = <?php echo json_encode($questions); ?>;
         let currentQuestionIndex = 0;
 
         function loadNextQuestion() {
@@ -366,16 +407,16 @@
 
             const currentQuestion = questions[currentQuestionIndex];
 
-            document.getElementById("question-number").textContent = currentQuestion.number;
-            document.getElementById("current-question").textContent = `${currentQuestion.number}/${questions.length}`;
-            document.getElementById("question").textContent = currentQuestion.questionText;
-            document.getElementById("question-image").src = currentQuestion.image;
-            document.getElementById("audio-source").src = currentQuestion.audio;
+            document.getElementById("question-number").textContent = currentQuestionIndex + 1;
+            document.getElementById("current-question").textContent = `${currentQuestionIndex + 1}/${questions.length}`;
+            document.getElementById("question").textContent = currentQuestion.QuestionText;
+            document.getElementById("question-image").src = currentQuestion.song.images;
+            document.getElementById("audio-source").src = currentQuestion.song.SongAudio;
             document.getElementById("question-audio").load();
 
             const optionButtons = document.querySelectorAll(".option-button");
             optionButtons.forEach((button, index) => {
-                button.textContent = currentQuestion.options[index];
+                button.textContent = currentQuestion.options[index].OptionName;
                 button.style.backgroundColor = "rgb(77, 72, 144)";
                 button.disabled = false;
             });
@@ -391,11 +432,13 @@
         const clickSound = new Audio('Sound Effect/click_sound_effect.wav'); 
         const correctSound = new Audio('Sound Effect/Correct_Answer.mp3'); 
         const incorrectSound = new Audio('Sound Effect/Incorrect_Answer.mp3'); 
+        const hoverSound = new Audio('Sound Effect/hover_sound_effect.mp3');  // Replace with the actual path to your sound file
 
         // Ensure sounds are loaded properly before playing
         clickSound.load();
         correctSound.load();
         incorrectSound.load();
+        hoverSound.load();
 
         // Add click sound to option buttons
         document.querySelectorAll('.option-button').forEach(button => {
@@ -403,12 +446,17 @@
                 clickSound.currentTime = 0; // Reset so it plays every time
                 clickSound.play().catch(error => console.log("Audio playback error:", error));
             });
+
+            // Add event listener to play sound on hover
+            button.addEventListener('mouseover', () => {
+                hoverSound.play();
+            });
         });
 
         // Function to handle selecting an option
         function selectOption(selectedOption) {
             const currentQuestion = questions[currentQuestionIndex - 1];
-            const isCorrect = selectedOption === currentQuestion.correctAnswer;
+            const isCorrect = selectedOption === currentQuestion.CorrectAnswer;
 
             // Play correct or incorrect sound
             if (isCorrect) {
@@ -422,7 +470,7 @@
             // Disable all buttons after selection
             document.querySelectorAll('.option-button').forEach(button => {
                 button.disabled = true;
-                if (button.textContent.trim().startsWith(currentQuestion.correctAnswer)) {
+                if (button.textContent.trim().startsWith(currentQuestion.CorrectAnswer)) {
                     button.style.backgroundColor = "green";
                 }
                 if (button.textContent.trim().startsWith(selectedOption) && !isCorrect) {
@@ -435,7 +483,25 @@
             document.getElementById("next-button").style.backgroundColor = "rgb(77, 72, 144)";
         }
 
+        function updateCountdown() {
+            const loadingElement = document.getElementById('loading');
+            loadingElement.textContent = countdown;
+            if (countdown > 0) {
+                countdown--;
+                setTimeout(updateCountdown, 1000);
+            } else {
+                loadingElement.style.display = 'none';
+                document.getElementById('header').style.display = 'flex';
+                document.getElementById('main').style.display = 'flex';
+                document.getElementById('controls').style.display = 'flex';
+                document.querySelector('.next-button-container').style.display = 'flex';
+                document.getElementById('footer').style.display = 'flex';
+            }
+        }
+        
+        let countdown = 3;
         document.addEventListener("DOMContentLoaded", () => {
+            updateCountdown();
             loadNextQuestion();
         });
 
@@ -447,7 +513,7 @@
         });
 
         function adjustVolume(value) {
-            AudioElement.volume = value / 100; // Adjust the audio volume
+            questionAudio.volume = value / 100; // Adjust the audio volume
         }
 
         // Fullscreen Toggle
@@ -460,38 +526,6 @@
                 }
             }
         }
-
-        // Add the sound effect for hovering over the buttons
-        const hoverSound = new Audio('Sound Effect/hover_sound_effect.mp3');  // Replace with the actual path to your sound file
-
-        // Add event listener to play sound on hover
-        document.querySelectorAll('.option-button').forEach(button => {
-            button.addEventListener('mouseover', () => {
-                hoverSound.play();
-            });
-        });
-
-        let countdown = 3;
-
-        function updateCountdown() {
-            document.getElementById('loading').textContent = countdown;
-            if (countdown > 1) {
-                countdown--;
-                setTimeout(updateCountdown, 1000);
-            } else {
-                setTimeout(() => {
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('header').style.display = 'flex';
-                    document.getElementById('main').style.display = 'flex';
-                    document.getElementById('footer').style.display = 'flex';
-                }, 1000);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            updateCountdown();
-        });
-
     </script>
 </body>
 </html>

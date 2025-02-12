@@ -464,79 +464,79 @@ $conn->close();
         }
 
         document.getElementById('category-dropdown').addEventListener('change', function () {
-    const selectedCategory = this.value;
-    if (selectedCategory === 'Category List') {
-        const gallery = document.getElementById('quiz-gallery');
-        gallery.innerHTML = ''; // Clear gallery content
-        const audioElement = document.getElementById('background-audio');
-        audioElement.pause(); // Stop any playing audio
-        audioElement.src = ''; // Clear audio source
-        return; // Exit early since no category is selected
-    }
-
-    fetchQuizzes(selectedCategory);
-    changeAudio(selectedCategory);
-});
-
-function fetchQuizzes(genreID) {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', `user_choose_category_new.php?genreID=${genreID}`, true);
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            const quizzes = JSON.parse(xhr.responseText);
-            const gallery = document.getElementById('quiz-gallery');
-            gallery.innerHTML = ''; // Clear existing content
-
-            quizzes.forEach(quiz => {
-                const box = document.createElement('div');
-                box.classList.add('quiz-box');
-                box.innerHTML = `
-                    <span>${quiz.QuizName}</span>
-                `;
-                box.addEventListener('click', function () {
-                    document.querySelectorAll('.quiz-box').forEach(b => b.classList.remove('selected'));
-                    box.classList.add('selected');
-                    box.dataset.quizId = quiz.QuizID;
-                });
-                gallery.appendChild(box);
-            });
-        }
-    };
-    xhr.send();
-}
-
-document.getElementById('start-button').addEventListener('click', function () {
-    const selectedBox = document.querySelector('.quiz-box.selected');
-    if (selectedBox) {
-        const quizId = selectedBox.dataset.quizId;
-        window.location.href = `user_question_page.php?quizId=${quizId}`;
-    }
-});
-
-function setupContinuousScrolling() {
-    const gallery = document.getElementById('quiz-gallery');
-    const boxes = Array.from(gallery.children);
-
-    // Clone boxes until the gallery width exceeds the container width
-    const galleryContainer = document.getElementById('quiz-gallery-container');
-    let totalWidth = 0;
-
-    while (totalWidth < galleryContainer.offsetWidth * 2) {
-        boxes.forEach(box => {
-            const clone = box.cloneNode(true);
-            gallery.appendChild(clone);
-            totalWidth += box.offsetWidth + parseFloat(getComputedStyle(box).marginRight);
+            const selectedCategory = this.value;
+            if (selectedCategory === 'Category List') {
+                const gallery = document.getElementById('quiz-gallery');
+                gallery.innerHTML = ''; // Clear gallery content
+                const audioElement = document.getElementById('background-audio');
+                audioElement.pause(); // Stop any playing audio
+                audioElement.src = ''; // Clear audio source
+                return; // Exit early since no category is selected
+            }
+        
+            fetchQuizzes(selectedCategory);
+            changeAudio(selectedCategory);
         });
-    }
 
-    // Set the gallery width dynamically
-    gallery.style.width = `${totalWidth}px`;
+        function fetchQuizzes(genreID) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', `user_choose_category_new.php?genreID=${genreID}`, true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    const quizzes = JSON.parse(xhr.responseText);
+                    const gallery = document.getElementById('quiz-gallery');
+                    gallery.innerHTML = ''; // Clear existing content
+        
+                    quizzes.forEach(quiz => {
+                        const box = document.createElement('div');
+                        box.classList.add('quiz-box');
+                        box.innerHTML = `
+                            <span>${quiz.QuizName}</span>
+                        `;
+                        box.addEventListener('click', function () {
+                            document.querySelectorAll('.quiz-box').forEach(b => b.classList.remove('selected'));
+                            box.classList.add('selected');
+                            box.dataset.quizId = quiz.QuizID;
+                        });
+                        gallery.appendChild(box);
+                    });
+                }
+            };
+            xhr.send();
+        }
+        
+        document.getElementById('start-button').addEventListener('click', function () {
+            const selectedBox = document.querySelector('.quiz-box.selected');
+            if (selectedBox) {
+                const quizId = selectedBox.dataset.quizId;
+                window.location.href = `user_question_page.php?quizId=${quizId}`;
+            }
+        });
 
-    // Reset and reapply animation
-    gallery.style.animation = 'none'; // Stop animation temporarily
-    gallery.offsetHeight; // Trigger reflow
-    gallery.style.animation = `scroll-left ${totalWidth / 100}s linear infinite`; // Set duration based on total width
-}
+        function setupContinuousScrolling() {
+            const gallery = document.getElementById('quiz-gallery');
+            const boxes = Array.from(gallery.children);
+        
+            // Clone boxes until the gallery width exceeds the container width
+            const galleryContainer = document.getElementById('quiz-gallery-container');
+            let totalWidth = 0;
+        
+            while (totalWidth < galleryContainer.offsetWidth * 2) {
+                boxes.forEach(box => {
+                    const clone = box.cloneNode(true);
+                    gallery.appendChild(clone);
+                    totalWidth += box.offsetWidth + parseFloat(getComputedStyle(box).marginRight);
+                });
+            }
+        
+            // Set the gallery width dynamically
+            gallery.style.width = `${totalWidth}px`;
+        
+            // Reset and reapply animation
+            gallery.style.animation = 'none'; // Stop animation temporarily
+            gallery.offsetHeight; // Trigger reflow
+            gallery.style.animation = `scroll-left ${totalWidth / 100}s linear infinite`; // Set duration based on total width
+        }
 
         document.addEventListener("DOMContentLoaded", function () {
             const startButton = document.getElementById("start-button");
@@ -558,28 +558,18 @@ function setupContinuousScrolling() {
                 clickSound.currentTime = 0; // Reset time so it plays every time
                 clickSound.play().catch(error => console.error("Click sound error:", error));
 
-                // Redirect based on selected category
-                const selectedCategory = document.getElementById("category-dropdown").value;
-
-                if (selectedCategory === "Category List") {
-                    showWarning("Please select a category first!");
-                } else if (selectedCategory === "English") {
-                    window.location.href = "user_question_page_english.php";
-                } else if (selectedCategory === "Japanese") {
-                    window.location.href = "user_question_page_japanese.php";
-                } else if (selectedCategory === "Korean") {
-                    window.location.href = "user_question_page_korean.php";
-                }
-
                 // Redirect based on selected quiz
                 const selectedBox = document.querySelector('.quiz-box.selected');
                 if (selectedBox) {
                     const quizId = selectedBox.dataset.quizId;
-                    window.location.href = `user_question_page.php?quizId=${quizId}`;
+                    window.location.href = `user_question_page_new.php?quizId=${quizId}`;
                 } else {
                     showWarning('Please select a quiz first!');
                 }
             });
+
+            fetchQuizzes(selectedCategory);
+            changeAudio(selectedCategory);
         });
         
         function validateNewUsername() {
