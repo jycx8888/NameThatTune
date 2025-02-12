@@ -88,8 +88,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: user_mainPage.php");
     exit();
 }
-
-$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -104,9 +102,13 @@ $conn->close();
     <style>
         
         #content {
-            height: 100%;
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
+            align-items: center;
+            font-family: "Lalezar", system-ui;
+            font-style: normal;
         }
 
         #leaderboard {
@@ -120,10 +122,10 @@ $conn->close();
             margin-top: 48px;
             padding: clamp(28px, 8vw, 40px);
             border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
         }
 
         #leaderboard h1 {
-            font-family: "Lalezar", system-ui;
             font-size: clamp(32px, 5vw, 40px);
             font-weight: 1000;
             font-style: normal;
@@ -132,19 +134,18 @@ $conn->close();
 
         .record {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             height: clamp(48px, 12vw, 68px);
             width: clamp(20em, 50vw, 30em);
             min-width: 240px;
             margin-top: 12px;
-            background-color: grey;
+            background-color: white;
             border-radius: 10px;
+            border-style: solid;
         }
 
         .record h3 {
             text-align: left;
-            font-family: "Lalezar", system-ui;
             font-size: clamp(20px, 4vw, 26px);
             font-weight: 1000;
             font-style: normal;
@@ -156,85 +157,123 @@ $conn->close();
             align-items: center;
             width: 45px;
             height: 45px;
-            background-color: white;
+            background-color: black;
             border-radius: 50%;
             margin-left: 8px;
         }
 
         .circle h2 {
-            font-family: "Lalezar", system-ui;
             font-size: clamp(20px, 4vw, 26px);
             font-weight: 1000;
-            font-style: normal;
+            color: white;
+        }
+
+        .username {
+            text-align: center;
+            flex: 1;
+            margin-left: 8px;
         }
         
         .result {
-            justify-content: right;
-            font-family: "Lalezar", system-ui;
+            justify-self: end;
             font-size: clamp(20px, 4vw, 26px);
             font-weight: 1000;
-            font-style: normal;
             margin-right: 8px;
+        }
+
+        .button {
+            margin: 24px 0 48px 0;
+            padding: 16px 24px;
+            font-size: clamp(18px, 2vw, 22px);
+            font-weight: 1000;
+            font-style: normal;
+            background-color: #584cba;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .button:hover {
+            background-color: #17066e;
+        }
+
+        .button:active {
+            transform: scale(0.98);
         }
 
         </style>
 </head>
 <body>
-    <div id="header">
+<div id="header">
         <h1>NameThatTune</h1>
         <div id="login" onclick="">
-            <img src="\Icon\account.png" alt="avatar">
-            <p>Username</p>
+            <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
+            <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>
+
 
     <div id="content">
         <div id="leaderboard">
             <h1>Leaderboard</h1>
-            <div class="record">
-                <div class="circle">
-                    <h2>1</h2>
-                </div>
-                <h3>kumkum</h3>
-                <div class="result">5/5(1s)</div>
-            </div>
-            <div class="record">
-                <div class="circle">
-                    <h2>2</h2>
-                </div>
-                <h3>Diddy</h3>
-                <div class="result">5/5(2s)</div>
-            </div>
-            <div class="record">
-                <div class="circle">
-                    <h2>3</h2>
-                </div>
-                <h3>Mervin Ooi</h3>
-                <div class="result">5/5(3s)</div>
-            </div>
-            <div class="record">
-                <div class="circle">
-                    <h2>4</h2>
-                </div>
-                <h3>player</h3>
-                <div class="result">5/5(4s)</div>
-            </div>
-            <div class="record">
-                <div class="circle">
-                    <h2>5</h2>
-                </div>
-                <h3>Username2</h3>
-                <div class="result">5/5(5s)</div>
-            </div>
-            <div class="record">
-                <div class="circle">
-                    <h2>10</h2>
-                </div>
-                <h3>Hehe(You)</h3>
-                <div class="result">5/5(10s)</div>
-            </div>
+            <?php
+            $sql1 = "SELECT UserID, Result, TimeUsed FROM record ORDER BY Result DESC, TimeUsed ASC";
+            $result1 = mysqli_query($conn, $sql1);
+        
+            if (mysqli_num_rows($result1) > 0) {
+                $rank = 1;
+                while ($row1 = mysqli_fetch_assoc($result1)) {
+                    $userID = $row1['UserID'];
+                    $sql2 = "SELECT Username FROM user WHERE UserID = '$userID'";
+                    $result2 = mysqli_query($conn, $sql2);
+                    $row2 = mysqli_fetch_assoc($result2);
+                    $username = $row2['Username'];
+                
+                    if ($rank <= 5) {
+                        echo "<div class='record'>";
+                        echo "<div class='circle'>";
+                        echo "<h2>$rank</h2>";
+                        echo "</div>";
+                        if ($username == $_SESSION['username']) {
+                            echo "<h3 class='username'>$username(You)</h3>";
+                            $user_rank = $rank;
+                        } else {
+                            echo "<h3 class='username'>$username</h3>";
+                        }
+                        echo "<div class='result'>" . $row1['Result'] . "/5(" . $row1['TimeUsed'] . "s)</div>";
+                        echo "</div>";
+                    }
+
+                    if ($username == $_SESSION['username']) {
+                        $user_result = $row1['Result'];
+                        $user_timeused = $row1['TimeUsed'];
+                        $user_rank = $rank;
+                    }
+
+                    $rank++;
+                }
+            }
+
+            echo "<div class='record'>";
+            echo "<div class='circle'>";
+            echo "<h2>$user_rank</h2>";
+            echo "</div>";
+            echo "<h3 class='username'>" . $_SESSION['username'] . "(You)</h3>";
+            echo "<div class='result'>" . $user_result . "/5(" . $user_timeused . "s)</div>";
+            echo "</div>";
+            ?>
         </div>
+
+        <input type="button" value="Back to Main Page" onclick="location.href='user_mainPage.php'" class = "button">
     </div>
+
+
     
 </body>
 </html>
+
+<?php
+$conn->close();
+?>

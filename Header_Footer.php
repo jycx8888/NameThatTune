@@ -162,8 +162,8 @@
     <div id="header">
         <h1>NameThatTune</h1>
         <div id="login" onclick="">
-            <img src="\RWDD Assignment\images\account.png" alt="avatar">
-            <p>Username</p>
+            <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
+            <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>
 
