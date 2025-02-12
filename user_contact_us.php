@@ -1,9 +1,8 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['username'])) {
-    header("Location: user_login.php");
-    exit();
+if (isset($_SESSION['username'])) {
+    $username = $_SESSION['username'];
 }
 
 $servername = "localhost";
@@ -85,16 +84,19 @@ $conn->close();
             flex-grow: 5; /* This ensures content takes up remaining space */
             display: flex;
             justify-content: center;
+            font-family: "Lalezar", system-ui;
+            font-weight: 1000;
         }
 
         .container {
-            font-family: "Lalezar", system-ui;
-            max-width: 800px;
+            width: clamp(420px, 50%, 800px);
             margin: 20px auto;
             padding: 20px 20px 10px; /* Reduced the padding-bottom from 20px to 10px */
             background: #fff;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
+            font-size: clamp(18px, 3vw, 22px);
+
         }
 
         .container-short-bottom {
@@ -106,10 +108,21 @@ $conn->close();
             flex-direction: column;
             align-items: center;
         }
+
+        .contact-info h1 {
+            font-family: "Lalezar", system-ui;
+            font-weight: 1000;
+            margin: 20px 0;
+        }
+
+        .contact-info p {
+            margin: 10px 24px;
+            text-align: center;
+        }
+
         .contact-info a {
             text-decoration: none;
             color: #4CAF50;
-            font-size: 1.2rem;
             margin: 10px 0;
             transition: color 0.3s;
         }
@@ -126,30 +139,44 @@ $conn->close();
 <body>
     <div id="header">
         <h1>NameThatTune</h1>
+        <div id="login" onclick="redirectTo()">
+            <?php
+
+            if (isset($_SESSION['username'])) {
+                $profile_picture_path = htmlspecialchars($profile_picture_path);
+                $username = htmlspecialchars($username);
+                echo "<img src='$profile_picture_path'>";
+                echo "<p>$username</p>";
+            } else {
+                echo "<div id='login' onclick='redirectToRegister()'>";
+                echo "<p>Login/Sign Up</p>";
+                echo "</div>";
+            }
+            ?>
+
+        </div>
     </div>
 
    <div id="content">
-
-   
-    <div class="container">
-        <div class="contact-info">
-            <h1>Contact Us</h1>
-        <p>We'd love to hear from you! Connect with us through any of the following channels:</p>
-            <a href="https://www.instagram.com" target="_blank">
-                <span class="icon">📸</span> Follow us on Instagram
-            </a>
-            <a href="https://www.facebook.com" target="_blank">
-                <span class="icon">📘</span> Like us on Facebook
-            </a>
-            <a href="mailto:namethattune@gmail.com">
-                <span class="icon">✉️</span> Email us at namethattune@gmail.com
-            </a>
-            <a href="tel:019-782-6732">
-                <span class="icon">📞</span> Call us at 019-782-6732
-            </a>
+        <div class="container">
+            <div class="contact-info">
+                <h1>Contact Us</h1>
+                <p>We'd love to hear from you! Connect with us through any of the following channels:</p>
+                <a href="https://www.instagram.com" target="_blank">
+                    <span class="icon">📸</span> Follow us on Instagram
+                </a>
+                <a href="https://www.facebook.com" target="_blank">
+                    <span class="icon">📘</span> Like us on Facebook
+                </a>
+                <a href="mailto:namethattune@gmail.com">
+                    <span class="icon">✉️</span> Email us at namethattune@gmail.com
+                </a>
+                <a href="tel:019-782-6732">
+                    <span class="icon">📞</span> Call us at 019-782-6732
+                </a>
+            </div>
         </div>
     </div>
-</div>
 
 
     <div id="footer">

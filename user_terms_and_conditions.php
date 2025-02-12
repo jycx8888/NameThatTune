@@ -1,9 +1,8 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['username'])) {
-    header("Location: user_login.php");
-    exit();
+if (isset($_SESSION['username'])) {
+    $username = $_SESSION['username'];
 }
 
 $servername = "localhost";
@@ -149,6 +148,22 @@ $conn->close();
 <body>
     <div id="header">
         <h1>NameThatTune</h1>
+        <div id="login" onclick="">
+            <?php
+
+            if (isset($_SESSION['username'])) {
+                $profile_picture_path = htmlspecialchars($profile_picture_path);
+                $username = htmlspecialchars($username);
+                echo "<img src='$profile_picture_path'>";
+                echo "<p>$username</p>";
+            } else {
+                echo "<div id='login' onclick='redirectToLogin()'>
+                 <p>Login</p>
+                 </div>";
+            }
+            ?>
+
+        </div>
     </div>
 
     <div id="content">
@@ -243,4 +258,10 @@ $conn->close();
         <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
     </div>
 </body>
+
+<script>
+    function redirectToLogin() {
+    window.location.href = "user_login.php";
+    }
+</script>
 </html>
