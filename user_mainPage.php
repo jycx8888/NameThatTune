@@ -383,7 +383,7 @@ $conn->close();
         }
 
         function directToChooseCategory() {
-            window.location.href = 'user_choose_category_page.php';
+            window.location.href = 'user_choose_category_new.php';
         }
 
         function directToHistory() {
