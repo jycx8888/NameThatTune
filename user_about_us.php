@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['username'])) {
-    header("Location: user_login.php");
-    exit();
+if (isset($_SESSION['username'])) {
+    $username = $_SESSION['username'];
+
 }
 
 $servername = "localhost";
@@ -18,6 +18,7 @@ $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['update_username'])) {
@@ -120,6 +121,23 @@ $conn->close();
 <body>
     <div id="header">
         <h1>NameThatTune</h1>
+        <div id="login" onclick="">
+            <?php
+
+            if (isset($_SESSION['username'])) {
+                $profile_picture_path = htmlspecialchars($profile_picture_path);
+                $username = htmlspecialchars($username);
+                echo "<img src='$profile_picture_path'>";
+                echo "<p>$username</p>";
+            } else {
+                echo "<div id='login' onclick='redirectToRegister()'>";
+                echo "<p>Login/Sign Up</p>";
+                echo "</div>";
+            }
+            ?>
+
+        </div>
+
     </div>
 
     <div id="content">

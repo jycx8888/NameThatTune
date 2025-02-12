@@ -19,7 +19,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-
 // Step 2: Fetch Data for Analytics
 $sql = "SELECT QuizID, COUNT(*) AS TotalAttempts, 
         SUM(Result) AS TotalCorrect, 
@@ -67,20 +66,20 @@ $conn->close();
             margin-top: 20px;
         }
         .container {
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        padding: 50px;
-        margin: 20px auto -30% auto;
-        width: 90%;
-        max-width: 800px;
-    }
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 50px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 800px;
+        }
         table {
-        border-collapse: collapse;
-        width: 80%;
-        margin: 20px auto -200px auto; /* Reduced bottom margin */
-    }
-
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px auto;
+            background-color: white; /* White background for the table */
+        }
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
@@ -91,13 +90,18 @@ $conn->close();
         }
         canvas {
             display: block;
-            margin: 1px auto;
-            width: 70%;
+            margin: 20px auto;
+            background-color: white; /* White background for the chart */
+            padding: 20px; /* Optional: Add padding for better appearance */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for better appearance */
+            width: 100%; /* Make the canvas take full width */
+            max-width: 1000px; /* Set a maximum width */
+            height: 500px; /* Set a fixed height */
         }
         .back-button {
             display: block;
             width: 200px;
-            margin: 70px auto;
+            margin: 20px auto;
             padding: 10px;
             background-color: #4CAF50;
             color: white;
@@ -109,10 +113,53 @@ $conn->close();
         .back-button:hover {
             background-color: #45a049;
         }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
+        .search-bar {
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px; /* Adds space between the search input and buttons */
+        }
+        
+        .search-bar input[type="text"] {
+            width: 60%; /* Adjust width to fit the buttons */
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        .search-bar button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .search-bar button:hover {
+            background-color: #45a049;
+        }
+        
+        .refresh-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #f44336; /* Red color for the refresh button */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .refresh-button:hover {
+            background-color: #e53935; /* Darker red on hover */
+        }
+            </style>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        </head>
+        <body>
    <!-- Header Section -->
    <div id="header">
         <h1>NameThatTune</h1>
@@ -124,6 +171,11 @@ $conn->close();
 
     <div class="container">
         <h1>Guess Song Quiz Analytics</h1>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search by Quiz ID">
+            <button onclick="filterTableAndChart()">Search</button>
+            <button class="refresh-button" onclick="refreshTableAndChart()">Refresh</button>
+        </div>
         <table>
             <thead>
                 <tr>
@@ -133,7 +185,7 @@ $conn->close();
                     <th>Total Incorrect</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="table-body">
                 <?php foreach ($data as $row): ?>
                     <tr>
                         <td><?php echo $row['QuizID']; ?></td>
@@ -144,8 +196,6 @@ $conn->close();
                 <?php endforeach; ?>
             </tbody>
         </table>
-        <canvas id="myChart"></canvas>
-        <!-- Step 4: Add Chart -->
         <canvas id="quizChart" width="400" height="200"></canvas>
         <a href="admin_adminDashboard.php" class="back-button">Back to Admin Dashboard</a>
     </div>
@@ -157,6 +207,7 @@ $conn->close();
             <img src="Icon/pencil.png" alt="Edit" class="edit-icon" style="width: 60px; height: 60px;" onclick="showPopup('profilePopup')">
         </div>
         <div class="username" id="username"><?php echo htmlspecialchars($username); ?></div>
+        <div class="menu-item" onclick="directToHistory()">History</div>
         <div class="menu-item" onclick="showPopup('usernamePopup')">Change Username</div>
         <div class="menu-item" onclick="showPopup('passwordPopup')">Change Password</div>
         <div class="menu-item" onclick="toggleSubmenu('settings-submenu')">Settings</div>
@@ -175,9 +226,9 @@ $conn->close();
         <div class="popup">
             <span class="close-btn" onclick="closePopup('profilePopup')">&times;</span>
             <h2>Change Profile Image</h2>
-            <form action="update_profile.php" method="post" enctype="multipart/form-data">
+            <form action="" method="post" enctype="multipart/form-data">
                 <input type="file" name="ProfilePicture" id="profileImageInput">
-                <button type="submit">Save</button>
+                <button type="submit" name="update_profile">Save</button>
             </form>
         </div>
     </div>
@@ -187,9 +238,9 @@ $conn->close();
         <div class="popup">
             <span class="close-btn" onclick="closePopup('usernamePopup')">&times;</span>
             <h2>Change Username</h2>
-            <form onsubmit="return validateNewUsername()" action="update_username.php" method="post">
+            <form onsubmit="return validateNewUsername()" action="" method="post">
                 <input type="text" name="newUsername" id="usernameInput" placeholder="Enter new username">
-                <button type="submit">Save</button>
+                <button type="submit" name="update_username">Save</button>
             </form>
         </div>
     </div>
@@ -199,7 +250,7 @@ $conn->close();
         <div class="popup">
             <span class="close-btn" onclick="closePopup('passwordPopup')">&times;</span>
             <h2>Change Password</h2>
-            <form onsubmit="return validateNewPassword()" action="update_password.php" method="post">
+            <form onsubmit="return validateNewPassword()" action="" method="post">
                 <div style="position: relative;">
                     <input type="password" name="newPassword" id="newPasswordInput" placeholder="Enter new password" required>
                     <span class="toggle-password"  style="position: absolute; right: 15px; object-fit: contain; top: 50%; transform: translateY(-50%); cursor: pointer;">
@@ -212,7 +263,7 @@ $conn->close();
                         <img src="Icon/hide.png" name alt="Show Password" onclick="togglePasswordVisibility('confirmPasswordInput',this)" style="width: 20px; height: 20px;">
                     </span>
                 </div>
-                <button type="submit">Save</button>
+                <button type="submit" name="update_password">Save</button>
             </form>
         </div>
     </div>
@@ -224,7 +275,7 @@ $conn->close();
             <p id="warningMessage"></p>
         </div>
     </div>
-
+    
     <div id="logoutOverlay" class="overlay">
         <div class="popup" id="logoutPopup">
             <p>Do you want to log out?</p>
@@ -233,69 +284,6 @@ $conn->close();
         </div>
     </div>
 
-    <script>
-        // Prepare data for the chart
-        const labels = <?php echo json_encode(array_column($data, 'QuizID')); ?>;
-        const totalAttempts = <?php echo json_encode(array_column($data, 'TotalAttempts')); ?>;
-        const totalCorrect = <?php echo json_encode(array_column($data, 'TotalCorrect')); ?>;
-        const totalIncorrect = <?php echo json_encode(array_column($data, 'TotalIncorrect')); ?>;
-    
-        // Configure the chart
-        const data = {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Total Attempts',
-                    data: totalAttempts,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Total Correct',
-                    data: totalCorrect,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Total Incorrect',
-                    data: totalIncorrect,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                }
-            ]
-        };
-    
-        const config = {
-            type: 'bar',
-            data: data,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Quiz Performance Overview'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        };
-    
-        // Render the chart
-        const quizChart = new Chart(
-            document.getElementById('quizChart'),
-            config
-        );
-    </script>
     <script>
         function validateNewUsername() {
             const username = document.getElementById('usernameInput').value;
@@ -383,7 +371,7 @@ $conn->close();
         }
 
         function logout() {
-            window.location.href = 'admin_login.php'; // Redirect to login page
+            window.location.href = 'user_login.php'; // Redirect to login page
         }
 
         document.getElementById('volumeSlider').addEventListener('input', function() {
@@ -401,6 +389,133 @@ $conn->close();
         function closeWarningPopup() {
             const warningPopup = document.getElementById('warningPopup');
             warningPopup.classList.remove('show');
+        }
+
+        function directToChooseCategory() {
+            window.location.href = 'user_choose_category_page.php';
+        }
+
+        function directToHistory() {
+            window.location.href = 'user_history.php';
+        }
+
+        function refreshTableAndChart() {
+            document.getElementById('searchInput').value = '';
+            const tableBody = document.getElementById('table-body');
+            const rows = tableBody.getElementsByTagName('tr');
+
+            // Show all table rows
+            for (let i = 0; i < rows.length; i++) {
+                rows[i].style.display = '';
+            }
+        
+            // Reset chart data
+            quizChart.data.labels = labels;
+            quizChart.data.datasets[0].data = totalAttempts;
+            quizChart.data.datasets[1].data = totalCorrect;
+            quizChart.data.datasets[2].data = totalIncorrect;
+            quizChart.update();
+        }
+    </script>
+
+    <script>
+        // Prepare data for the chart
+        const labels = <?php echo json_encode(array_column($data, 'QuizID')); ?>;
+        const totalAttempts = <?php echo json_encode(array_column($data, 'TotalAttempts')); ?>;
+        const totalCorrect = <?php echo json_encode(array_column($data, 'TotalCorrect')); ?>;
+        const totalIncorrect = <?php echo json_encode(array_column($data, 'TotalIncorrect')); ?>;
+
+        // Configure the chart
+        const data = {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Total Attempts',
+                    data: totalAttempts,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Total Correct',
+                    data: totalCorrect,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Total Incorrect',
+                    data: totalIncorrect,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Quiz Performance Overview'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+
+        // Render the chart
+        const quizChart = new Chart(
+            document.getElementById('quizChart'),
+            config
+        );
+
+        function filterTableAndChart() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const tableBody = document.getElementById('table-body');
+            const rows = tableBody.getElementsByTagName('tr');
+            const filteredData = [];
+
+            // Filter table rows
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                const quizID = cells[0].textContent.toLowerCase();
+
+                if (quizID.includes(searchInput)) {
+                    rows[i].style.display = '';
+                    filteredData.push({
+                        QuizID: cells[0].textContent,
+                        TotalAttempts: parseInt(cells[1].textContent),
+                        TotalCorrect: parseInt(cells[2].textContent),
+                        TotalIncorrect: parseInt(cells[3].textContent)
+                    });
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+
+            // Update chart with filtered data
+            const filteredLabels = filteredData.map(item => item.QuizID);
+            const filteredTotalAttempts = filteredData.map(item => item.TotalAttempts);
+            const filteredTotalCorrect = filteredData.map(item => item.TotalCorrect);
+            const filteredTotalIncorrect = filteredData.map(item => item.TotalIncorrect);
+
+            quizChart.data.labels = filteredLabels;
+            quizChart.data.datasets[0].data = filteredTotalAttempts;
+            quizChart.data.datasets[1].data = filteredTotalCorrect;
+            quizChart.data.datasets[2].data = filteredTotalIncorrect;
+            quizChart.update();
         }
     </script>
 </body>
