@@ -509,7 +509,7 @@ $conn->close();
             const selectedBox = document.querySelector('.quiz-box.selected');
             if (selectedBox) {
                 const quizId = selectedBox.dataset.quizId;
-                window.location.href = `user_question_page.php?quizId=${quizId}`;
+                window.location.href = `user_question_page_new.php?quizId=${quizId}`;
             }
         });
 
