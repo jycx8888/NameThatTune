@@ -1,10 +1,6 @@
 <?php
 session_start();
 
-if (isset($_SESSION['username'])) {
-    $username = $_SESSION['username'];
-}
-
 $servername = "localhost";
 $dbusername = "root"; // Database username
 $dbpassword = ""; // Database password
@@ -18,52 +14,9 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['update_username'])) {
-        $new_username = $_POST['newUsername'];
-
-        $stmt = $conn->prepare("UPDATE user SET Username = ? WHERE Username = ?");
-        $stmt->bind_param("ss", $new_username, $username);
-        if ($stmt->execute()) {
-            $_SESSION['username'] = $new_username;
-            $username = $new_username;
-        } else {
-            echo "Error updating username.";
-        }
-
-        $stmt->close();
-    }
-
-    if (isset($_POST['update_password'])) {
-        $new_password =$_POST['newPassword'];
-        $stmt = $conn->prepare("UPDATE user SET Password = ? WHERE Username = ?");
-        $stmt->bind_param("ss", $new_password, $username);
-        if ($stmt->execute()) {
-        } else {
-            echo "Error updating password.";
-        }
-        $stmt->close();
-    }
-
-    if (isset($_POST['update_profile'])) {
-        $profile_picture = $_FILES['ProfilePicture']['name'];
-        $target_dir = "uploads/";
-        $target_file = $target_dir . basename($profile_picture);
-
-        if (move_uploaded_file($_FILES['ProfilePicture']['tmp_name'], $target_file)) {
-            $stmt = $conn->prepare("UPDATE user SET ProfilePicture = ? WHERE Username = ?");
-            $stmt->bind_param("ss", $target_file, $username);
-            if ($stmt->execute()) {
-                $profile_picture_path = $target_file;
-            } else {
-                echo "Error updating profile picture.";
-            }
-
-            $stmt->close();
-        } else {
-            echo "Error uploading file.";
-        }
-    }
+if (isset($_SESSION['username'])) {
+    $username = $_SESSION['username'];
+    include 'user_fetch_profile.php';
 }
 
 $conn->close();
@@ -77,6 +30,7 @@ $conn->close();
     <title>Document</title>
     <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_footer.css">
+    
     <style>
 
         #content {
@@ -164,6 +118,10 @@ $conn->close();
         </div>
     </div>
 
+    <?php
+    include 'user_hamburger_menu.php';
+    ?>
+
     <div id="content">
         <div id="terms">
             <h2>Terms and Conditions</h2>
@@ -244,6 +202,8 @@ $conn->close();
             </ol>
         </div>
     </div>
+
+
     
     <div id="footer">
         <ul class="nav">
@@ -256,11 +216,5 @@ $conn->close();
         <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
     </div>
 </body>
-
-<script>
-    function redirectToLogin() {
-    window.location.href = "user_login.php";
-    }
-</script>
 
 </html>

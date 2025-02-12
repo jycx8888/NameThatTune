@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="user_hamburger_menu.css">
 
 <div id="hamburger-menu">
         <div class="close-btn" onclick="toggleMenu()">×</div>
@@ -72,6 +73,14 @@
         <div class="popup">
             <span class="close-btn" onclick="closeWarningPopup()">&times;</span>
             <p id="warningMessage"></p>
+        </div>
+    </div>
+
+    <div id="logoutOverlay" class="overlay">
+        <div class="popup" id="logoutPopup">
+            <p>Do you want to log out?</p>
+            <button class="yes" onclick="logout()">Yes</button>
+            <button class="no" onclick="closeLogoutPopup()">No</button>
         </div>
     </div>
 
