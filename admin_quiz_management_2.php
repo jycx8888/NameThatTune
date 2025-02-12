@@ -1,6 +1,5 @@
 <?php
-// Database connection
-    session_start();
+session_start();
 
 if (!isset($_SESSION['username'])) {
     header("Location: admin_login.php");
@@ -12,18 +11,14 @@ $user = "root";
 $password = "";
 $database = "namethattune";
 
-// Create connection
 $conn = new mysqli($server, $user, $password, $database);
 
-// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
 $username = $_SESSION['username'];
 
-
-// Fetch user data from the database
 $stmt = $conn->prepare("SELECT ProfilePicture FROM admin WHERE Username = ?");
 $stmt->bind_param("s", $_SESSION['username']);
 $stmt->execute();
@@ -33,47 +28,70 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $profile_picture_path = $row['ProfilePicture'];
 } else {
-    // Handle case where user data is not found
-    $profile_picture_path = 'Icon/account.png'; // Default profile picture
+    $profile_picture_path = 'Icon/account.png';
 }
 
-// Check if 'quiz_id' is provided for editing
 if (isset($_GET['quiz_id'])) {
-    $quiz_id = intval($_GET['quiz_id']); // Get from URL
-
-    // Fetch quiz data for editing
-    $stmt = $conn->prepare("SELECT QuizID, GenreID, CreatedTime FROM quiz WHERE QuizID = ?");
-    $stmt->bind_param("i", $quiz_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $quiz = $result->fetch_assoc(); // Fetch data into an array
-    } else {
-        die("Error: Quiz not found.");
+    echo "Debug: Raw quiz_id = " . $_GET['quiz_id'] . "<br>";
+    $quiz_id = intval($_GET['quiz_id']);
+    echo "Debug: Converted quiz_id = " . $quiz_id . "<br>";
+    
+    if ($quiz_id <= 0) {
+        die("Error: Invalid quiz_id.");
     }
-
-    // Fetch questions related to this quiz
-    $sql_questions = "SELECT * FROM question WHERE QuizID = '$quiz_id'";
-    $result_questions = $conn->query($sql_questions);
 } else {
-    // No quiz_id provided, meaning the user is adding a new song
+    die("Error: quiz_id not provided in the URL.");
+}
+
+// Validate if quiz_id exists in the database
+$query = $conn->prepare("SELECT id FROM quizzes WHERE id = ?");
+$query->bind_param("i", $quiz_id);
+$query->execute();
+$result = $query->get_result();
+
+if ($result->num_rows === 0) {
+    die("Error: quiz_id does not exist in the database.");
+}else {
+die("Error: quiz_id not provided in the URL.");
+}
+
+$stmt = $conn->prepare("SELECT QuizID, GenreID, CreatedTime FROM quiz WHERE QuizID = ?");
+$stmt->bind_param("i", $quiz_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $quiz = $result->fetch_assoc();
+    echo "Debug: Quiz Data = ";
+    print_r($quiz);
+} else {
+    die("Error: Quiz not found.");
+}
+
+if (isset($quiz_id)) {
+    $stmt_questions = $conn->prepare("SELECT question_id, question_text FROM question WHERE QuizID = ?");
+    $stmt_questions->bind_param("i", $quiz_id);
+    $stmt_questions->execute();
+    $result_questions = $stmt_questions->get_result();
+
+    if ($result_questions->num_rows > 0) {
+        echo "Debug: Questions Found = " . $result_questions->num_rows . "<br>";
+    } else {
+        echo "Debug: No Questions Found for Quiz ID = " . $quiz_id . "<br>";
+    }
+} else {
     $quiz = null;
     $result_questions = null;
 }
 
-// Handle form submission for updating quiz details
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Retrieve updated data from the form
     $genre_id = $conn->real_escape_string($_POST['genre_id']);
     $created_time = $conn->real_escape_string($_POST['created_time']);
 
-    // Update query
     $update_sql = "UPDATE quiz SET GenreID='$genre_id', CreatedTime='$created_time' WHERE QuizID='$quiz_id'";
 
     if ($conn->query($update_sql) === TRUE) {
         echo "Quiz updated successfully!<br>";
-        // Reload the page to reflect changes
         header("Location: edit_quiz.php?quiz_id=$quiz_id");
         exit();
     } else {
@@ -189,6 +207,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
      <!-- Display Quiz ID -->
      <p>Quiz ID: <?= isset($quiz['QuizID']) && !empty($quiz['QuizID']) ? htmlspecialchars($quiz['QuizID']) : 'No Quiz Found'; ?></p>
+    <?php if (isset($quiz)): ?>
+        <p>Debug: Quiz Data = <?php print_r($quiz); ?></p> <!-- Debugging output -->
+    <?php endif; ?>
     
     <?php if (isset($quiz)): ?>
         <input type="hidden" name="quiz_id" value="<?php echo $quiz['QuizID']; ?>">
@@ -224,8 +245,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <?php if ($result_questions->num_rows > 0): ?>
                     <?php while ($question = $result_questions->fetch_assoc()): ?>
                         <tr>
-                            <td><?php echo $question['question_id']; ?></td>
-                            <td><?php echo isset($question['question_text']) ? htmlspecialchars($question['question_text']) : 'No question text'; ?></td>
+                            <td><?php echo htmlspecialchars($question['question_id']); ?></td>
+                            <td><?php echo htmlspecialchars($question['question_text']); ?></td>
                             <td class="actions">
                                 <a href="edit_question.php?question_id=<?php echo $question['question_id']; ?>">Edit</a> |
                                 <a href="delete_question.php?question_id=<?php echo $question['question_id']; ?>">Delete</a>
@@ -236,6 +257,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <tr>
                         <td colspan="3">No questions found for this quiz.</td>
                     </tr>
+                <?php endif; ?>
+                <?php if (isset($quiz_id)): ?>
+                    <p>Debug: Questions for Quiz ID = <?php echo $quiz_id; ?></p> <!-- Debugging output -->
                 <?php endif; ?>
             </tbody>
         </table>
