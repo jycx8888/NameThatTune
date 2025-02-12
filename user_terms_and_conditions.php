@@ -18,6 +18,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+<<<<<<< HEAD
 // Fetch user data from the database
 $stmt = $conn->prepare("SELECT ProfilePicture FROM user WHERE Username = ?");
 $stmt->bind_param("s", $username);
@@ -34,6 +35,8 @@ if ($result->num_rows > 0) {
 
 $stmt->close();
 
+=======
+>>>>>>> c9f35c83e6717adb2bb97ada32c167a72eaddb26
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['update_username'])) {
         $new_username = $_POST['newUsername'];
@@ -164,6 +167,7 @@ $conn->close();
 <body>
     <div id="header">
         <h1>NameThatTune</h1>
+<<<<<<< HEAD
         <div id="login" onclick="">
             <?php
 
@@ -180,6 +184,8 @@ $conn->close();
             ?>
 
         </div>
+=======
+>>>>>>> c9f35c83e6717adb2bb97ada32c167a72eaddb26
     </div>
 
     <div id="content">

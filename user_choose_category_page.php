@@ -278,40 +278,6 @@ $conn->close();
             height: 70px;
             cursor: pointer;
         }
-
-        /* Snow container */
-        #snow {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none; /* Ensure it doesn't interfere with user interactions */
-            z-index: 9999; /* Keep it above all other elements */
-            overflow: hidden;
-        }
-
-        /* Snowflake */
-        .snowflake {
-            position: absolute;
-            top: -10px;
-            color: white; /* Snowflake color */
-            font-size: 1rem; /* Adjust size of snowflake */
-            animation-name: fall;
-            animation-timing-function: linear;
-            animation-iteration-count: infinite;
-        }
-
-        /* Animation for falling */
-        @keyframes fall {
-            0% {
-                transform: translateY(0) rotate(0deg);
-            }
-            100% {
-                transform: translateY(100vh) rotate(360deg);
-            }
-        }
-
     </style>
 </head>
 <body>
@@ -326,8 +292,6 @@ $conn->close();
         <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>
-
-    <div id="snow"></div>
 
     <div id="main">
         <select class="category-dropdown" id="category-dropdown">
@@ -449,36 +413,6 @@ $conn->close();
 
 
     <script>
-        function createSnowflakes() {
-            const snowContainer = document.getElementById('snow');
-            const snowflakeCount = 20; // Decreased number of snowflakes per interval
-
-            for (let i = 0; i < snowflakeCount; i++) {
-                const snowflake = document.createElement('div');
-                snowflake.classList.add('snowflake');
-                snowflake.innerHTML = '&#10052;'; // Unicode for a snowflake
-
-                // Random position and animation duration
-                snowflake.style.left = Math.random() * 100 + 'vw';
-                snowflake.style.animationDuration = Math.random() * 5 + 3 + 's'; // Slower fall (3s to 8s)
-                snowflake.style.fontSize = Math.random() * 10 + 8 + 'px'; // Smaller snowflakes (8px to 18px)
-                snowflake.style.opacity = Math.random() * 0.8 + 0.2; // Lighter snowflakes
-
-                snowContainer.appendChild(snowflake);
-
-                // Remove the snowflake after animation ends
-                snowflake.addEventListener('animationend', () => {
-                    snowflake.remove();
-                });
-            }
-        }
-
-        // Decrease frequency of snowflake generation (every 1 second)
-        setInterval(createSnowflakes, 1000);
-
-        const AudioElement = document.getElementById('background-audio');
-        const volumeSlider = document.getElementById('volume-slider');
-
         function toggleVolumeSlider() {
             volumeSlider.style.display = volumeSlider.style.display === 'block' ? 'none' : 'block';
         }
@@ -541,6 +475,16 @@ $conn->close();
             const selectedCategory = this.value;
             let songsToShow = [];
 
+             // Clear the gallery and reset the button behavior if "Select a Category..." is selected
+            if (selectedCategory === 'Category List') {
+                const gallery = document.getElementById('quiz-gallery');
+                gallery.innerHTML = ''; // Clear gallery content
+                const audioElement = document.getElementById('background-audio');
+                audioElement.pause(); // Stop any playing audio
+                audioElement.src = ''; // Clear audio source
+                return; // Exit early since no category is selected
+            }
+
             if (selectedCategory === 'English') {
                 songsToShow = englishSongs;
             } else if (selectedCategory === 'Japanese') {
@@ -592,34 +536,39 @@ $conn->close();
             gallery.style.animation = `scroll-left ${totalWidth / 100}s linear infinite`; // Set duration based on total width
         }
 
+        document.addEventListener("DOMContentLoaded", function () {
+            const startButton = document.getElementById("start-button");
+            const hoverSound = new Audio("Sound Effect/hover_sound_effect.mp3"); 
+            const clickSound = new Audio("Sound Effect/click_sound_effect.wav");
 
-        document.getElementById('start-button').addEventListener('click', function () {
-            const selectedCategory = document.getElementById('category-dropdown').value;
+            // Ensure audio loads properly
+            hoverSound.preload = "auto";
+            clickSound.preload = "auto";
 
-            if (selectedCategory === 'Category List') {
-                showWarning('Please select a category first!');
-            } else if (selectedCategory === 'English') {
-                window.location.href = 'user_question_page_english.php';
-            } else if (selectedCategory === 'Japanese') {
-                window.location.href = 'user_question_page_japanese.php';
-            } else if (selectedCategory === 'Korean') {
-                window.location.href = 'user_question_page_korean.php';
-            }
-        });
+            // Hover sound effect
+            startButton.addEventListener("mouseover", () => {
+                hoverSound.currentTime = 0; // Reset time so it plays every time
+                hoverSound.play().catch(error => console.error("Hover sound error:", error));
+            });
 
-        // Add a hover sound effect
-        const startButton = document.getElementById('start-button');
-        const hoverSound = new Audio('Sound Effect/hover_sound_effect.mp3'); // Replace with the actual path
-        const clickSound = new Audio('Sound Effect/click_sound_effect.mp3'); // Replace with the actual path
+            // Click sound effect with autoplay fix
+            startButton.addEventListener("click", () => {
+                clickSound.currentTime = 0; // Reset time so it plays every time
+                clickSound.play().catch(error => console.error("Click sound error:", error));
 
-        // Play hover sound
-        startButton.addEventListener('mouseover', () => {
-            hoverSound.play();
-        });
+                // Redirect based on selected category
+                const selectedCategory = document.getElementById("category-dropdown").value;
 
-        // Play click sound
-        startButton.addEventListener('click', () => {
-            clickSound.play();
+                if (selectedCategory === "Category List") {
+                    showWarning("Please select a category first!");
+                } else if (selectedCategory === "English") {
+                    window.location.href = "user_question_page_english.php";
+                } else if (selectedCategory === "Japanese") {
+                    window.location.href = "user_question_page_japanese.php";
+                } else if (selectedCategory === "Korean") {
+                    window.location.href = "user_question_page_korean.php";
+                }
+            });
         });
         
         function validateNewUsername() {
@@ -632,6 +581,26 @@ $conn->close();
 
             return true;
         }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const dropdown = document.getElementById("category-dropdown");
+
+            // Always reset the dropdown when the page loads
+            dropdown.value = "Category List";
+            sessionStorage.removeItem("selectedCategory"); // Ensure the selection is cleared
+
+            dropdown.addEventListener("change", function () {
+                sessionStorage.setItem("selectedCategory", this.value);
+            });
+
+            // Ensure dropdown resets when back button is used
+            window.addEventListener("pageshow", function (event) {
+                if (event.persisted || performance.navigation.type === 2) {
+                    dropdown.value = "Category List"; 
+                    sessionStorage.removeItem("selectedCategory"); // Ensure reset
+                }
+            });
+        });
 
         function validateNewPassword() {
             const password = document.getElementById('newPasswordInput').value;

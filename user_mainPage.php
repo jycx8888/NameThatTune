@@ -177,6 +177,7 @@ $conn->close();
             <img src="Icon/pencil.png" alt="Edit" class="edit-icon" style="width: 60px; height: 60px;" onclick="showPopup('profilePopup')">
         </div>
         <div class="username" id="username"><?php echo htmlspecialchars($username); ?></div>
+        <div class="menu-item" onclick="directToHistory()">History</div>
         <div class="menu-item" onclick="showPopup('usernamePopup')">Change Username</div>
         <div class="menu-item" onclick="showPopup('passwordPopup')">Change Password</div>
         <div class="menu-item" onclick="toggleSubmenu('settings-submenu')">Settings</div>
@@ -257,13 +258,10 @@ $conn->close();
     
     <div id="footer">
          <ul class="nav">
-            <li>About Us</li>
-            <li>Terms and Conditions</li>
-            <li>Privacy Policy</li>
-            <li>Contact Us
-                <img src="Icon/facebook.png" alt="facebook" id="facebook">&nbsp;
-                <img src="Icon/instagram.png" alt="instagram" id="instagram">
-            </li>
+            <li><a href="user_about_us.php">About Us</a></li>
+            <li><a href="user_terms_and_conditions.php">Terms and Conditions</a></li>
+            <li><a href="user_privacy_policy.php">Privacy Policy</a></li>
+            <li><a href="user_contact_us.php">Contact Us</a></li>
         </ul>
         
         <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
@@ -389,6 +387,10 @@ $conn->close();
 
         function directToChooseCategory() {
             window.location.href = 'user_choose_category_page.php';
+        }
+
+        function directToHistory() {
+            window.location.href = 'user_history.php';
         }
     </script>
 </body>

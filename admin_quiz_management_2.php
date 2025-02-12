@@ -1,6 +1,5 @@
 <?php
-// Database connection
-    session_start();
+session_start();
 
 if (!isset($_SESSION['username'])) {
     header("Location: admin_login.php");
@@ -12,18 +11,14 @@ $user = "root";
 $password = "";
 $database = "namethattune";
 
-// Create connection
 $conn = new mysqli($server, $user, $password, $database);
 
-// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
 $username = $_SESSION['username'];
 
-
-// Fetch user data from the database
 $stmt = $conn->prepare("SELECT ProfilePicture FROM admin WHERE Username = ?");
 $stmt->bind_param("s", $_SESSION['username']);
 $stmt->execute();
@@ -33,48 +28,70 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $profile_picture_path = $row['ProfilePicture'];
 } else {
-    // Handle case where user data is not found
-    $profile_picture_path = 'Icon/account.png'; // Default profile picture
+    $profile_picture_path = 'Icon/account.png';
 }
 
-// Check if 'quiz_id' is provided
-if (!isset($_GET['quiz_id']) || empty($_GET['quiz_id'])) {
-    die("Error: Quiz ID is required. Debug Info: " . print_r($_GET, true));
+if (isset($_GET['quiz_id'])) {
+    echo "Debug: Raw quiz_id = " . $_GET['quiz_id'] . "<br>";
+    $quiz_id = intval($_GET['quiz_id']);
+    echo "Debug: Converted quiz_id = " . $quiz_id . "<br>";
+    
+    if ($quiz_id <= 0) {
+        die("Error: Invalid quiz_id.");
+    }
 } else {
-    echo "Debug: Quiz ID received - " . htmlspecialchars($_GET['quiz_id']) . "<br>";
+    die("Error: quiz_id not provided in the URL.");
 }
 
+// Validate if quiz_id exists in the database
+$query = $conn->prepare("SELECT id FROM quizzes WHERE id = ?");
+$query->bind_param("i", $quiz_id);
+$query->execute();
+$result = $query->get_result();
 
-// Sanitize and fetch the quiz ID
-$quiz_id = $_GET['quiz_id'];
+if ($result->num_rows === 0) {
+    die("Error: quiz_id does not exist in the database.");
+}else {
+die("Error: quiz_id not provided in the URL.");
+}
 
-$stmt = $conn->prepare("SELECT QuizID, GenreID, CreatedTime FROM quiz WHERE QuizID=?");
-$stmt->bind_param("i", $quiz_id); // "i" means integer
+$stmt = $conn->prepare("SELECT QuizID, GenreID, CreatedTime FROM quiz WHERE QuizID = ?");
+$stmt->bind_param("i", $quiz_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
-    $quiz = $result->fetch_assoc(); // Fetch data into an array
+    $quiz = $result->fetch_assoc();
+    echo "Debug: Quiz Data = ";
+    print_r($quiz);
 } else {
     die("Error: Quiz not found.");
 }
 
-// Fetch questions related to this quiz
-$sql_questions = "SELECT * FROM question WHERE QuizID='$quiz_id'";
-$result_questions = $conn->query($sql_questions);
+if (isset($quiz_id)) {
+    $stmt_questions = $conn->prepare("SELECT question_id, question_text FROM question WHERE QuizID = ?");
+    $stmt_questions->bind_param("i", $quiz_id);
+    $stmt_questions->execute();
+    $result_questions = $stmt_questions->get_result();
 
-// Handle form submission for updating quiz details
+    if ($result_questions->num_rows > 0) {
+        echo "Debug: Questions Found = " . $result_questions->num_rows . "<br>";
+    } else {
+        echo "Debug: No Questions Found for Quiz ID = " . $quiz_id . "<br>";
+    }
+} else {
+    $quiz = null;
+    $result_questions = null;
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Retrieve updated data from the form
     $genre_id = $conn->real_escape_string($_POST['genre_id']);
     $created_time = $conn->real_escape_string($_POST['created_time']);
 
-    // Update query
     $update_sql = "UPDATE quiz SET GenreID='$genre_id', CreatedTime='$created_time' WHERE QuizID='$quiz_id'";
 
     if ($conn->query($update_sql) === TRUE) {
         echo "Quiz updated successfully!<br>";
-        // Reload the page to reflect changes
         header("Location: edit_quiz.php?quiz_id=$quiz_id");
         exit();
     } else {
@@ -185,28 +202,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Main Content Section -->
     <main>
-        <form method="POST" action="admin_quiz_management_2.php?quiz_id=<?php echo $quiz_id; ?>">
-            <h2 class="edit-quiz-header">Edit Quiz</h2>
-            <div class="form-group">
-                <label for="quiz-id">Quiz ID</label>
-                <input type="text" id="quiz-id" name="quiz_id" value="<?php echo $quiz['QuizID']; ?>" readonly>
-            </div>
-            
-            <div class="form-group">
-                <label for="genre-id">Genre</label>
-                <select id="genre-id" name="genre_id">
-                    <option value="1" <?php if ($quiz['genre_id'] == '1') echo 'selected'; ?>>English</option>
-                    <option value="2" <?php if ($quiz['genre_id'] == '2') echo 'selected'; ?>>Korean</option>
-                    <option value="3" <?php if ($quiz['genre_id'] == '3') echo 'selected'; ?>>Japanese</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="created-time">Created Time</label>
-                <input type="datetime-local" id="created-time" name="created_time" 
-                    value="<?php echo !empty($quiz['created_time']) ? date('Y-m-d\TH:i:s', strtotime($quiz['created_time'])) : ''; ?>">
-            </div>
+    <form method="POST" action="admin_quiz_management_2.php">
+    <h2 class="edit-quiz-header"><?php echo isset($quiz) ? 'Edit Quiz' : 'Add Song'; ?></h2>
 
-        <!-- Table Section -->
+     <!-- Display Quiz ID -->
+     <p>Quiz ID: <?= isset($quiz['QuizID']) && !empty($quiz['QuizID']) ? htmlspecialchars($quiz['QuizID']) : 'No Quiz Found'; ?></p>
+    <?php if (isset($quiz)): ?>
+        <p>Debug: Quiz Data = <?php print_r($quiz); ?></p> <!-- Debugging output -->
+    <?php endif; ?>
+    
+    <?php if (isset($quiz)): ?>
+        <input type="hidden" name="quiz_id" value="<?php echo $quiz['QuizID']; ?>">
+    <?php endif; ?>
+
+    <div class="form-group">
+        <label for="genre-id">Genre</label>
+        <select id="genre-id" name="genre_id">
+            <option value="1" <?php if (isset($quiz) && $quiz['GenreID'] == '1') echo 'selected'; ?>>English</option>
+            <option value="2" <?php if (isset($quiz) && $quiz['GenreID'] == '2') echo 'selected'; ?>>Korean</option>
+            <option value="3" <?php if (isset($quiz) && $quiz['GenreID'] == '3') echo 'selected'; ?>>Japanese</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="created-time">Created Time</label>
+        <input type="datetime-local" id="created-time" name="created_time" 
+            value="<?php echo isset($quiz) ? date('Y-m-d\TH:i:s', strtotime($quiz['CreatedTime'])) : ''; ?>">
+    </div>
+
+    <!-- Table Section for Questions (only in edit mode) -->
+    <?php if (isset($quiz)): ?>
         <h3>Questions</h3>
         <table class="question-table">
             <thead>
@@ -220,8 +245,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <?php if ($result_questions->num_rows > 0): ?>
                     <?php while ($question = $result_questions->fetch_assoc()): ?>
                         <tr>
-                            <td><?php echo $question['question_id']; ?></td>
-                            <td><?php echo isset($question['question_text']) ? htmlspecialchars($question['question_text']) : 'No question text'; ?></td>
+                            <td><?php echo htmlspecialchars($question['question_id']); ?></td>
+                            <td><?php echo htmlspecialchars($question['question_text']); ?></td>
                             <td class="actions">
                                 <a href="edit_question.php?question_id=<?php echo $question['question_id']; ?>">Edit</a> |
                                 <a href="delete_question.php?question_id=<?php echo $question['question_id']; ?>">Delete</a>
@@ -233,15 +258,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <td colspan="3">No questions found for this quiz.</td>
                     </tr>
                 <?php endif; ?>
+                <?php if (isset($quiz_id)): ?>
+                    <p>Debug: Questions for Quiz ID = <?php echo $quiz_id; ?></p> <!-- Debugging output -->
+                <?php endif; ?>
             </tbody>
         </table>
+    <?php endif; ?>
 
-        <!-- Buttons -->
-        <div class="button-container">
-            <button type="button" class="cancel" onclick="window.location.href='quizzes.php';">Cancel</button>
-            <button type="submit" class="confirm">Save Changes</button>
-        </div>
-        </form>
+    <!-- Buttons -->
+    <div class="button-container">
+        <button type="button" class="cancel" onclick="window.location.href='quizzes.php';">Cancel</button>
+        <button type="submit" class="confirm"><?php echo isset($quiz) ? 'Save Changes' : 'Add Song'; ?></button>
+    </div>
+</form>
     </main>
 
     <div id="hamburger-menu">

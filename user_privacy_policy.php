@@ -18,6 +18,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+<<<<<<< HEAD
 // Fetch user data from the database
 $stmt = $conn->prepare("SELECT ProfilePicture FROM user WHERE Username = ?");
 $stmt->bind_param("s", $username);
@@ -82,6 +83,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
+=======
+>>>>>>> c9f35c83e6717adb2bb97ada32c167a72eaddb26
 $conn->close();
 ?>
 
@@ -169,6 +172,7 @@ $conn->close();
 <body>
     <div id="header">
         <h1>NameThatTune</h1>
+<<<<<<< HEAD
         <div id="login" onclick="redirectToLogin()">
             <?php
 
@@ -185,6 +189,8 @@ $conn->close();
             ?>
 
         </div>
+=======
+>>>>>>> c9f35c83e6717adb2bb97ada32c167a72eaddb26
     </div>
 
     <div id="content">

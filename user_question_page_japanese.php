@@ -387,23 +387,52 @@
             currentQuestionIndex++;
         }
 
+        // Preload sound effects
+        const clickSound = new Audio('Sound Effect/click_sound_effect.wav'); 
+        const correctSound = new Audio('Sound Effect/Correct_Answer.mp3'); 
+        const incorrectSound = new Audio('Sound Effect/Incorrect_Answer.mp3'); 
+
+        // Ensure sounds are loaded properly before playing
+        clickSound.load();
+        correctSound.load();
+        incorrectSound.load();
+
+        // Add click sound to option buttons
+        document.querySelectorAll('.option-button').forEach(button => {
+            button.addEventListener('click', () => {
+                clickSound.currentTime = 0; // Reset so it plays every time
+                clickSound.play().catch(error => console.log("Audio playback error:", error));
+            });
+        });
+
+        // Function to handle selecting an option
         function selectOption(selectedOption) {
             const currentQuestion = questions[currentQuestionIndex - 1];
-            const buttons = document.querySelectorAll(".option-button");
+            const isCorrect = selectedOption === currentQuestion.correctAnswer;
 
-            buttons.forEach((button) => {
+            // Play correct or incorrect sound
+            if (isCorrect) {
+                correctSound.currentTime = 0;
+                correctSound.play().catch(error => console.log("Audio playback error:", error));
+            } else {
+                incorrectSound.currentTime = 0;
+                incorrectSound.play().catch(error => console.log("Audio playback error:", error));
+            }
+
+            // Disable all buttons after selection
+            document.querySelectorAll('.option-button').forEach(button => {
                 button.disabled = true;
                 if (button.textContent.trim().startsWith(currentQuestion.correctAnswer)) {
                     button.style.backgroundColor = "green";
                 }
-                if (button.textContent.trim().startsWith(selectedOption) && selectedOption !== currentQuestion.correctAnswer) {
+                if (button.textContent.trim().startsWith(selectedOption) && !isCorrect) {
                     button.style.backgroundColor = "red";
                 }
             });
 
-            const nextButton = document.getElementById("next-button");
-            nextButton.disabled = false;
-            nextButton.style.backgroundColor = "rgb(77, 72, 144)";
+            // Enable next button
+            document.getElementById("next-button").disabled = false;
+            document.getElementById("next-button").style.backgroundColor = "rgb(77, 72, 144)";
         }
 
         document.addEventListener("DOMContentLoaded", () => {

@@ -22,18 +22,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
 
     // Prepare and bind
-    $stmt = $conn->prepare("SELECT * FROM user WHERE Username = ? AND Password = ?");
-    $stmt->bind_param("ss", $username, $password);
+    $stmt = $conn->prepare("SELECT * FROM user WHERE Username = ?");
+    $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        // Login successful
         $row = $result->fetch_assoc();
-        $_SESSION['username'] = $username;
-        $login_success = true;
-        header("Location: user_mainPage.php");
-        exit();
+        // Compare passwords in a case-sensitive manner
+        if ($row['Password'] === $password) {
+            // Login successful
+            $_SESSION['username'] = $username;
+            $login_success = true;
+            header("Location: user_mainPage.php");
+            exit();
+        } else {
+            // Login failed
+            $login_error = "Invalid username or password.";
+        }
     } else {
         // Login failed
         $login_error = "Invalid username or password.";
@@ -65,7 +71,7 @@ $conn->close();
 
         #login2 {
             width: clamp(20em, 50vw, 30em);
-            height: auto;
+            height: 370px;
             padding: 48px;
             background-color: white;
             border-radius: 25px;
@@ -77,18 +83,18 @@ $conn->close();
         #login2 input[type="text"],
         #login2 input[type="password"]{
             height: 32px;
-            width: clamp(15em, 20vw, 25em);
+            width: clamp(18em, 22vw, 25em);
             display: flex;
             justify-content: center;
             flex-direction: column;
             padding-left: 5px;
-            margin: 5px 0;
+            margin: 10px 0;
             border: 3px solid #ccc;
             border-radius: 5px;
             cursor: pointer;
             font-family: "Lalezar", system-ui;
             font-weight: 900;
-            font-size: 18px;
+            font-size: 15px;
         }
 
         .logo-image {
