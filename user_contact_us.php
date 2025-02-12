@@ -139,9 +139,7 @@ $conn->close();
 <body>
     <div id="header">
         <h1>NameThatTune</h1>
-        <div id="login" onclick="redirectTo()">
             <?php
-
             if (isset($_SESSION['username'])) {
                 $profile_picture_path = htmlspecialchars($profile_picture_path);
                 $username = htmlspecialchars($username);
@@ -153,7 +151,6 @@ $conn->close();
                 echo "</div>";
             }
             ?>
-
         </div>
     </div>
 

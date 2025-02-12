@@ -1,10 +1,6 @@
 <?php
 session_start();
 
-if (isset($_SESSION['username'])) {
-    $username = $_SESSION['username'];
-}
-
 $servername = "localhost";
 $dbusername = "root"; // Database username
 $dbpassword = ""; // Database password
@@ -18,21 +14,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch user data from the database
-$stmt = $conn->prepare("SELECT ProfilePicture FROM user WHERE Username = ?");
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $profile_picture_path = $row['ProfilePicture'];
-} else {
-    // Handle case where user data is not found
-    $profile_picture_path = 'Icon/account.png'; // Default profile picture
-}
-
-$stmt->close();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['update_username'])) {
@@ -169,9 +150,7 @@ $conn->close();
 <body>
     <div id="header">
         <h1>NameThatTune</h1>
-        <div id="login" onclick="redirectToLogin()">
             <?php
-
             if (isset($_SESSION['username'])) {
                 $profile_picture_path = htmlspecialchars($profile_picture_path);
                 $username = htmlspecialchars($username);
@@ -183,7 +162,6 @@ $conn->close();
                 echo "</div>";
             }
             ?>
-
         </div>
     </div>
 
