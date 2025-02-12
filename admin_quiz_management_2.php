@@ -51,8 +51,6 @@ $result = $query->get_result();
 
 if ($result->num_rows === 0) {
     die("Error: quiz_id does not exist in the database.");
-}else {
-die("Error: quiz_id not provided in the URL.");
 }
 
 $stmt = $conn->prepare("SELECT QuizID, GenreID, CreatedTime FROM quiz WHERE QuizID = ?");
