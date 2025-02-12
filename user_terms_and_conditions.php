@@ -148,7 +148,6 @@ $conn->close();
 <body>
     <div id="header">
         <h1>NameThatTune</h1>
-<<<<<<< HEAD
         <div id="login" onclick="">
             <?php
 

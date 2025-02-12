@@ -21,21 +21,6 @@ if ($conn->connect_error) {
 
 $username = $_SESSION['username'];
 
-// Fetch user data from the database
-$stmt = $conn->prepare("SELECT ProfilePicture FROM user WHERE Username = ?");
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $profile_picture_path = $row['ProfilePicture'];
-} else {
-    // Handle case where user data is not found
-    $profile_picture_path = 'Icon/account.png'; // Default profile picture
-}
-
-$stmt->close();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['update_username'])) {

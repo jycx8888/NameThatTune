@@ -137,8 +137,7 @@ $conn->close();
             ?>
 
         </div>
-=======
->>>>>>> c9f35c83e6717adb2bb97ada32c167a72eaddb26
+
     </div>
 
     <div id="content">
