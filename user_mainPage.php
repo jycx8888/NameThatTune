@@ -363,9 +363,6 @@ $conn->close();
 
         function logout() {
             window.location.href = 'user_login.php'; // Redirect to login page
-            <?php
-            session_destroy();
-            ?>
         }
 
         document.getElementById('volumeSlider').addEventListener('input', function() {
