@@ -62,22 +62,6 @@ if (isset($_GET['quiz_id'])) {
     $result_questions = null;
 }
 
-$stmt = $conn->prepare("SELECT QuizID, GenreID, CreatedTime FROM quiz WHERE QuizID=?");
-$stmt->bind_param("i", $quiz_id); // "i" means integer
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $quiz = $result->fetch_assoc(); // Fetch data into an array
-    print_r($quiz); // Debugging output
-} else {
-    die("Error: Quiz not found.");
-}
-
-// Fetch questions related to this quiz
-$sql_questions = "SELECT * FROM question WHERE QuizID='$quiz_id'";
-$result_questions = $conn->query($sql_questions);
-
 // Handle form submission for updating quiz details
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Retrieve updated data from the form
