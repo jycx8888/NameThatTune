@@ -445,10 +445,26 @@
         volumeSlider.addEventListener("input", (e) => {
             questionAudio.volume = e.target.value / 100;
         });
-
+        
         function adjustVolume(value) {
-            AudioElement.volume = value / 100; // Adjust the audio volume
+            let audioElement = document.getElementById("question-audio");
+            if (audioElement) {
+                audioElement.volume = value / 100;
+                audioElement.muted = value == 0; // Mute if volume is 0
+                console.log("Volume set to:", audioElement.volume, "Muted:", audioElement.muted);
+            } else {
+                console.log("Error: Audio element not found.");
+            }
         }
+
+        function toggleVolumeSlider() {
+            let volumeSlider = document.getElementById("volume-slider");
+            if (volumeSlider.style.display === "none" || volumeSlider.style.display === "") {
+                volumeSlider.style.display = "block";
+            } else {
+                volumeSlider.style.display = "none";
+            }
+        }       
 
         // Fullscreen Toggle
         function toggleFullscreen() {

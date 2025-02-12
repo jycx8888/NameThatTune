@@ -414,11 +414,13 @@ $conn->close();
 
     <script>
         function toggleVolumeSlider() {
-            volumeSlider.style.display = volumeSlider.style.display === 'block' ? 'none' : 'block';
+            let volumeSlider = document.getElementById("volume-slider");
+            volumeSlider.style.display = volumeSlider.style.display === "block" ? "none" : "block";
         }
 
         function adjustVolume(value) {
-            AudioElement.volume = value / 100; // Adjust the audio volume
+            let audioElement = document.getElementById("background-audio");
+            audioElement.volume = value / 100; // Adjust volume based on slider value
         }
 
         // Fullscreen Toggle
