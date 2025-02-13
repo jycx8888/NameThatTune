@@ -19,6 +19,24 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+$username = $_SESSION['username'];
+
+// Fetch user data from the database
+$stmt = $conn->prepare("SELECT ProfilePicture FROM user WHERE Username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $profile_picture_path = $row['ProfilePicture'];
+} else {
+    // Handle case where user data is not found
+    $profile_picture_path = 'Icon/account.png'; // Default profile picture
+}
+
+$stmt->close();
+
 // Set the character set to UTF-8
 $conn->set_charset("utf8");
 
@@ -370,8 +388,8 @@ if (json_last_error() !== JSON_ERROR_NONE) {
         <h1><a href="user_mainPage.php">NameThatTune</a></h1>
         <button id="backButton" onclick="goBack()">Back</button>
         <div id="loginOrRegister" onclick="">
-            <img src="icon/account.png" alt="avatar">
-            <span id="username">Username</span>
+            <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
+            <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>
 
