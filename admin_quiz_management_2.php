@@ -257,7 +257,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Buttons -->
     <div class="button-container">
-        <button type="button" class="cancel" onclick="window.location.href='quizzes.php';">Cancel</button>
+        <button type="button" class="cancel" onclick="window.location.href='admin_quiz_management.php';">Cancel</button>
         <button type="submit" class="confirm"><?php echo isset($quiz) ? 'Save Changes' : 'Add Song'; ?></button>
     </div>
 </form>
