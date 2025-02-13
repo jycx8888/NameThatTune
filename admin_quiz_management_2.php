@@ -88,8 +88,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($conn->query($update_sql) === TRUE) {
         echo "Quiz updated successfully!<br>";
-        header("Location: edit_quiz.php?quiz_id=$quiz_id");
-        exit();
+        header("Location: admin_quiz_management.php?quiz_id=$quiz_id");
+        exit(); // Ensure no further code is executed after the redirection
     } else {
         echo "Error updating quiz: " . $conn->error;
     }
