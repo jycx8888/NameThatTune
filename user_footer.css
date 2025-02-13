@@ -28,6 +28,11 @@
     text-align: center;
 }
 
+#footer ul li a {
+    color: white;
+    text-decoration: none;
+}
+
 #footer #instagram {
     width: 30px;
     height: 30px;

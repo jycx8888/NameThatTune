@@ -1,11 +1,6 @@
 <?php
 session_start();
 
-if (isset($_SESSION['username'])) {
-    $username = $_SESSION['username'];
-
-}
-
 $servername = "localhost";
 $dbusername = "root"; // Database username
 $dbpassword = ""; // Database password
@@ -76,21 +71,21 @@ $conn->close();
 </head>
 <body>
     <div id="header">
-        <h1>NameThatTune</h1>
-            <?php
-            if (isset($_SESSION['username'])) {
-                $profile_picture_path = htmlspecialchars($profile_picture_path);
-                $username = htmlspecialchars($username);
-                echo "<div id='login'>
-                <img src='$profile_picture_path'>
-                <p>$username</p>";
-            } else {
-                echo "<div id='login' onclick='redirectToLogin()'>
-                <p>Login</p>
-                </div>";
-            }
-            ?>
-        </div>
+        <h1><a href="user_mainPage.php">NameThatTune</a></h1>
+        <?php
+        if (isset($_SESSION['username'])) {
+            $profile_picture_path = htmlspecialchars($profile_picture_path);
+            $username = htmlspecialchars($username);
+            echo "<div id='login'>
+            <img src='$profile_picture_path'>
+            <p>$username</p>
+            </div>";
+        } else {
+            echo "<div id='login' onclick='redirectToLogin()'>
+            <p>Login</p>
+            </div>";
+        }
+        ?>
     </div>
 
     <?php include 'user_hamburger_menu.php'; ?>

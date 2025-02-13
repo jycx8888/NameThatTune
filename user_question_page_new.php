@@ -367,7 +367,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     <div id="loading">3</div>
 
     <div id="header">
-        <h1>NameThatTune</h1>
+        <h1><a href="user_mainPage.php">NameThatTune</a></h1>
         <button id="backButton" onclick="goBack()">Back</button>
         <div id="loginOrRegister" onclick="">
             <img src="icon/account.png" alt="avatar">
