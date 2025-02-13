@@ -32,9 +32,9 @@ if ($result->num_rows > 0) {
 }
 
 if (isset($_GET['quiz_id'])) {
-    echo "Debug: Raw quiz_id = " . $_GET['quiz_id'] . "<br>";
+    //echo "Debug: Raw quiz_id = " . $_GET['quiz_id'] . "<br>";
     $quiz_id = $_GET['quiz_id']; // Keep it as a string
-    echo "Debug: Processed quiz_id = " . $quiz_id . "<br>";
+    //echo "Debug: Processed quiz_id = " . $quiz_id . "<br>";
     
     if (empty($quiz_id)) {
         die("Error: quiz_id cannot be empty.");
@@ -60,8 +60,6 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $quiz = $result->fetch_assoc();
-    echo "Debug: Quiz Data = ";
-    print_r($quiz);
 } else {
     die("Error: Quiz not found.");
 }
@@ -72,11 +70,11 @@ if (isset($quiz_id)) {
     $stmt_questions->execute();
     $result_questions = $stmt_questions->get_result();
 
-    if ($result_questions->num_rows > 0) {
-        echo "Debug: Questions Found = " . $result_questions->num_rows . "<br>";
-    } else {
-        echo "Debug: No Questions Found for Quiz ID = " . $quiz_id . "<br>";
-    }
+    //if ($result_questions->num_rows > 0) {
+        //echo "Debug: Questions Found = " . $result_questions->num_rows . "<br>";
+    //} else {
+        //echo "Debug: No Questions Found for Quiz ID = " . $quiz_id . "<br>";
+   // }
 } else {
     $quiz = null;
     $result_questions = null;
@@ -205,9 +203,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
      <!-- Display Quiz ID -->
      <p>Quiz ID: <?= isset($quiz['QuizID']) && !empty($quiz['QuizID']) ? htmlspecialchars($quiz['QuizID']) : 'No Quiz Found'; ?></p>
-    <?php if (isset($quiz)): ?>
-        <p>Debug: Quiz Data = <?php print_r($quiz); ?></p> <!-- Debugging output -->
-    <?php endif; ?>
     
     <?php if (isset($quiz)): ?>
         <input type="hidden" name="quiz_id" value="<?php echo $quiz['QuizID']; ?>">
@@ -256,9 +251,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <td colspan="3">No questions found for this quiz.</td>
         </tr>
     <?php endif; ?>
-        <?php if (isset($quiz_id)): ?>
-            <p>Debug: Questions for Quiz ID = <?php echo $quiz_id; ?></p> <!-- Debugging output -->
-        <?php endif; ?>
             </tbody>
         </table>
     <?php endif; ?>
