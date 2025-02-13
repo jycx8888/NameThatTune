@@ -19,6 +19,9 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Set the character set to UTF-8
+$conn->set_charset("utf8");
+
 if (!isset($_GET['quizId'])) {
     die("Quiz ID not provided.");
 }
@@ -41,6 +44,12 @@ while ($row = $questionsResult->fetch_assoc()) {
     $song = $songResult->fetch_assoc();
     $songStmt->close();
 
+    // Convert BLOB data to base64
+    if ($song) {
+        $song['SongImage'] = 'data:image/jpeg;base64,' . base64_encode($song['SongImage']);
+        $song['SongAudio'] = 'data:audio/mpeg;base64,' . base64_encode($song['SongAudio']);
+    }
+
     // Fetch options for each question
     $optionStmt = $conn->prepare("SELECT * FROM option WHERE QuestionID = ?");
     $optionStmt->bind_param("s", $row['QuestionID']);
@@ -48,7 +57,7 @@ while ($row = $questionsResult->fetch_assoc()) {
     $optionsResult = $optionStmt->get_result();
     $options = [];
     while ($optionRow = $optionsResult->fetch_assoc()) {
-        $options[] = $optionRow;
+        $options[] = $optionRow['OptionName'];
     }
     $optionStmt->close();
 
@@ -59,6 +68,31 @@ while ($row = $questionsResult->fetch_assoc()) {
 
 $stmt->close();
 $conn->close();
+
+// Debugging: Check if $questions is populated
+if (empty($questions)) {
+    die("No questions found for the provided Quiz ID.");
+}
+
+// Convert data to UTF-8 using mb_convert_encoding
+function convertToUtf8($data) {
+    if (is_array($data)) {
+        foreach ($data as $key => $value) {
+            $data[$key] = convertToUtf8($value);
+        }
+    } else if (is_string($data)) {
+        return mb_convert_encoding($data, 'UTF-8', 'UTF-8');
+    }
+    return $data;
+}
+
+$questions = convertToUtf8($questions);
+
+// Check for JSON encoding errors
+$jsonQuestions = json_encode($questions,JSON_UNESCAPED_UNICODE);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    die("JSON encoding error: " . json_last_error_msg());
+}
 ?>
 
 <!DOCTYPE html>
@@ -130,6 +164,7 @@ $conn->close();
             background-color: white;
             border-radius: 15px;
             padding: 20px;
+            margin-top: 80px;
             max-width: 600px;
             width: 100%;
             text-align: center;
@@ -297,7 +332,7 @@ $conn->close();
             display: flex;
             justify-content: center; /* Center horizontally */
             align-items: center; /* Center vertically */
-            margin-top: 20px; /* Add spacing if needed */
+            margin-top: -100px; /* Add spacing if needed */
             height: 100px; /* Adjust height as needed */
         }
 
@@ -322,6 +357,10 @@ $conn->close();
             background-color: rgb(104, 99, 174);
         }
 
+        .blurred {
+            filter: blur(10px);
+        }
+
     </style>
 </head>
 <body>
@@ -342,20 +381,22 @@ $conn->close();
                 <span id="question-number">1</span>
                 <span id="current-question">1/5</span>
             </div>
-            <img id="question-image" src="" alt="Question Image" class="question-image">
-            <h2 id="question">What song is this?</h2>
+            <img id="question-image" style='height: 200px; width:200px;' alt="Question Image" class="question-image blurred">
+            <div><h2 id="question">What song is this?</h2></div>
 
             <!-- Add the audio bar -->
-            <audio id="question-audio" controls autoplay>
+            <audio id="question-audio" autoplay loop>
                 <source id="audio-source" src="" type="audio/mpeg">
                 Your browser does not support the audio element.
             </audio>
+            
+            
 
             <div class="options">
-                <button class="option-button" onclick="selectOption('A')"></button>
-                <button class="option-button" onclick="selectOption('B')"></button>
-                <button class="option-button" onclick="selectOption('C')"></button>
-                <button class="option-button" onclick="selectOption('D')"></button>
+                <button class="option-button" onclick="selectOption(this)"></button>
+                <button class="option-button" onclick="selectOption(this)"></button>
+                <button class="option-button" onclick="selectOption(this)"></button>
+                <button class="option-button" onclick="selectOption(this)"></button>
             </div>
         </div>
     </div>
@@ -376,17 +417,24 @@ $conn->close();
     </div>
 
     <script>
+
         function goBack() {
             if (window.history.length > 1) {
                 // Go back if there's history
                 window.history.back();
             } else {
                 // Fallback to a default page if no history exists
-                window.location.href = 'user_choose_category_new.php'; // Replace with your fallback URL
+                window.location.href = 'user_choose_category_page.php'; // Replace with your fallback URL
             }
         }
 
-        const questions = <?php echo json_encode($questions); ?>;
+        const questions = <?php echo $jsonQuestions; ?>;
+        if (!questions || questions.length === 0) {
+            alert("No questions found for the provided Quiz ID.");
+        } else{
+            alert("Questions loaded successfully!");
+        }
+
         let currentQuestionIndex = 0;
 
         function loadNextQuestion() {
@@ -395,18 +443,23 @@ $conn->close();
                 return;
             }
 
+            document.getElementById("question-image").classList.add("blurred");
+
             const currentQuestion = questions[currentQuestionIndex];
 
             document.getElementById("question-number").textContent = currentQuestionIndex + 1;
             document.getElementById("current-question").textContent = `${currentQuestionIndex + 1}/${questions.length}`;
             document.getElementById("question").textContent = currentQuestion.QuestionText;
-            document.getElementById("question-image").src = currentQuestion.song.images;
+            document.getElementById("question-image").src = currentQuestion.song.SongImage;
             document.getElementById("audio-source").src = currentQuestion.song.SongAudio;
             document.getElementById("question-audio").load();
 
+            // Shuffle the options
+            shuffleArray(currentQuestion.options);
+
             const optionButtons = document.querySelectorAll(".option-button");
             optionButtons.forEach((button, index) => {
-                button.textContent = currentQuestion.options[index].OptionName;
+                button.textContent = currentQuestion.options[index];
                 button.style.backgroundColor = "rgb(77, 72, 144)";
                 button.disabled = false;
             });
@@ -422,13 +475,11 @@ $conn->close();
         const clickSound = new Audio('Sound Effect/click_sound_effect.wav'); 
         const correctSound = new Audio('Sound Effect/Correct_Answer.mp3'); 
         const incorrectSound = new Audio('Sound Effect/Incorrect_Answer.mp3'); 
-        const hoverSound = new Audio('Sound Effect/hover_sound_effect.mp3');  // Replace with the actual path to your sound file
 
         // Ensure sounds are loaded properly before playing
         clickSound.load();
         correctSound.load();
         incorrectSound.load();
-        hoverSound.load();
 
         // Add click sound to option buttons
         document.querySelectorAll('.option-button').forEach(button => {
@@ -436,16 +487,19 @@ $conn->close();
                 clickSound.currentTime = 0; // Reset so it plays every time
                 clickSound.play().catch(error => console.log("Audio playback error:", error));
             });
-
-            // Add event listener to play sound on hover
-            button.addEventListener('mouseover', () => {
-                hoverSound.play();
-            });
         });
 
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
         // Function to handle selecting an option
-        function selectOption(selectedOption) {
+        function selectOption(button) {
             const currentQuestion = questions[currentQuestionIndex - 1];
+            const selectedOption = button.textContent.trim();
             const isCorrect = selectedOption === currentQuestion.CorrectAnswer;
 
             // Play correct or incorrect sound
@@ -455,15 +509,18 @@ $conn->close();
             } else {
                 incorrectSound.currentTime = 0;
                 incorrectSound.play().catch(error => console.log("Audio playback error:", error));
+                
             }
+            document.getElementById("question-image").classList.remove("blurred");
+            
 
             // Disable all buttons after selection
             document.querySelectorAll('.option-button').forEach(button => {
                 button.disabled = true;
-                if (button.textContent.trim().startsWith(currentQuestion.CorrectAnswer)) {
+                if (button.textContent.trim() === currentQuestion.CorrectAnswer) {
                     button.style.backgroundColor = "green";
                 }
-                if (button.textContent.trim().startsWith(selectedOption) && !isCorrect) {
+                if (button.textContent.trim() === selectedOption && !isCorrect) {
                     button.style.backgroundColor = "red";
                 }
             });
@@ -473,25 +530,7 @@ $conn->close();
             document.getElementById("next-button").style.backgroundColor = "rgb(77, 72, 144)";
         }
 
-        function updateCountdown() {
-            const loadingElement = document.getElementById('loading');
-            loadingElement.textContent = countdown;
-            if (countdown > 0) {
-                countdown--;
-                setTimeout(updateCountdown, 1000);
-            } else {
-                loadingElement.style.display = 'none';
-                document.getElementById('header').style.display = 'flex';
-                document.getElementById('main').style.display = 'flex';
-                document.getElementById('controls').style.display = 'flex';
-                document.querySelector('.next-button-container').style.display = 'flex';
-                document.getElementById('footer').style.display = 'flex';
-            }
-        }
-        
-        let countdown = 3;
         document.addEventListener("DOMContentLoaded", () => {
-            updateCountdown();
             loadNextQuestion();
         });
 
@@ -501,10 +540,26 @@ $conn->close();
         volumeSlider.addEventListener("input", (e) => {
             questionAudio.volume = e.target.value / 100;
         });
-
+        
         function adjustVolume(value) {
-            questionAudio.volume = value / 100; // Adjust the audio volume
+            let audioElement = document.getElementById("question-audio");
+            if (audioElement) {
+                audioElement.volume = value / 100;
+                audioElement.muted = value == 0; // Mute if volume is 0
+                console.log("Volume set to:", audioElement.volume, "Muted:", audioElement.muted);
+            } else {
+                console.log("Error: Audio element not found.");
+            }
         }
+
+        function toggleVolumeSlider() {
+            let volumeSlider = document.getElementById("volume-slider");
+            if (volumeSlider.style.display === "none" || volumeSlider.style.display === "") {
+                volumeSlider.style.display = "block";
+            } else {
+                volumeSlider.style.display = "none";
+            }
+        }       
 
         // Fullscreen Toggle
         function toggleFullscreen() {
@@ -516,6 +571,42 @@ $conn->close();
                 }
             }
         }
+
+        // Add the sound effect for hovering over the buttons
+        const hoverSound = new Audio('Sound Effect/hover_sound_effect.mp3');  // Replace with the actual path to your sound file
+
+        // Add event listener to play sound on hover
+        document.querySelectorAll('.option-button').forEach(button => {
+            button.addEventListener('mouseover', () => {
+                hoverSound.play();
+            });
+        });
+
+        let countdown = 3;
+
+        function updateCountdown() {
+            document.getElementById('loading').textContent = countdown;
+            if (countdown > 1) {
+                countdown--;
+                setTimeout(updateCountdown, 1000);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('loading').textContent = "Name That Tune !!!";
+                    setTimeout(() => {
+                        document.getElementById('loading').style.display = 'none';
+                        document.getElementById('header').style.display = 'flex';
+                        document.getElementById('main').style.display = 'flex';
+                        document.getElementById('footer').style.display = 'flex';
+                        document.getElementById('question-audio').play();
+                    }, 1000);
+                }, 1000);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCountdown();
+        });
+
     </script>
 </body>
 </html>
