@@ -35,10 +35,6 @@ if (isset($_GET['quiz_id'])) {
     //echo "Debug: Raw quiz_id = " . $_GET['quiz_id'] . "<br>";
     $quiz_id = $_GET['quiz_id']; // Keep it as a string
     //echo "Debug: Processed quiz_id = " . $quiz_id . "<br>";
-    
-    if (empty($quiz_id)) {
-        die("Error: quiz_id cannot be empty.");
-    }
 } else {
     die("Error: quiz_id not provided in the URL.");
 }
@@ -198,7 +194,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Main Content Section -->
     <main>
-    <form method="POST" action="admin_quiz_management_2.php">
+    <form method="POST" action="admin_quiz_management_2.php?quiz_id=<?php echo $quiz['QuizID']; ?>">
     <h2 class="edit-quiz-header"><?php echo isset($quiz) ? 'Edit Quiz' : 'Add Song'; ?></h2>
 
      <!-- Display Quiz ID -->
@@ -211,9 +207,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="form-group">
         <label for="genre-id">Genre</label>
         <select id="genre-id" name="genre_id">
-            <option value="1" <?php if (isset($quiz) && $quiz['GenreID'] == '1') echo 'selected'; ?>>English</option>
-            <option value="2" <?php if (isset($quiz) && $quiz['GenreID'] == '2') echo 'selected'; ?>>Korean</option>
-            <option value="3" <?php if (isset($quiz) && $quiz['GenreID'] == '3') echo 'selected'; ?>>Japanese</option>
+            <option value="1" <?php if (isset($quiz) && $quiz['GenreID'] == 'G001') echo 'selected'; ?>>English</option>
+            <option value="2" <?php if (isset($quiz) && $quiz['GenreID'] == 'G002') echo 'selected'; ?>>Korean</option>
+            <option value="3" <?php if (isset($quiz) && $quiz['GenreID'] == 'G003') echo 'selected'; ?>>Japanese</option>
         </select>
     </div>
 
