@@ -33,6 +33,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($row['Password'] === $password) {
             // Login successful
             $_SESSION['username'] = $username;
+            $_SESSION['user_id'] = $row['UserID'];
+            $_SESSION['password'] = $row['Password'];
             $login_success = true;
             header("Location: user_mainPage.php");
             exit();
