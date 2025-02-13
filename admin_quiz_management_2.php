@@ -33,19 +33,19 @@ if ($result->num_rows > 0) {
 
 if (isset($_GET['quiz_id'])) {
     echo "Debug: Raw quiz_id = " . $_GET['quiz_id'] . "<br>";
-    $quiz_id = intval($_GET['quiz_id']);
-    echo "Debug: Converted quiz_id = " . $quiz_id . "<br>";
+    $quiz_id = $_GET['quiz_id']; // Keep it as a string
+    echo "Debug: Processed quiz_id = " . $quiz_id . "<br>";
     
-    if ($quiz_id <= 0) {
-        die("Error: Invalid quiz_id.");
+    if (empty($quiz_id)) {
+        die("Error: quiz_id cannot be empty.");
     }
 } else {
     die("Error: quiz_id not provided in the URL.");
 }
 
 // Validate if quiz_id exists in the database
-$query = $conn->prepare("SELECT id FROM quizzes WHERE id = ?");
-$query->bind_param("i", $quiz_id);
+$query = $conn->prepare("SELECT QuizID FROM quiz WHERE QuizID = ?");
+$query->bind_param("s", $quiz_id); // Use "s" for string
 $query->execute();
 $result = $query->get_result();
 
@@ -54,7 +54,7 @@ if ($result->num_rows === 0) {
 }
 
 $stmt = $conn->prepare("SELECT QuizID, GenreID, CreatedTime FROM quiz WHERE QuizID = ?");
-$stmt->bind_param("i", $quiz_id);
+$stmt->bind_param("s", $quiz_id); // Use "s" for string
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -67,8 +67,8 @@ if ($result->num_rows > 0) {
 }
 
 if (isset($quiz_id)) {
-    $stmt_questions = $conn->prepare("SELECT question_id, question_text FROM question WHERE QuizID = ?");
-    $stmt_questions->bind_param("i", $quiz_id);
+    $stmt_questions = $conn->prepare("SELECT QuestionID, CorrectAnswer FROM question WHERE QuizID = ?");
+    $stmt_questions->bind_param("s", $quiz_id); // Use "s" for string
     $stmt_questions->execute();
     $result_questions = $stmt_questions->get_result();
 
@@ -241,24 +241,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </thead>
             <tbody>
                 <?php if ($result_questions->num_rows > 0): ?>
-                    <?php while ($question = $result_questions->fetch_assoc()): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($question['question_id']); ?></td>
-                            <td><?php echo htmlspecialchars($question['question_text']); ?></td>
-                            <td class="actions">
-                                <a href="edit_question.php?question_id=<?php echo $question['question_id']; ?>">Edit</a> |
-                                <a href="delete_question.php?question_id=<?php echo $question['question_id']; ?>">Delete</a>
-                            </td>
-                        </tr>
-                    <?php endwhile; ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="3">No questions found for this quiz.</td>
-                    </tr>
-                <?php endif; ?>
-                <?php if (isset($quiz_id)): ?>
-                    <p>Debug: Questions for Quiz ID = <?php echo $quiz_id; ?></p> <!-- Debugging output -->
-                <?php endif; ?>
+        <?php while ($question = $result_questions->fetch_assoc()): ?>
+            <tr>
+                <td><?php echo htmlspecialchars($question['QuestionID']); ?></td>
+                <td><?php echo htmlspecialchars($question['CorrectAnswer']); ?></td>
+                <td class="actions">
+                    <a href="edit_question.php?question_id=<?php echo $question['QuestionID']; ?>">Edit</a> |
+                    <a href="delete_question.php?question_id=<?php echo $question['QuestionID']; ?>">Delete</a>
+                </td>
+            </tr>
+        <?php endwhile; ?>
+    <?php else: ?>
+        <tr>
+            <td colspan="3">No questions found for this quiz.</td>
+        </tr>
+    <?php endif; ?>
+        <?php if (isset($quiz_id)): ?>
+            <p>Debug: Questions for Quiz ID = <?php echo $quiz_id; ?></p> <!-- Debugging output -->
+        <?php endif; ?>
             </tbody>
         </table>
     <?php endif; ?>
