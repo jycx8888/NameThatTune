@@ -188,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             background-color: #98FB98;
             color: white;
         }
-        /* Overlay Styles */
+       /* Overlay Styles */
         #overlay {
             display: none;
             position: fixed;
@@ -330,6 +330,33 @@ function deleteQuestion(questionId) {
         xhr.send("action=delete&question_id=" + questionId);
     }
 }
+
+// Function to open the popup and load page3 content
+function openEditQuizPopup(questionId) {
+    // Fetch the content of page3 with the question ID as a parameter
+    fetch('admin_quiz_management_3.php?question_id=' + questionId)
+        .then(response => response.text())
+        .then(data => {
+            // Insert the content into the popup
+            document.getElementById('popupContent').innerHTML = data;
+            // Show the popup and overlay
+            document.getElementById('editQuizPopup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        })
+        .catch(error => console.error('Error loading page3:', error));
+}
+
+// Function to close the popup
+function closePopup() {
+    document.getElementById('editQuizPopup').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+}
+
+// Event listener for the close button
+document.getElementById('closePopupButton').addEventListener('click', closePopup);
+
+// Event listener to close the popup when clicking outside
+document.getElementById('overlay').addEventListener('click', closePopup);
 </script>
 
 </head>
@@ -372,46 +399,46 @@ function deleteQuestion(questionId) {
     </div>
 
     <!-- Table Section for Questions (only in edit mode) -->
-    <?php if (isset($quiz)): ?>
-        <h3>Questions</h3>
-        <table class="question-table">
-            <thead>
-                <tr>
-                    <th>Question ID</th>
-                    <th>Question</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if ($result_questions->num_rows > 0): ?>
-        <?php while ($question = $result_questions->fetch_assoc()): ?>
+<?php if (isset($quiz)): ?>
+    <h3>Questions</h3>
+    <table class="question-table">
+        <thead>
             <tr>
-                <td><?php echo htmlspecialchars($question['QuestionID']); ?></td>
-                <td><?php echo htmlspecialchars($question['CorrectAnswer']); ?></td>
-                <td class="actions">
-                    <a href="admin_quiz_management_3.php?question_id=<?php echo $question['QuestionID']; ?>">Edit</a> |
-                    <button onclick="deleteQuestion('<?php echo $question['QuestionID']; ?>')">Delete</button>
-                </td>
+                <th>Question ID</th>
+                <th>Question</th>
+                <th>Actions</th>
             </tr>
-        <?php endwhile; ?>
-    <?php else: ?>
-        <tr>
-            <td colspan="3">No questions found for this quiz.</td>
-        </tr>
-    <?php endif; ?>
-            </tbody>
-        </table>
-    <?php endif; ?>
+        </thead>
+        <tbody>
+            <?php if ($result_questions->num_rows > 0): ?>
+                <?php while ($question = $result_questions->fetch_assoc()): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($question['QuestionID']); ?></td>
+                        <td><?php echo htmlspecialchars($question['CorrectAnswer']); ?></td>
+                        <td class="actions">
+                            <button onclick="openEditQuizPopup('<?php echo $question['QuestionID']; ?>')">Edit</button> |
+                            <button onclick="deleteQuestion('<?php echo $question['QuestionID']; ?>')">Delete</button>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="3">No questions found for this quiz.</td>
+                </tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
+<?php endif; ?>
 
-    <!-- Popup Container -->
-    <div id="overlay"></div>
-    <div id="editQuizPopup">
-        <h2>Edit Quiz</h2>
-        <form id="quiz-form">
-            <div id="popupContent"></div> <!-- Content from page3 will be loaded here -->
-        </form>
-        <button id="closePopupButton">Close</button>
-    </div>
+<!-- Popup Container -->
+<div id="overlay"></div>
+<div id="editQuizPopup">
+    <h2>Edit Quiz</h2>
+    <form id="quiz-form">
+        <div id="popupContent"></div> <!-- Content from page3 will be loaded here -->
+    </form>
+    <button id="closePopupButton">Close</button>
+</div>
 
     <!-- Buttons -->
     <div class="button-container">

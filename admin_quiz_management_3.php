@@ -36,6 +36,23 @@ if ($result->num_rows > 0) {
     // Handle case where user data is not found
     $profile_picture_path = 'Icon/account.png'; // Default profile picture
 }
+
+if (isset($_GET['question_id'])) {
+    $question_id = $_GET['question_id'];
+
+    $stmt = $conn->prepare("SELECT * FROM question WHERE QuestionID = ?");
+    $stmt->bind_param("s", $question_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $question = $result->fetch_assoc();
+    } else {
+        die("Question not found.");
+    }
+} else {
+    die("Question ID not provided.");
+}
 ?>
 
 <!DOCTYPE html>
