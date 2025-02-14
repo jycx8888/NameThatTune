@@ -455,8 +455,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 
         let currentQuestionIndex = 0;
 
-        const quizId = <?php echo json_encode($quizId); ?>;
-        const userId = <?php echo json_encode($_SESSION['user_id']); ?>;
 
         console.log("User ID:", userId); // Log the user ID to the console
         console.log("Quiz ID:", quizId); // Log the quiz ID to the console
@@ -479,7 +477,8 @@ if (json_last_error() !== JSON_ERROR_NONE) {
                         correctAnswersCount: correctAnswersCount,
                         totalQuestions: questions.length,
                         timeTaken: timeTaken,
-                        userAnswers: userAnswers
+                        userAnswers: userAnswers,
+                        startTime: startTime.toISOString(),
                     })
                 })
                 .then(response => response.text())

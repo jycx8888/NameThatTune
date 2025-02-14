@@ -42,6 +42,7 @@ $quizId = $data['quizId'];
 $correctAnswersCount = $data['correctAnswersCount'];
 $totalQuestions = $data['totalQuestions'];
 $timeTaken = $data['timeTaken'];
+$startTime = $data['startTime'];
 $userAnswers = $data['userAnswers'];
 
 // Verify that the user exists
@@ -103,18 +104,23 @@ foreach ($userAnswers as $answer) {
     $stmt->close();
 }
 
+// Generate a new RecordID
+$result = $conn->query("SELECT COUNT(*) AS count FROM record");
+$row = $result->fetch_assoc();
+$recordCount = $row['count'] + 1;
+$recordId = 'R' . str_pad($recordCount, 3, '0', STR_PAD_LEFT);
+
 // Insert the record into the record table
-$stmt = $conn->prepare("INSERT INTO record (Result, Time, UserID, QuizID) VALUES (?, ?, ?, ?)");
+$stmt = $conn->prepare("INSERT INTO record (RecordID, Result, Time, UserID, QuizID, TimeUsed) VALUES (?, ?, ?, ?, ?)");
 if (!$stmt) {
     error_log("Prepare failed: " . $conn->error);
     die(json_encode(['success' => false, 'message' => 'Prepare failed: ' . $conn->error]));
 }
-$stmt->bind_param("ssis", $correctAnswersCount, $timeTaken, $userId, $quizId); // Bind UserID as string
+$stmt->bind_param("ssssss", $recordId, $correctAnswersCount, $timeTaken, $userId, $quizId, $startTime); // Bind UserID as string
 if (!$stmt->execute()) {
     error_log("Execute failed: " . $stmt->error);
     die(json_encode(['success' => false, 'message' => 'Execute failed: ' . $stmt->error]));
 }
-$recordId = $stmt->insert_id;
 $stmt->close();
 
 // Insert the record_question data
@@ -127,7 +133,7 @@ foreach ($userAnswers as $answer) {
         error_log("Prepare failed: " . $conn->error);
         die(json_encode(['success' => false, 'message' => 'Prepare failed: ' . $conn->error]));
     }
-    $stmt->bind_param("iis", $recordId, $questionId, $userAnswer);
+    $stmt->bind_param("sss", $recordId, $questionId, $userAnswer);
     if (!$stmt->execute()) {
         error_log("Execute failed: " . $stmt->error);
         die(json_encode(['success' => false, 'message' => 'Execute failed: ' . $stmt->error]));
