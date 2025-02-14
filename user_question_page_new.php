@@ -479,7 +479,8 @@ if (json_last_error() !== JSON_ERROR_NONE) {
                         correctAnswersCount: correctAnswersCount,
                         totalQuestions: questions.length,
                         timeTaken: timeTaken,
-                        userAnswers: userAnswers
+                        userAnswers: userAnswers,
+                        startTime: startTime.toISOString()
                     })
                 })
                 .then(response => response.text())
