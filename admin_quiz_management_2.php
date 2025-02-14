@@ -741,7 +741,7 @@ document.getElementById('overlay').addEventListener('click', closePopup);
 // Function to open the popup and load page3 content
 function openEditQuizPopup() {
     // Fetch the content of page3
-    fetch('page3.php')
+    fetch('admin_quiz_management_3.php')
         .then(response => response.text())
         .then(data => {
             // Insert the content into the popup
