@@ -140,11 +140,11 @@ include 'user_fetch_profile.php';
         </style>
 </head>
 <body>
-<div id="header">
+    <div id="header">
         <h1><a href="user_mainPage.php">NameThatTune</a></h1>
-        <div id="login" onclick="">
-            <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
-            <p><?php echo htmlspecialchars($username); ?></p>
+        <div id="login">
+        <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
+        <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>
     
@@ -154,7 +154,7 @@ include 'user_fetch_profile.php';
         <div id="leaderboard">
             <h1>Leaderboard</h1>
             <?php
-            $sql1 = "SELECT UserID, Result, TimeUsed FROM record ORDER BY Result DESC, TimeUsed ASC";
+            $sql1 = "SELECT UserID, Result, TimeUsed FROM record WHERE QuizID = '$quiz_id' ORDER BY Result DESC, TimeUsed ASC";
             $result1 = mysqli_query($conn, $sql1);
         
             if (mysqli_num_rows($result1) > 0) {

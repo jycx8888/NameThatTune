@@ -496,7 +496,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
         }
 
         function moveToAddSong() {
-            window.location.href = 'admin_quiz_management_3.php';
+            window.location.href = 'admin_addQuiz.php';
         }
     </script>
     

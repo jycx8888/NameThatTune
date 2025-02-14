@@ -28,13 +28,14 @@ include 'user_fetch_profile.php';
     <link rel="stylesheet" href="user_footer.css">
     <style>
         #content {
+            margin: 24px 64px;
             min-height: 100vh;
             justify-content: center;
             font-family: "Lalezar", system-ui;
             font-style: normal;
         }
 
-        #history {
+        #details {
             width: 75vw;
             height: 50vh;
             min-width: fit-content;
@@ -60,7 +61,7 @@ include 'user_fetch_profile.php';
             background-color: white;
             border-collapse: collapse;
             justify-self: center;
-            width: clamp(50%, 80vw, 80%);
+            width: 80%;
         }
 
         td, th {
@@ -94,45 +95,54 @@ include 'user_fetch_profile.php';
     <?php include 'user_hamburger_menu.php'; ?>
 
     <div id='content'>
-        <div id='history'>
-        <h1 id='title'>History</h1>
-        <table>
-            <tr>
-                <th>Number</th>
-                <th>Quiz ID</th>
-                <th>Quiz Name</th>
-                <th>Result</th>
-                <th>Time Used</th>
-                <th>Answer Date</th>
-                <th>Action</th>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td>Q001</td>
-                <td>English Quiz 1</td>
-                <td>5/5</td>
-                <td>24s</td>
-                <td>2021-07-01 21:24:11</td>
-                <td><a href="user_history_details.php">View Details</a></td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>Q002</td>
-                <td>Korean Quiz 1</td>
-                <td>4/5</td>
-                <td>30s</td>
-                <td>2021-07-01 21:24:11</td>
-                <td><a href="user_history_details.php">View Details</a></td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>Q003</td>
-                <td>Japanese Quiz 1</td>
-                <td>3/5</td>
-                <td>40s</td>
-                <td>2021-07-01 21:24:11</td>
-                <td><a href="user_history_details.php">View Details</a></td>
-        </table>
+        <div id='details'>
+            <h1 id='title'>History Details</h1>
+            <div>
+                <span>Quiz ID: Q002</span><br>
+                <span>Quiz Name: Korean Quiz 1</span><br>
+                <span>Result: 4/5</span><br>
+                <span>Time Used: 30s</span><br>
+                <span>Answer Date: 2021-07-01 21:24:11</span>
+            </div><br>
+            <table>
+                <tr>
+                    <th>Question</th>
+                    <th>User Answer</th>
+                    <th>Correct Answer</th>
+                    <th>Result</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Answer 1</td>
+                    <td>Answer 1</td>
+                    <td>Correct</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Answer 2</td>
+                    <td>Answer 2</td>
+                    <td>Correct</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Answer 3</td>
+                    <td>Answer 2</td>
+                    <td>Wrong</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Answer 4</td>
+                    <td>Answer 4</td>
+                    <td>Correct</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Answer 5</td>
+                    <td>Answer 5</td>
+                    <td>Correct</td>
+                </tr>
+            </table>
+
         </div>
     </div>
 

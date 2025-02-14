@@ -122,7 +122,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     <link rel="icon" href="icon/logo.jpg" type="image/png">
     <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_footer.css">
-    <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
 
         #loading {
@@ -392,6 +391,8 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>
+
+    <?php include 'user_hamburger_menu.php'; ?>
 
     <div id="main">
         <div class="question-box">
