@@ -60,50 +60,6 @@ if ($result->num_rows === 0) {
 }
 $stmt->close();
 
-// Calculate the correct rate for each question
-foreach ($userAnswers as $answer) {
-    $questionId = $answer['questionId'];
-    $isCorrect = $answer['isCorrect'];
-
-    // Update the correct rate for the question
-    $stmt = $conn->prepare("SELECT CorrectRate, TotalAttempts FROM question WHERE QuestionID = ?");
-    if (!$stmt) {
-        error_log("Prepare failed: " . $conn->error);
-        die(json_encode(['success' => false, 'message' => 'Prepare failed: ' . $conn->error]));
-    }
-    $stmt->bind_param("s", $questionId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    $correctRate = $row['CorrectRate'];
-    $totalAttempts = $row['TotalAttempts'];
-    $stmt->close();
-
-    // Increment the total attempts
-    $totalAttempts++;
-
-    // Increment the total correct answers if the answer is correct
-    if ($isCorrect) {
-        $correctRate++;
-    }
-
-    // Calculate the new correct rate
-    $newCorrectRate = $correctRate / $totalAttempts;
-
-    // Update the question table with the new correct rate and total attempts
-    $stmt = $conn->prepare("UPDATE question SET CorrectRate = ?, TotalAttempts = ? WHERE QuestionID = ?");
-    if (!$stmt) {
-        error_log("Prepare failed: " . $conn->error);
-        die(json_encode(['success' => false, 'message' => 'Prepare failed: ' . $conn->error]));
-    }
-    $stmt->bind_param("dii", $newCorrectRate, $totalAttempts, $questionId);
-    if (!$stmt->execute()) {
-        error_log("Execute failed: " . $stmt->error);
-        die(json_encode(['success' => false, 'message' => 'Execute failed: ' . $stmt->error]));
-    }
-    $stmt->close();
-}
-
 // Generate a new RecordID
 $result = $conn->query("SELECT COUNT(*) AS count FROM record");
 $row = $result->fetch_assoc();
@@ -111,12 +67,12 @@ $recordCount = $row['count'] + 1;
 $recordId = 'R' . str_pad($recordCount, 3, '0', STR_PAD_LEFT);
 
 // Insert the record into the record table
-$stmt = $conn->prepare("INSERT INTO record (RecordID, Result, Time, UserID, QuizID, TimeUsed) VALUES (?, ?, ?, ?, ?)");
+$stmt = $conn->prepare("INSERT INTO record (RecordID, Result, Time, UserID, QuizID, TimeUsed) VALUES (?, ?, ?, ?, ?, ?)");
 if (!$stmt) {
     error_log("Prepare failed: " . $conn->error);
     die(json_encode(['success' => false, 'message' => 'Prepare failed: ' . $conn->error]));
 }
-$stmt->bind_param("ssssss", $recordId, $correctAnswersCount, $timeTaken, $userId, $quizId, $startTime); // Bind UserID as string
+$stmt->bind_param("ssssss", $recordId, $correctAnswersCount, $startTime, $userId, $quizId, $timeTaken); // Bind UserID as string
 if (!$stmt->execute()) {
     error_log("Execute failed: " . $stmt->error);
     die(json_encode(['success' => false, 'message' => 'Execute failed: ' . $stmt->error]));
@@ -134,6 +90,41 @@ foreach ($userAnswers as $answer) {
         die(json_encode(['success' => false, 'message' => 'Prepare failed: ' . $conn->error]));
     }
     $stmt->bind_param("sss", $recordId, $questionId, $userAnswer);
+    if (!$stmt->execute()) {
+        error_log("Execute failed: " . $stmt->error);
+        die(json_encode(['success' => false, 'message' => 'Execute failed: ' . $stmt->error]));
+    }
+    $stmt->close();
+}
+
+// Update the correct rate and total attempts for each question
+foreach ($userAnswers as $answer) {
+    $questionId = $answer['questionId'];
+
+    // Get the total attempts and correct attempts for the question
+    $stmt = $conn->prepare("SELECT COUNT(*) AS totalAttempts, SUM(CASE WHEN UserAnswer = (SELECT CorrectAnswer FROM question WHERE QuestionID = ?) THEN 1 ELSE 0 END) AS correctAttempts FROM record_question WHERE QuestionID = ?");
+    if (!$stmt) {
+        error_log("Prepare failed: " . $conn->error);
+        die(json_encode(['success' => false, 'message' => 'Prepare failed: ' . $conn->error]));
+    }
+    $stmt->bind_param("ss", $questionId, $questionId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $totalAttempts = $row['totalAttempts'];
+    $correctAttempts = $row['correctAttempts'];
+    $stmt->close();
+
+    // Calculate the new correct rate
+    $newCorrectRate = $correctAttempts / $totalAttempts;
+
+    // Update the question table with the new correct rate and total attempts
+    $stmt = $conn->prepare("UPDATE question SET CorrectRate = ?, TotalAttempts = ? WHERE QuestionID = ?");
+    if (!$stmt) {
+        error_log("Prepare failed: " . $conn->error);
+        die(json_encode(['success' => false, 'message' => 'Prepare failed: ' . $conn->error]));
+    }
+    $stmt->bind_param("dis", $newCorrectRate, $totalAttempts, $questionId);
     if (!$stmt->execute()) {
         error_log("Execute failed: " . $stmt->error);
         die(json_encode(['success' => false, 'message' => 'Execute failed: ' . $stmt->error]));
