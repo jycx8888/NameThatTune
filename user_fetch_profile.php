@@ -14,7 +14,6 @@ if ($result->num_rows > 0) {
 }
     
 $stmt->close();
-
     
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['update_username'])) {

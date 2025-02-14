@@ -35,19 +35,19 @@ include 'user_fetch_profile.php';
         }
 
         #history {
-            width: 75vw;
-            height: 50vh;
-            min-width: fit-content;
-            min-height: fit-content;
+            width: fit-content;
+            height: fit-content;
+            min-width: 75vw;
+            min-height: 50vh;
             justify-self: center;
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
             padding-left: clamp(28px, 8vw, 40px);
             padding-right: clamp(28px, 8vw, 40px);
-            padding-top: clamp(28px, 8vw, 40px);
-            padding-bottom: clamp(28px, 8vw, 40px);
-            margin: 48px 84px 24px 84px;
+            padding-top: 12px;
+            padding-bottom: 24px;
+            margin: 24px 84px 24px 84px;
         }
 
         #title {
@@ -65,10 +65,10 @@ include 'user_fetch_profile.php';
 
         td, th {
             padding: 10px;
-            border: 1px solid black;
+            border: 2px solid black;
             text-align: center;
             font-family: 'Lalezar', system-ui;
-            font-size: clamp(16px, 2vw, 18px);
+            font-size: clamp(14px, 2vw, 18px);
         }
 
         td {
@@ -106,32 +106,44 @@ include 'user_fetch_profile.php';
                 <th>Answer Date</th>
                 <th>Action</th>
             </tr>
-            <tr>
-                <td>1</td>
-                <td>Q001</td>
-                <td>English Quiz 1</td>
-                <td>5/5</td>
-                <td>24s</td>
-                <td>2021-07-01 21:24:11</td>
-                <td><a href="user_history_details.php">View Details</a></td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>Q002</td>
-                <td>Korean Quiz 1</td>
-                <td>4/5</td>
-                <td>30s</td>
-                <td>2021-07-01 21:24:11</td>
-                <td><a href="user_history_details.php">View Details</a></td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>Q003</td>
-                <td>Japanese Quiz 1</td>
-                <td>3/5</td>
-                <td>40s</td>
-                <td>2021-07-01 21:24:11</td>
-                <td><a href="user_history_details.php">View Details</a></td>
+            
+            <?php
+			$sql1 = "SELECT UserID FROM user WHERE Username = '$username'";
+			$result1 = mysqli_query($conn, $sql1);
+            if (mysqli_num_rows($result1) != 0) {
+            
+                $row1 = mysqli_fetch_assoc($result1);
+                $user_id = $row1['UserID'];
+
+                $sql2 = "SELECT Result, TimeUsed, Time, QuizID FROM record WHERE UserID = '$user_id' ORDER BY Time DESC";
+			    $result2 = mysqli_query($conn, $sql2);
+
+                $count = 1;
+                while ($row2 = mysqli_fetch_assoc($result2)) {
+                    $quiz_result = $row2['Result'];
+                    $time_used = $row2['TimeUsed'];
+                    $quiz_id = $row2['QuizID'];
+                    $time = $row2['Time'];
+
+                    $sql3 = "SELECT QuizName FROM quiz WHERE QuizID = '$quiz_id'";
+                    $result3 = mysqli_query($conn, $sql3);
+                    $row3 = mysqli_fetch_assoc($result3);
+                    $quiz_name = $row3['QuizName'];
+
+                    echo "<tr>
+                    <td>$count</td>
+                    <td>$quiz_id</td>
+                    <td>$quiz_name</td>
+                    <td>$quiz_result/5</td>
+                    <td>$time_used s</td>
+                    <td>$time</td>
+                    <td><a href='user_history_details.php'>View Details</a></td>
+                </tr>";
+
+                $count++;
+                }
+            }
+            ?>
         </table>
         </div>
     </div>

@@ -154,6 +154,7 @@ include 'user_fetch_profile.php';
         <div id="leaderboard">
             <h1>Leaderboard</h1>
             <?php
+            $quiz_id = $_POST['quiz_id'];
             $sql1 = "SELECT UserID, Result, TimeUsed FROM record WHERE QuizID = '$quiz_id' ORDER BY Result DESC, TimeUsed ASC";
             $result1 = mysqli_query($conn, $sql1);
         
