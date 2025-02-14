@@ -189,6 +189,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             color: white;
         }
     </style>
+    
+<script>
+function deleteQuestion(questionId) {
+    if (confirm("Are you sure you want to delete this question?")) {
+        // Create an AJAX request
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "admin_quiz_management_3.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        // Define what happens on successful data submission
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                alert("Question deleted successfully!");
+                location.reload(); // Reload the page to reflect changes
+            } else {
+                alert("Error deleting question: " + xhr.responseText);
+            }
+        };
+
+        // Define what happens in case of an error
+        xhr.onerror = function () {
+            alert("Request failed. Please try again.");
+        };
+
+        // Send the request with the question ID
+        xhr.send("action=delete&question_id=" + questionId);
+    }
+}
+</script>
+
 </head>
 <body>
 
@@ -246,8 +276,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <td><?php echo htmlspecialchars($question['QuestionID']); ?></td>
                 <td><?php echo htmlspecialchars($question['CorrectAnswer']); ?></td>
                 <td class="actions">
-                    <a href="edit_question.php?question_id=<?php echo $question['QuestionID']; ?>">Edit</a> |
-                    <a href="delete_question.php?question_id=<?php echo $question['QuestionID']; ?>">Delete</a>
+                    <a href="admin_quiz_management_3.php?question_id=<?php echo $question['QuestionID']; ?>">Edit</a> |
+                    <button onclick="deleteQuestion('<?php echo $question['QuestionID']; ?>')">Delete</button>
                 </td>
             </tr>
         <?php endwhile; ?>
