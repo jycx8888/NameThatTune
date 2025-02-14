@@ -483,7 +483,6 @@ $conn->close();
                 if (selectedBox) {
                     const quizId = selectedBox.dataset.quizId;
                     window.location.href = `user_question_page_new.php?quizId=${quizId}`;
-                    window.location.href = `user_leaderboard.php?quizId=${quizId}`;
                 } else {
                     showWarning('Please select a quiz first!');
                 }

@@ -435,7 +435,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     </div>
 
     <script>
-
         function goBack() {
             if (window.history.length > 1) {
                 // Go back if there's history
@@ -455,9 +454,54 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 
         let currentQuestionIndex = 0;
 
+        const quizId = <?php echo json_encode($quizId); ?>;
+        const userId = <?php echo json_encode($_SESSION['user_id']); ?>;
+
+        console.log("User ID:", userId); // Log the user ID to the console
+        console.log("Quiz ID:", quizId); // Log the quiz ID to the console
+
         function loadNextQuestion() {
             if (currentQuestionIndex >= questions.length) {
-                alert("Quiz completed!");
+                // Calculate the total time taken
+                let endTime = new Date();
+                let timeTaken = (endTime - startTime) / 1000; // Time in seconds
+
+                // Save the record and record_question data to the database
+                fetch('save_record.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        quizId: quizId,
+                        correctAnswersCount: correctAnswersCount,
+                        totalQuestions: questions.length,
+                        timeTaken: timeTaken,
+                        userAnswers: userAnswers
+                    })
+                })
+                .then(response => response.text())
+                .then(data => {
+                    console.log(data); // Log the raw response
+                    try {
+                        const jsonData = JSON.parse(data); // Parse the JSON response
+                        if (jsonData.success) {
+                            // Redirect to the leaderboard page with the result and quiz ID
+                            window.location.href = `user_leaderboard.php?result=${correctAnswersCount}&quizId=${quizId}`;
+                        } else {
+                            alert('Failed to save the record. Please try again.');
+                        }
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error);
+                        alert('An error occurred while saving the record. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while saving the record.');
+                });
+        
                 return;
             }
 
@@ -514,11 +558,27 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             }
         }
 
+        let userAnswers = [];
+        let correctAnswersCount = 0;
+        let startTime = new Date();
+
         // Function to handle selecting an option
         function selectOption(button) {
             const currentQuestion = questions[currentQuestionIndex - 1];
             const selectedOption = button.textContent.trim();
             const isCorrect = selectedOption === currentQuestion.CorrectAnswer;
+
+            // Track user's answer
+            userAnswers.push({
+                questionId: currentQuestion.QuestionID,
+                userAnswer: selectedOption,
+                isCorrect: isCorrect
+            });
+        
+            // Increment correct answers count if the answer is correct
+            if (isCorrect) {
+                correctAnswersCount++;
+            }
 
             // Play correct or incorrect sound
             if (isCorrect) {
