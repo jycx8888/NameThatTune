@@ -122,7 +122,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     <link rel="icon" href="icon/logo.jpg" type="image/png">
     <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_footer.css">
-    <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
 
         #loading {
@@ -393,6 +392,8 @@ if (json_last_error() !== JSON_ERROR_NONE) {
         </div>
     </div>
 
+    <?php include 'user_hamburger_menu.php'; ?>
+
     <div id="main">
         <div class="question-box">
             <div class="question-header">
@@ -435,6 +436,9 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     </div>
 
     <script>
+        document.getElementById('login').addEventListener('click', function() {
+            document.getElementById('hamburger-menu').classList.toggle('open');
+        });
 
         function goBack() {
             if (window.history.length > 1) {

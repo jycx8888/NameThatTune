@@ -120,7 +120,6 @@ $conn->close();
     <link rel="icon" href="icon/logo.jpg" type="image/png">
     <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_footer.css">
-    <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
         #main {
             flex-grow: 1;
@@ -309,6 +308,8 @@ $conn->close();
         </div>
     </div>
 
+    <?php include 'user_hamburger_menu.php'; ?>
+
     <div id="main">
         <select class="category-dropdown" id="category-dropdown">
             <option value="Category List">Select a Category...</option>
@@ -343,12 +344,13 @@ $conn->close();
         </ul>
         <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
     </div>
-        
-    <?php
-    include 'user_hamburger_menu.php';
-    ?>
 
     <script>
+        document.getElementById('login').addEventListener('click', function() {
+            document.getElementById('hamburger-menu').classList.toggle('open');
+        });
+
+
         function toggleVolumeSlider() {
             volumeSlider.style.display = volumeSlider.style.display === 'block' ? 'none' : 'block';
         }
