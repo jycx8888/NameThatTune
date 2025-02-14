@@ -164,43 +164,49 @@ if (isset($_GET['question_id'])) {
     <div id="container">
         <div id="form-container">
             <h2>Edit Quiz</h2>
+            <input type="hidden" name="question_id" value="<?php echo htmlspecialchars($question['QuestionID']); ?>">
             <form id="quiz-form">
-                <div class="form-group">
-                    <label for="song-name">Song Name</label>
-                    <input type="text" id="song-name" placeholder="Enter Song Name">
-                </div>
+            <button type="button" id="closePopupButton" onclick="closePopup()">Close</button>
+            <div class="form-group">
+                        <label for="song-name">Song Name</label>
+                        <input type="text" id="song-name" name="song_name" placeholder="Enter Song Name" value="<?php echo htmlspecialchars($question['SongName'] ?? ''); ?>">
+                    </div>
 
-                <div class="form-group">
-                    <label for="song-photo">Song Photo</label>
-                    <input type="file" id="song-photo" accept="image/*">
-                    <div id="song-photo-display" style="margin-top: 10px;"></div>
-                </div>
+                    <div class="form-group">
+                        <label for="song-photo">Song Photo</label>
+                        <input type="file" id="song-photo" name="song_photo" accept="image/*">
+                        <div id="song-photo-display" style="margin-top: 10px;">
+                            <?php if (!empty($question['SongPhoto'])): ?>
+                                <img src="<?php echo htmlspecialchars($question['SongPhoto']); ?>" alt="Song Photo" style="max-width: 200px;">
+                            <?php endif; ?>
+                        </div>
+                    </div>
 
-                <div class="form-group">
-                    <label for="song-mp3">Song MP3</label>
-                    <input type="file" id="song-mp3" accept=".mp3">
-                    <div id="mp3-display" style="margin-top: 10px;"></div>
-                </div>
+                    <div class="form-group">
+                        <label for="song-mp3">Song MP3</label>
+                        <input type="file" id="song-mp3" name="song_mp3" accept=".mp3">
+                        <div id="mp3-display" style="margin-top: 10px;">
+                            <?php if (!empty($question['SongMP3'])): ?>
+                                <audio controls src="<?php echo htmlspecialchars($question['SongMP3']); ?>"></audio>
+                            <?php endif; ?>
+                        </div>
+                    </div>
 
-                <div class="form-group options">
-                    <label>Options</label>
-                    <div class="option-item">
-                        <input type="text" placeholder="Option 1">
-                        <img src="Icon/no_select.png" alt="Correct Icon" class="correct-icon">
+                    <div class="form-group options">
+                        <label>Options</label>
+                        <?php
+                        $options = json_decode($question['Options'] ?? '[]', true); // Assuming options are stored as JSON
+                        for ($i = 0; $i < 4; $i++):
+                            $option = $options[$i] ?? '';
+                            $isCorrect = ($option === $question['CorrectAnswer']);
+                        ?>
+                            <div class="option-item">
+                                <input type="text" name="option_<?php echo $i + 1; ?>" placeholder="Option <?php echo $i + 1; ?>" value="<?php echo htmlspecialchars($option); ?>">
+                                <img src="Icon/<?php echo $isCorrect ? 'select.png' : 'no_select.png'; ?>" alt="Correct Icon" class="correct-icon" onclick="toggleCorrect(this)">
+                            </div>
+                        <?php endfor; ?>
+                        <div id="loading" style="display: none;">Loading...</div>
                     </div>
-                    <div class="option-item">
-                        <input type="text" placeholder="Option 2">
-                        <img src="Icon/no_select.png" alt="Correct Icon" class="correct-icon">
-                    </div>
-                    <div class="option-item">
-                        <input type="text" placeholder="Option 3">
-                        <img src="Icon/no_select.png" alt="Correct Icon" class="correct-icon">
-                    </div>
-                    <div class="option-item">
-                        <input type="text" placeholder="Option 4">
-                        <img src="Icon/no_select.png" alt="Correct Icon" class="correct-icon">
-                    </div>
-                </div>
 
                 <button type="submit" class="submit-button">Confirm</button>
             </form>
@@ -454,5 +460,57 @@ if (isset($_GET['question_id'])) {
         }
     </script>
 
+<script>
+document.getElementById('quiz-form').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    const formData = new FormData(this);
+
+    fetch('update_question.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        alert(data); // Show success or error message
+        if (data.includes("successfully")) {
+            closePopup(); // Close the popup if the update is successful
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the question.');
+    });
+});
+</script>
+
+<script>
+    document.getElementById('quiz-form').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const loadingIndicator = document.getElementById('loading');
+    loadingIndicator.style.display = 'block';
+
+    const formData = new FormData(this);
+
+    fetch('update_question.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        loadingIndicator.style.display = 'none';
+        alert(data.message);
+        if (data.status === 'success') {
+            closePopup();
+        }
+    })
+    .catch(error => {
+        loadingIndicator.style.display = 'none';
+        console.error('Error:', error);
+        alert('An error occurred while updating the question.');
+    });
+});
+</script>
 </body>
 </html>
