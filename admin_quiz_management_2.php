@@ -80,12 +80,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $genre_id = $conn->real_escape_string($_POST['genre_id']);
     $created_time = $conn->real_escape_string($_POST['created_time']);
 
+    // Validate GenreID
+    $validate_genre_sql = "SELECT GenreID FROM genre WHERE GenreID = '$genre_id'";
+    $validate_result = $conn->query($validate_genre_sql);
+
+    if ($validate_result->num_rows === 0) {
+        die("Error: Invalid GenreID. The selected genre does not exist in the database.");
+    }
+
+    // Proceed with the update if GenreID is valid
     $update_sql = "UPDATE quiz SET GenreID='$genre_id', CreatedTime='$created_time' WHERE QuizID='$quiz_id'";
 
     if ($conn->query($update_sql) === TRUE) {
         echo "Quiz updated successfully!<br>";
         header("Location: admin_quiz_management.php?quiz_id=$quiz_id");
-        exit(); // Ensure no further code is executed after the redirection
+        exit();
     } else {
         echo "Error updating quiz: " . $conn->error;
     }
@@ -194,7 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Main Content Section -->
     <main>
-    <form method="POST" action="admin_quiz_management_2.php?quiz_id=<?php echo $quiz['QuizID']; ?>">
+    <form method="POST" action="admin_quiz_management.php?quiz_id=<?php echo $quiz['QuizID']; ?>">
     <h2 class="edit-quiz-header"><?php echo isset($quiz) ? 'Edit Quiz' : 'Add Song'; ?></h2>
 
      <!-- Display Quiz ID -->
@@ -208,8 +217,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <label for="genre-id">Genre</label>
         <select id="genre-id" name="genre_id">
             <option value="1" <?php if (isset($quiz) && $quiz['GenreID'] == 'G001') echo 'selected'; ?>>English</option>
-            <option value="2" <?php if (isset($quiz) && $quiz['GenreID'] == 'G002') echo 'selected'; ?>>Korean</option>
-            <option value="3" <?php if (isset($quiz) && $quiz['GenreID'] == 'G003') echo 'selected'; ?>>Japanese</option>
+            <option value="2" <?php if (isset($quiz) && $quiz['GenreID'] == 'G002') echo 'selected'; ?>>Japanese</option>
+            <option value="3" <?php if (isset($quiz) && $quiz['GenreID'] == 'G003') echo 'selected'; ?>>Korean</option>
         </select>
     </div>
 
