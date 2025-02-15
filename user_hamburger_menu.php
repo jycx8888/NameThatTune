@@ -6,7 +6,7 @@
             <img src="<?php echo htmlspecialchars($profile_picture_path); ?>" alt="Profile Picture" id="profilePicture" onclick="showPopup('profilePopup')"> <!-- Display the profile picture -->
             <img src="Icon/pencil.png" alt="Edit" class="edit-icon" style="width: 60px; height: 60px;" onclick="showPopup('profilePopup')">
         </div>
-        <div class="username" id="username"><?php echo htmlspecialchars($username); ?></div>
+        <div id="username"><?php echo htmlspecialchars($username); ?></div>
         <div class="menu-item" onclick="redirectToHistory()">History</div>
         <div class="menu-item" onclick="showPopup('usernamePopup')">Change Username</div>
         <div class="menu-item" onclick="showPopup('passwordPopup')">Change Password</div>
