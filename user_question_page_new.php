@@ -381,7 +381,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     </style>
 </head>
 <body>
-    <div id="loading">3</div>
 
     <div id="header">
         <h1><a href="user_mainPage.php">NameThatTune</a></h1>
@@ -404,7 +403,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             <div><h2 id="question">What song is this?</h2></div>
 
             <!-- Add the audio bar -->
-            <audio id="question-audio" autoplay loop>
+            <audio id="question-audio" autoplay>
                 <source id="audio-source" src="" type="audio/mpeg">
                 Your browser does not support the audio element.
             </audio>
@@ -438,20 +437,15 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     <script>
         function goBack() {
             if (window.history.length > 1) {
-                // Go back if there's history
-                window.history.back();
-            } else {
-                // Fallback to a default page if no history exists
-                window.location.href = 'user_choose_category_page.php'; // Replace with your fallback URL
+                window.location.href = 'user_choose_category_new.php'; // Replace with your fallback URL
             }
         }
 
         const questions = <?php echo $jsonQuestions; ?>;
         if (!questions || questions.length === 0) {
             alert("No questions found for the provided Quiz ID.");
-        } else{
-            alert("Questions loaded successfully!");
-        }
+        } 
+        
 
         let currentQuestionIndex = 0;
 
@@ -662,29 +656,8 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             });
         });
 
-        let countdown = 3;
-
-        function updateCountdown() {
-            document.getElementById('loading').textContent = countdown;
-            if (countdown > 1) {
-                countdown--;
-                setTimeout(updateCountdown, 1000);
-            } else {
-                setTimeout(() => {
-                    document.getElementById('loading').textContent = "Name That Tune !!!";
-                    setTimeout(() => {
-                        document.getElementById('loading').style.display = 'none';
-                        document.getElementById('header').style.display = 'flex';
-                        document.getElementById('main').style.display = 'flex';
-                        document.getElementById('footer').style.display = 'flex';
-                        document.getElementById('question-audio').play();
-                    }, 1000);
-                }, 1000);
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
-            updateCountdown();
+            document.getElementById('question-audio').play();
         });
 
     </script>

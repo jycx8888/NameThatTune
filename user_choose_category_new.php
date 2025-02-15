@@ -352,11 +352,19 @@ $conn->close();
 
 
         function toggleVolumeSlider() {
+            const volumeSlider = document.getElementById('volume-slider');
             volumeSlider.style.display = volumeSlider.style.display === 'block' ? 'none' : 'block';
         }
 
         function adjustVolume(value) {
-            AudioElement.volume = value / 100; // Adjust the audio volume
+            const audioElement = document.getElementById('background-audio');
+            if (audioElement) {
+                audioElement.volume = value / 100; // Adjust the audio volume
+                audioElement.muted = value == 0; // Mute if volume is 0
+                console.log("Volume set to:", audioElement.volume, "Muted:", audioElement.muted);
+            } else {
+                console.log("Error: Audio element not found.");
+            }
         }
 
         // Fullscreen Toggle
@@ -431,7 +439,7 @@ $conn->close();
             const selectedBox = document.querySelector('.quiz-box.selected');
             if (selectedBox) {
                 const quizId = selectedBox.dataset.quizId;
-                window.location.href = `user_question_page_new.php?quizId=${quizId}`;
+                window.location.href = `countdown.php?quizId=${quizId}`;
             }
         });
 
@@ -484,7 +492,7 @@ $conn->close();
                 const selectedBox = document.querySelector('.quiz-box.selected');
                 if (selectedBox) {
                     const quizId = selectedBox.dataset.quizId;
-                    window.location.href = `user_question_page_new.php?quizId=${quizId}`;
+                    window.location.href = `countdown.php?quizId=${quizId}`;
                 } else {
                     showWarning('Please select a quiz first!');
                 }
