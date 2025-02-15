@@ -213,6 +213,20 @@ if (isset($_GET['question_id'])) {
         </div>
     </div>
 
+    <!-- Overlay -->
+    <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000;"></div>
+
+    <!-- Pop-up Container -->
+    <div id="editQuizPopup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; z-index: 1001;">
+        <!-- Your existing form content goes here -->
+        <h2>Edit Quiz</h2>
+        <form id="quiz-form">
+            <!-- Form fields -->
+            <button type="button" id="closePopupButton" onclick="closePopup()">Close</button>
+            <!-- Rest of the form -->
+        </form>
+    </div>
+
     <div id="hamburger-menu">
         <div class="close-btn" onclick="toggleMenu()">×</div>
         <div class="profile-container">
