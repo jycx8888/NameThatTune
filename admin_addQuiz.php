@@ -1,10 +1,38 @@
 <?php
-// Connect to database
-$conn = new mysqli("127.0.0.1", "root", "", "namethattune");
+session_start();
+
+if (!isset($_SESSION['username'])) {
+    header("Location: admin_login.php");
+    exit();
+}
+
+$servername = "localhost";
+$dbusername = "root"; // Database username
+$dbpassword = ""; // Database password
+$dbname = "namethattune";
+
+// Create connection
+$conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
+}
+
+$username = $_SESSION['username'];
+
+// Fetch user data from the database
+$stmt = $conn->prepare("SELECT ProfilePicture FROM admin WHERE Username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $profile_picture_path = $row['ProfilePicture'];
+} else {
+    // Handle case where user data is not found
+    $profile_picture_path = 'Icon/account.png'; // Default profile picture
 }
 
 // Fetch genres from database
@@ -18,9 +46,9 @@ if ($result->num_rows > 0) {
         $genres[] = $row;
     }
 }
+$stmt->close();
 $conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -35,18 +63,18 @@ $conn->close();
             background-color: #d1a3ff;
             display: flex;
             flex-direction: column;
-            align-items: center;
             min-height: 100vh;
             margin: 0;
         }
         .container {
             background-color: white;
+            align-self: center;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             width: 90%;
             max-width: 1000px;
-            margin-top: 20px;
+            margin-top: 60px;
             text-align: left; /* Change from center to left */
         }
         table {
@@ -203,46 +231,40 @@ $conn->close();
         </div>
     </div>
 
+    <?php include 'admin_hamburger_menu.php'; ?>
+
     <div class="container">
-    <h2 style="text-align: left;">Add New Quiz</h2>
-
-    <div style="margin: 15px; text-align: left;">
-        <div style="max-width: 300px; margin-bottom: 20px;">  <!-- Changed from 600px to 300px -->
-            <label for="questionId" style="display: block; text-align: left; margin-bottom: 5px;">Add New Quiz Name:</label>
-            <input type="text" id="questionId" name="questionId" required style="width: 100%;">
+        <h2 style="text-align: left;">Add New Quiz</h2>
+    
+        <div style="margin: 15px; text-align: left;">
+            <div style="max-width: 300px; margin-bottom: 20px;">  <!-- Changed from 600px to 300px -->
+                <label for="questionId" style="display: block; text-align: left; margin-bottom: 5px;">Add New Quiz Name:</label>
+                <input type="text" id="questionId" name="questionId" required style="width: 100%;">
+            </div>
+            <div style="max-width: 300px;">  <!-- Changed from 600px to 300px -->
+                <label for="options" style="display: block; text-align: left; margin-bottom: 5px;">Add New Quiz Category:</label>
+                <select id="options" name="options" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">Select a category</option>
+                    <?php foreach ($genres as $genre): ?>
+                        <option value="<?php echo htmlspecialchars($genre['GenreID']); ?>">
+                            <?php echo htmlspecialchars($genre['GenreName']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
         </div>
-        <div style="max-width: 300px;">  <!-- Changed from 600px to 300px -->
-            <label for="options" style="display: block; text-align: left; margin-bottom: 5px;">Add New Quiz Category:</label>
-            <select id="options" name="options" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                <option value="">Select a category</option>
-                <?php foreach ($genres as $genre): ?>
-                    <option value="<?php echo htmlspecialchars($genre['GenreID']); ?>">
-                        <?php echo htmlspecialchars($genre['GenreName']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-    </div>
-
         <table>
             <thead>
                 <tr>
                     <th>New Quiz No</th>
                     <th>Options</th>
                     <th>Answer</th>
+                    <th>MP3 File</th>
+                    <th>Photo File</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Q001</td>
-                    <td>Never Gonna Give You Up, Niggas in Paris, Blank Space, YMCA</td>
-                    <td>Never Gonna Give You Up</td>
-                    <td class="actions">
-                        <a href="edit_question.php?question_id=Q001">Edit</a> |
-                        <a href="delete_question.php?question_id=Q001">Delete</a>
-                    </td>
-                </tr>
             </tbody>
         </table>
         <br><br>
@@ -302,10 +324,149 @@ $conn->close();
         
         document.getElementById("addQuestionForm").onsubmit = function(e) {
             e.preventDefault();
-            // Here you would typically add AJAX call to save the question
-            alert("Question Added Successfully!");
-            closeModal();
+
+            // Validate MP3 file duration
+            const songUpload = document.getElementById("songUpload").files[0];
+            if (!songUpload) {
+                alert("Please upload an MP3 file.");
+                return;
+            }
+        
+            // Validate song photo upload
+            const songPhoto = document.getElementById("songPhoto").files[0];
+            if (!songPhoto) {
+                alert("Please upload a song photo.");
+                return;
+            }
+        
+            const audio = new Audio(URL.createObjectURL(songUpload));
+            audio.onloadedmetadata = function() {
+                if (audio.duration > 8) {
+                    alert("The uploaded MP3 must be **8 seconds or less**.");
+                    return;
+                }
+            
+                // Get values from the form
+                const options = document.querySelectorAll('.option-container input[type="text"]');
+                const correctOption = document.getElementById("correctOption").value;
+            
+                if (!correctOption) {
+                    alert("Please select the correct answer.");
+                    return;
+                }
+            
+                // Convert options to a comma-separated string
+                const optionTexts = [];
+                options.forEach(option => optionTexts.push(option.value));
+            
+                // Find the correct answer text
+                const correctAnswerText = document.querySelector('.checkmark.selected').previousElementSibling.value;
+            
+                // Generate new quiz number
+                const table = document.querySelector("table tbody");
+                const newQuizNo = table.rows.length + 1;
+            
+                // Create a new row
+                const newRow = document.createElement("tr");
+                newRow.innerHTML = `
+                    <td>${newQuizNo}</td>
+                    <td>${optionTexts.join(", ")}</td>
+                    <td>${correctAnswerText}</td>
+                    <td>${songUpload.name}</td>
+                    <td>${songPhoto.name}</td>
+                    <td class="actions">
+                        <a href="#" onclick="editQuestion(this)">Edit</a> |
+                        <a href="#" onclick="deleteQuestion(this)">Delete</a>
+                    </td>
+                `;
+                table.appendChild(newRow);
+
+                // Close modal and reset form
+                closeModal();
+            };
         };
+
+
+        // Replace the existing deleteQuestion function with this:
+
+        function deleteQuestion(link) {
+            if (confirm("Are you sure you want to delete this question?")) {
+                // Get the row to be deleted
+                const row = link.closest("tr");
+
+                // Remove the row from the table
+                row.parentNode.removeChild(row);
+
+                // Update the quiz numbers for remaining rows
+                const rows = document.querySelectorAll("table tbody tr");
+                rows.forEach((row, index) => {
+                    row.cells[0].textContent = index + 1;  // Update the quiz number
+                });
+            }
+        }
+
+        // Function to update quiz numbers after deleting a row
+        function updateQuizNumbers() {
+            const rows = document.querySelectorAll("table tbody tr");
+            rows.forEach((row, index) => {
+                row.cells[0].textContent = index + 1;
+            });
+        }
+
+        // Function to edit a question 
+        function editQuestion(link) {
+            const row = link.closest("tr");
+            const cells = row.getElementsByTagName("td");
+
+            const quizNo = cells[0].textContent;
+            const optionsText = cells[1].textContent.split(", ");
+            const correctAnswer = cells[2].textContent;
+            const existingSongFileName = cells[3].textContent;
+            const existingPhotoFileName = cells[4].textContent;
+
+            openModal();
+
+            // Populate option fields
+            const options = document.querySelectorAll('.option-container input[type="text"]');
+            options.forEach((option, index) => {
+                option.value = optionsText[index] || "";
+            });
+        
+            // Select the correct answer
+            document.querySelectorAll('.checkmark').forEach(check => {
+                check.classList.remove('selected');
+                check.textContent = "";
+                if (check.previousElementSibling.value === correctAnswer) {
+                    check.classList.add('selected');
+                    check.textContent = "\u2714"; // Checkmark
+                    document.getElementById('correctOption').value = check.getAttribute('data-value');
+                }
+            });
+        
+            // Display existing file names
+            const songFileLabel = document.getElementById("existingSongFile");
+            if (!songFileLabel) {
+                const newLabel = document.createElement("p");
+                newLabel.id = "existingSongFile";
+                newLabel.textContent = "Current MP3: " + existingSongFileName;
+                document.getElementById("songUpload").insertAdjacentElement("afterend", newLabel);
+            } else {
+                songFileLabel.textContent = "Current MP3: " + existingSongFileName;
+            }
+        
+            const photoFileLabel = document.getElementById("existingPhotoFile");
+            if (!photoFileLabel) {
+                const newLabel = document.createElement("p");
+                newLabel.id = "existingPhotoFile";
+                newLabel.textContent = "Current Photo: " + existingPhotoFileName;
+                document.getElementById("songPhoto").insertAdjacentElement("afterend", newLabel);
+            } else {
+                photoFileLabel.textContent = "Current Photo: " + existingPhotoFileName;
+            }
+        }
+
+
+
 
         document.querySelectorAll('.checkmark').forEach(check => {
             check.addEventListener('click', function() {
