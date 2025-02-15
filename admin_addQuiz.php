@@ -63,18 +63,18 @@ $conn->close();
             background-color: #d1a3ff;
             display: flex;
             flex-direction: column;
-            align-items: center;
             min-height: 100vh;
             margin: 0;
         }
         .container {
             background-color: white;
+            align-self: center;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             width: 90%;
             max-width: 1000px;
-            margin-top: 20px;
+            margin-top: 60px;
             text-align: left; /* Change from center to left */
         }
         table {
@@ -234,25 +234,25 @@ $conn->close();
     <?php include 'admin_hamburger_menu.php'; ?>
 
     <div class="container">
-    <h2 style="text-align: left;">Add New Quiz</h2>
-
-    <div style="margin: 15px; text-align: left;">
-        <div style="max-width: 300px; margin-bottom: 20px;">  <!-- Changed from 600px to 300px -->
-            <label for="questionId" style="display: block; text-align: left; margin-bottom: 5px;">Add New Quiz Name:</label>
-            <input type="text" id="questionId" name="questionId" required style="width: 100%;">
+        <h2 style="text-align: left;">Add New Quiz</h2>
+    
+        <div style="margin: 15px; text-align: left;">
+            <div style="max-width: 300px; margin-bottom: 20px;">  <!-- Changed from 600px to 300px -->
+                <label for="questionId" style="display: block; text-align: left; margin-bottom: 5px;">Add New Quiz Name:</label>
+                <input type="text" id="questionId" name="questionId" required style="width: 100%;">
+            </div>
+            <div style="max-width: 300px;">  <!-- Changed from 600px to 300px -->
+                <label for="options" style="display: block; text-align: left; margin-bottom: 5px;">Add New Quiz Category:</label>
+                <select id="options" name="options" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">Select a category</option>
+                    <?php foreach ($genres as $genre): ?>
+                        <option value="<?php echo htmlspecialchars($genre['GenreID']); ?>">
+                            <?php echo htmlspecialchars($genre['GenreName']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
         </div>
-        <div style="max-width: 300px;">  <!-- Changed from 600px to 300px -->
-            <label for="options" style="display: block; text-align: left; margin-bottom: 5px;">Add New Quiz Category:</label>
-            <select id="options" name="options" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                <option value="">Select a category</option>
-                <?php foreach ($genres as $genre): ?>
-                    <option value="<?php echo htmlspecialchars($genre['GenreID']); ?>">
-                        <?php echo htmlspecialchars($genre['GenreName']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-    </div>
 
         <table>
             <thead>
