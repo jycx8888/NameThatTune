@@ -1,3 +1,27 @@
+<?php
+// Connect to database
+$conn = new mysqli("127.0.0.1", "root", "", "namethattune");
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Fetch genres from database
+$sql = "SELECT GenreID, GenreName FROM genre";
+$result = $conn->query($sql);
+
+// Store genres in an array
+$genres = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $genres[] = $row;
+    }
+}
+$conn->close();
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,8 +46,8 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             width: 90%;
             max-width: 1000px;
-            text-align: center;
             margin-top: 20px;
+            text-align: left; /* Change from center to left */
         }
         table {
             width: 100%;
@@ -180,7 +204,26 @@
     </div>
 
     <div class="container">
-        <h2>Add New Quiz</h2>
+    <h2 style="text-align: left;">Add New Quiz</h2>
+
+    <div style="margin: 15px; text-align: left;">
+        <div style="max-width: 300px; margin-bottom: 20px;">  <!-- Changed from 600px to 300px -->
+            <label for="questionId" style="display: block; text-align: left; margin-bottom: 5px;">Add New Quiz Name:</label>
+            <input type="text" id="questionId" name="questionId" required style="width: 100%;">
+        </div>
+        <div style="max-width: 300px;">  <!-- Changed from 600px to 300px -->
+            <label for="options" style="display: block; text-align: left; margin-bottom: 5px;">Add New Quiz Category:</label>
+            <select id="options" name="options" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">Select a category</option>
+                <?php foreach ($genres as $genre): ?>
+                    <option value="<?php echo htmlspecialchars($genre['GenreID']); ?>">
+                        <?php echo htmlspecialchars($genre['GenreName']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </div>
+
         <table>
             <thead>
                 <tr>
@@ -210,31 +253,16 @@
 
     <!-- Modal -->
     <div id="quizModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Add New Question</h2>
-            <form id="addQuestionForm">
-                <div style="margin: 15px;">
-                    <label for="questionId">New Quiz Name:</label>
-                    <input type="text" id="questionId" name="questionId" required>
-                </div>
-                <div style="margin: 15px;">
-                    <label for="options">New Quiz Category:</label>
-                    <select id="options" name="options" required style="width: 80%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px;">
-                        <option value="">Select a category</option>
-                        <option value="english">English</option>
-                        <option value="japanese">Japanese</option>
-                        <option value="korean">Korean</option>
-                    </select>
-                </div>
-    
-            </form>
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Add New Quiz</h2>
+        <form id="addQuestionForm">
             <label for="songUpload">Correct Song Upload (8 secs):</label>
             <input type="file" id="songUpload" name="songUpload" accept="audio/mp3">
-
+            <br><br>
             <label for="songPhoto">Song Photo (Photos related to Options only):</label>
             <input type="file" id="songPhoto" name="songPhoto" accept="image/*">
-            
+            <br><br>
             <label>Options:</label>
                 <div class="option-container">
             <div>
@@ -255,7 +283,7 @@
             </div>
             <input type="hidden" id="correctOption" name="correctOption">
         </div>
-
+            
             <button type="submit">Add Question</button>
             <button type="button" onclick="closeModal()">Cancel</button>
         </form>

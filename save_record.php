@@ -39,6 +39,7 @@ error_log("Received data: " . print_r($data, true)); // Log the received data
 
 $userId = $data['userId'];
 $quizId = $data['quizId'];
+$recordId = $data['recordId'];
 $correctAnswersCount = $data['correctAnswersCount'];
 $totalQuestions = $data['totalQuestions'];
 $timeTaken = $data['timeTaken'];
@@ -60,11 +61,7 @@ if ($result->num_rows === 0) {
 }
 $stmt->close();
 
-// Generate a new RecordID
-$result = $conn->query("SELECT COUNT(*) AS count FROM record");
-$row = $result->fetch_assoc();
-$recordCount = $row['count'] + 1;
-$recordId = 'R' . str_pad($recordCount, 3, '0', STR_PAD_LEFT);
+
 
 // Insert the record into the record table
 $stmt = $conn->prepare("INSERT INTO record (RecordID, Result, Time, UserID, QuizID, TimeUsed) VALUES (?, ?, ?, ?, ?, ?)");
