@@ -178,9 +178,7 @@ $conn->close();
 
         /* Volume and Fullscreen Controls */
         #controls {
-            position: sticky; /* Fixes the controls to the viewport */
             width: 100%; /* Full width of the screen */
-            bottom: 20px; /* Stays 20px from the bottom */
             display: flex; /* Align buttons */
             justify-content: space-between; /* Align one button to the left and the other to the right */
             align-items: center;
