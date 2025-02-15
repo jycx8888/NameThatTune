@@ -126,8 +126,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 
         #loading {
             position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
             background-color: #9370db;
@@ -141,50 +139,22 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             z-index: 1000;
         }
 
-        #loginOrRegister {
-            width: auto;
-            height: 60px;
-            background-color: white;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            padding: 0 10px;
-            cursor: pointer;
-        }
-
-        #loginOrRegister img {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        
-        #username {
-            font-size: 16px;
-            color: black;
-            font-weight: bold;
-            font-family: "Lalezar", system-ui;
-            font-weight: 1000;
-            font-style: normal;
-        }
-
-        #main {
-            flex-grow: 1;
+        #content {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            height: 100%;
         }
 
         .question-box {
             background-color: white;
             border-radius: 15px;
             padding: 20px;
-            margin-top: 80px;
             max-width: 600px;
             width: 100%;
             text-align: center;
+            align-self: center;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
             position: relative;
         }
@@ -241,11 +211,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             cursor: not-allowed;
         }
 
-        #header {
-            position: relative;
-            z-index: 1000;
-        }
-
         #backButton {
             background-color: rgb(77, 72, 144);
             color: white;
@@ -253,10 +218,9 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             border: none;
             border-radius: 10px;
             padding: 10px 20px;
+            margin: 24px;
             cursor: pointer;
-            position: absolute;
-            top: 100px; /* Adjust this value to move the button down as needed */
-            left: 50px; /* Adjust this value to move the button horizontally as needed */
+            align-self: start;
             transition: background-color 0.3s, transform 0.2s;
             z-index: 1001; /* Ensure it appears above other elements */
         }
@@ -274,8 +238,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             display: flex; /* Align buttons */
             justify-content: space-between; /* Align one button to the left and the other to the right */
             align-items: center;
-            padding: 0 20px;
-            z-index: 9999; /* Ensures the controls stay above other elements */
             background-color: transparent; /* Optional: Makes the background transparent */
         }
 
@@ -304,9 +266,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             display: flex;
             align-items: center;
             position: sticky; /* Ensures it stays in place */
-            bottom: 20px; /* Keep it at the bottom */
-            right: 10px; /* Adjust this value to move it left */
-            z-index: 9999; /* Keeps it above other content */
+            margin-right: 24px;
         }
 
         #fullscreen-icon {
@@ -362,7 +322,9 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             border-radius: 10px; /* Slightly round edges */
             cursor: not-allowed;
             transition: background-color 0.3s;
-            display: inline-block; /* Ensure button stays inline */
+            display: block; /* Ensure button stays inline */
+            width: fit-content;
+            justify-self: center;
         }
 
         #next-button:enabled {
@@ -385,16 +347,16 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 
     <div id="header">
         <h1><a href="user_mainPage.php">NameThatTune</a></h1>
-        <button id="backButton" onclick="goBack()">Back</button>
-        <div id="loginOrRegister" onclick="">
-            <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
-            <p><?php echo htmlspecialchars($username); ?></p>
+        <div id="login">
+        <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
+        <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>
 
     <?php include 'user_hamburger_menu.php'; ?>
 
-    <div id="main">
+    <div id="content">
+        <button id="backButton" onclick="goBack()">Back</button>
         <div class="question-box">
             <div class="question-header">
                 <span id="question-number">1</span>
@@ -404,13 +366,11 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             <div><h2 id="question">What song is this?</h2></div>
 
             <!-- Add the audio bar -->
-            <audio id="question-audio" autoplay loop>
+            <audio id="question-audio" autoplay>
                 <source id="audio-source" src="" type="audio/mpeg">
                 Your browser does not support the audio element.
             </audio>
             
-            
-
             <div class="options">
                 <button class="option-button" onclick="selectOption(this)"></button>
                 <button class="option-button" onclick="selectOption(this)"></button>
@@ -418,20 +378,19 @@ if (json_last_error() !== JSON_ERROR_NONE) {
                 <button class="option-button" onclick="selectOption(this)"></button>
             </div>
         </div>
-    </div>
 
-    <div id="controls">
-        <div id="volume-control">
-            <img id="volume-icon" src="icon/volume.png" alt="Volume Icon" onclick="toggleVolumeSlider()">
-            <input id="volume-slider" type="range" min="0" max="100" value="50" onchange="adjustVolume(this.value)">
-        </div>
-        <div id="fullscreen-control">
-            <img id="fullscreen-icon" src="icon/fullscreen.png" alt="Fullscreen Icon" onclick="toggleFullscreen()">
-        </div>
-    </div>
 
-    <!-- Add the Next button -->
-    <div class="next-button-container">
+        <div id="controls">
+            <div id="volume-control">
+                <img id="volume-icon" src="icon/volume.png" alt="Volume Icon" onclick="toggleVolumeSlider()">
+                <input id="volume-slider" type="range" min="0" max="100" value="50" onchange="adjustVolume(this.value)">
+            </div>
+            <div id="fullscreen-control">
+                <img id="fullscreen-icon" src="icon/fullscreen.png" alt="Fullscreen Icon" onclick="toggleFullscreen()">
+            </div>
+        </div>
+
+            <!-- Add the Next button -->
         <button id="next-button" onclick="loadNextQuestion()" disabled>Next</button>
     </div>
 
@@ -675,7 +634,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
                     setTimeout(() => {
                         document.getElementById('loading').style.display = 'none';
                         document.getElementById('header').style.display = 'flex';
-                        document.getElementById('main').style.display = 'flex';
+                        document.getElementById('content').style.display = 'flex';
                         document.getElementById('footer').style.display = 'flex';
                         document.getElementById('question-audio').play();
                     }, 1000);
