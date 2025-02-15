@@ -84,6 +84,12 @@ while ($row = $questionsResult->fetch_assoc()) {
     $questions[] = $row;
 }
 
+// Generate a new RecordID
+$result = $conn->query("SELECT COUNT(*) AS count FROM record");
+$row = $result->fetch_assoc();
+$recordCount = $row['count'] + 1;
+$recordId = 'R' . str_pad($recordCount, 3, '0', STR_PAD_LEFT);
+
 $stmt->close();
 $conn->close();
 
@@ -391,9 +397,12 @@ if (json_last_error() !== JSON_ERROR_NONE) {
         
 
         let currentQuestionIndex = 0;
+        let startTime = new Date();
+        let realStartTime = new Date(startTime.toLocaleString('en-US', { timeZone: 'UTC' }));
 
         const quizId = <?php echo json_encode($quizId); ?>;
         const userId = <?php echo json_encode($_SESSION['user_id']); ?>;
+        const recordId = <?php echo json_encode($recordId); ?>;
 
         console.log("User ID:", userId); // Log the user ID to the console
         console.log("Quiz ID:", quizId); // Log the quiz ID to the console
@@ -402,7 +411,8 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             if (currentQuestionIndex >= questions.length) {
                 // Calculate the total time taken
                 let endTime = new Date();
-                let timeTaken = ((endTime - startTime) / 1000).toFixed(1); // Time in seconds
+                let realEndTime = new Date(endTime.toLocaleString('en-US', { timeZone: 'UTC' }));
+                let timeTaken = ((realEndTime - realStartTime) / 1000).toFixed(1); // Time in seconds
 
                 // Save the record and record_question data to the database
                 fetch('save_record.php', {
@@ -413,6 +423,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
                     body: JSON.stringify({
                         userId: userId,
                         quizId: quizId,
+                        recordId: recordId,
                         correctAnswersCount: correctAnswersCount,
                         totalQuestions: questions.length,
                         timeTaken: timeTaken,
@@ -427,7 +438,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
                         const jsonData = JSON.parse(data); // Parse the JSON response
                         if (jsonData.success) {
                             // Redirect to the leaderboard page with the result and quiz ID
-                            window.location.href = `user_leaderboard.php?result=${correctAnswersCount}&quizId=${quizId}`;
+                            window.location.href = `user_leaderboard.php?result=${correctAnswersCount}&quizId=${quizId}&recordId=${recordId}`;
                         } else {
                             alert('Failed to save the record. Please try again.');
                         }
@@ -499,7 +510,8 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 
         let userAnswers = [];
         let correctAnswersCount = 0;
-        let startTime = new Date();
+        
+
 
         // Function to handle selecting an option
         function selectOption(button) {
