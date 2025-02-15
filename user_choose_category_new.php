@@ -52,6 +52,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NameThatTune</title>
     <link rel="icon" href="icon/logo.jpg" type="image/png">
+    <link rel="stylesheet" href="hamburger_menu.css">
     <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_footer.css">
     <style>
@@ -223,7 +224,7 @@ $conn->close();
 </head>
 <body>
     <audio id="background-audio" autoplay loop>
-        <source src="Background Audio/tokyo-hot.mp3" type="audio/mpeg">
+        <source src="Background Audio/Hotel lobby music.mp3" type="audio/mpeg">
     </audio> 
 
     <div id="header">
@@ -429,17 +430,6 @@ $conn->close();
             fetchQuizzes(selectedCategory);
             changeAudio(selectedCategory);
         });
-        
-        function validateNewUsername() {
-            const username = document.getElementById('usernameInput').value;
-            
-            if (username === "") {
-                showWarning('Username cannot be empty.');
-                return false;
-            }
-
-            return true;
-        }
 
         document.addEventListener("DOMContentLoaded", function () {
             const dropdown = document.getElementById("category-dropdown");
