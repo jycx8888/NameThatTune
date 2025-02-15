@@ -23,15 +23,18 @@
 </head>
 <body>
     <div id="countdown">3</div>
+    <audio id="countdown-audio" src="Sound Effect/countdown.mp3"></audio> <!-- Add the audio element -->
 
     <script>
         let countdown = 3;
+        const audio = document.getElementById('countdown-audio');
 
         function updateCountdown() {
             document.getElementById('countdown').textContent = countdown;
             if (countdown > 1) {
                 countdown--;
                 setTimeout(updateCountdown, 1000);
+                audio.play();
             } else {
                 setTimeout(() => {
                     document.getElementById('countdown').textContent = "Name That Tune !!!";
