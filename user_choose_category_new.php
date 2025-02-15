@@ -21,73 +21,7 @@ if ($conn->connect_error) {
 
 $username = $_SESSION['username'];
 
-// Fetch user data from the database
-$stmt = $conn->prepare("SELECT ProfilePicture FROM user WHERE Username = ?");
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $profile_picture_path = $row['ProfilePicture'];
-} else {
-    // Handle case where user data is not found
-    $profile_picture_path = 'Icon/account.png'; // Default profile picture
-}
-
-$stmt->close();
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['update_username'])) {
-        $new_username = $_POST['newUsername'];
-
-        $stmt = $conn->prepare("UPDATE user SET Username = ? WHERE Username = ?");
-        $stmt->bind_param("ss", $new_username, $username);
-        if ($stmt->execute()) {
-            $_SESSION['username'] = $new_username;
-            $username = $new_username;
-        } else {
-            echo "Error updating username.";
-        }
-
-        $stmt->close();
-    }
-
-    if (isset($_POST['update_password'])) {
-        $new_password =$_POST['newPassword'];
-        $stmt = $conn->prepare("UPDATE user SET Password = ? WHERE Username = ?");
-        $stmt->bind_param("ss", $new_password, $username);
-        if ($stmt->execute()) {
-        } else {
-            echo "Error updating password.";
-        }
-        $stmt->close();
-    }
-
-    if (isset($_POST['update_profile'])) {
-        $profile_picture = $_FILES['ProfilePicture']['name'];
-        $target_dir = "uploads/";
-        $target_file = $target_dir . basename($profile_picture);
-
-        if (move_uploaded_file($_FILES['ProfilePicture']['tmp_name'], $target_file)) {
-            $stmt = $conn->prepare("UPDATE user SET ProfilePicture = ? WHERE Username = ?");
-            $stmt->bind_param("ss", $target_file, $username);
-            if ($stmt->execute()) {
-                $profile_picture_path = $target_file;
-            } else {
-                echo "Error updating profile picture.";
-            }
-
-            $stmt->close();
-        } else {
-            echo "Error uploading file.";
-        }
-    }
-
-    // Redirect to avoid form resubmission
-    header("Location: user_mainPage.php");
-    exit();
-}
+include 'user_fetch_profile.php';
 
 if (isset($_GET['genreID'])) {
     $genreID = $_GET['genreID'];
@@ -121,40 +55,38 @@ $conn->close();
     <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_footer.css">
     <style>
-        #main {
-            flex-grow: 1;
+
+        #content {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            height: calc(99vh - 100px); 
+            height: 100%;
         }
 
         .category-dropdown {
             font-family: "Lalezar", system-ui;
             font-weight: 1000;
-            font-size: small;
+            font-size: 16px;
             padding: 10px;
             border: 2px solid #000000;
             border-radius: 10px;
-            background-color: #ffffff;
-            color: #000000;
+            background-color: white;
+            color: black;
             background-image: url('icon/music.png');
             background-repeat: no-repeat;
             background-position: right 25px center;
             background-size: 20px;
             padding-right: 40px;
-            margin-top: -100px;
         }
 
         .category-dropdown option {
             font-family: "Lalezar", system-ui;
             font-weight: 1000;
-            font-size: small;
-            color: #000; /* Text color */
-            background-color: #fff; /* Background color */
-            padding: 5px; /* Option padding */
+            font-size: 16px;
+            color: black;
+            background-color: white;
+            padding: 5px;
         }
 
         #quiz-gallery-container {
@@ -183,46 +115,46 @@ $conn->close();
         }
 
         .quiz-box {
-    font-family: "Lalezar", system-ui;
-    font-weight: 1000;
-    font-size: small;
-    display: inline-block;
-    width: 200px;
-    height: 200px;
-    background-color: rgb(72, 87, 227);
-    color: white;
-    text-align: center;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-    cursor: pointer;
-    overflow: hidden;
-    margin: 30px;
-    transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
-}
+            font-family: "Lalezar", system-ui;
+            font-weight: 1000;
+            font-size: small;
+            display: inline-block;
+            width: 200px;
+            height: 200px;
+            background-color: rgb(72, 87, 227);
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            overflow: hidden;
+            margin: 30px;
+            transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+        }
 
-.quiz-box span {
-    display: block;
-    padding: 8px 5px; /* Reduce padding */
-    font-size: 1.1rem; /* Adjust font size */
-    background-color: rgba(0, 0, 0, 0.6);
-    position: relative;
-    top: 5px; /* Maintain slight downward position */
-}
+        .quiz-box span {
+            display: block;
+            padding: 8px 5px; /* Reduce padding */
+            font-size: 1.1rem; /* Adjust font size */
+            background-color: rgba(0, 0, 0, 0.6);
+            position: relative;
+            top: 5px; /* Maintain slight downward position */
+        }
 
-@media (max-width: 600px) {
-    .quiz-box span {
-        font-size: 0.9rem; /* Smaller text for mobile */
-        padding: 5px; /* Adjust padding */
-    }
-}
+        @media (max-width: 600px) {
+            .quiz-box span {
+                font-size: 0.9rem; /* Smaller text for mobile */
+                padding: 5px; /* Adjust padding */
+            }
+        }
 
-.quiz-box:hover {
-    transform: scale(1.1); /* Slightly enlarge the box */
-}
+        .quiz-box:hover {
+            transform: scale(1.1); /* Slightly enlarge the box */
+        }
 
-.quiz-box.selected {
-    transform: scale(1.1); /* Slightly enlarge the box */
-}
+        .quiz-box.selected {
+            transform: scale(1.1); /* Slightly enlarge the box */
+        }
 
         #start-button {
             margin-top: 20px;
@@ -297,7 +229,7 @@ $conn->close();
 </head>
 <body>
     <audio id="background-audio" autoplay loop>
-        <source src="Background Audio/Hotel lobby music.mp3" type="audio/mpeg">
+        <source src="Background Audio/tokyo-hot.mp3" type="audio/mpeg">
     </audio> 
 
     <div id="header">
@@ -310,7 +242,7 @@ $conn->close();
 
     <?php include 'user_hamburger_menu.php'; ?>
 
-    <div id="main">
+    <div id="content">
         <select class="category-dropdown" id="category-dropdown">
             <option value="Category List">Select a Category...</option>
             <option value="G001">English</option>
@@ -323,17 +255,19 @@ $conn->close();
         </div>
 
         <button id="start-button">Click to Start</button>
+
+        <div id="controls">
+            <div id="volume-control">
+                <img id="volume-icon" src="icon/volume.png" alt="Volume Icon" onclick="toggleVolumeSlider()">
+                <input id="volume-slider" type="range" min="0" max="100" value="50" onchange="adjustVolume(this.value)">
+            </div>
+            <div id="fullscreen-control">
+                <img id="fullscreen-icon" src="icon/fullscreen.png" alt="Fullscreen Icon" onclick="toggleFullscreen()">
+            </div>
+        </div>
     </div>
 
-    <div id="controls">
-        <div id="volume-control">
-            <img id="volume-icon" src="icon/volume.png" alt="Volume Icon" onclick="toggleVolumeSlider()">
-            <input id="volume-slider" type="range" min="0" max="100" value="50" onchange="adjustVolume(this.value)">
-        </div>
-        <div id="fullscreen-control">
-            <img id="fullscreen-icon" src="icon/fullscreen.png" alt="Fullscreen Icon" onclick="toggleFullscreen()">
-        </div>
-    </div>
+
 
     <div id="footer">
         <ul class="nav">

@@ -7,7 +7,7 @@
             <img src="Icon/pencil.png" alt="Edit" class="edit-icon" style="width: 60px; height: 60px;" onclick="showPopup('profilePopup')">
         </div>
         <div class="username" id="username"><?php echo htmlspecialchars($username); ?></div>
-        <div class="menu-item" onclick="directToHistory()">History</div>
+        <div class="menu-item" onclick="redirectToHistory()">History</div>
         <div class="menu-item" onclick="showPopup('usernamePopup')">Change Username</div>
         <div class="menu-item" onclick="showPopup('passwordPopup')">Change Password</div>
         <div class="menu-item" onclick="toggleSubmenu('settings-submenu')">Settings</div>

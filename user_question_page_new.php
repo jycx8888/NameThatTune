@@ -124,21 +124,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     <link rel="stylesheet" href="user_footer.css">
     <style>
 
-        #loading {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background-color: #9370db;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: "Lalezar", system-ui;
-            font-size: 3rem;
-            font-weight: 1000;
-            z-index: 1000;
-        }
-
         #content {
             display: flex;
             flex-direction: column;
