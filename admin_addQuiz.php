@@ -119,7 +119,7 @@
         .option-container div {
         display: flex;
         align-items: center;
-        background-color:rgb(166, 92, 176);
+        background-color:rgb(194, 194, 194);
         border-radius: 20px;
         padding: 10px;
         margin-bottom: 10px;
@@ -233,28 +233,26 @@
             <input type="file" id="songPhoto" name="songPhoto" accept="image/*">
             
             <label>Options:</label>
-            <div class="option-container">
-                <div>
-                    <span class="icon">↗</span>
-                    <input type="text" name="option1" value="Never Gonna Give You Up" readonly>
-                    <input type="radio" name="correctOption" value="option1" checked>
-                </div>
-                <div>
-                    <span class="icon">↗</span>
-                    <input type="text" name="option2" value="Niggas in Paris" readonly>
-                    <input type="radio" name="correctOption" value="option2">
-                </div>
-                <div>
-                    <span class="icon">↗</span>
-                    <input type="text" name="option3" value="Blank Space" readonly>
-                    <input type="radio" name="correctOption" value="option3">
-                </div>
-                <div>
-                    <span class="icon">↗</span>
-                    <input type="text" name="option4" value="YMCA" readonly>
-                    <input type="radio" name="correctOption" value="option4">
-                </div>
+                    <div class="option-container">
+            <div>
+                <input type="text" name="option1" placeholder="Enter option 1" required>
+                <span class="checkmark" data-value="option1">⬜</span>
             </div>
+            <div>
+                <input type="text" name="option2" placeholder="Enter option 2" required>
+                <span class="checkmark" data-value="option2">⬜</span>
+            </div>
+            <div>
+                <input type="text" name="option3" placeholder="Enter option 3" required>
+                <span class="checkmark" data-value="option3">⬜</span>
+            </div>
+            <div>
+                <input type="text" name="option4" placeholder="Enter option 4" required>
+                <span class="checkmark" data-value="option4">⬜</span>
+            </div>
+            <input type="hidden" id="correctOption" name="correctOption">
+        </div>
+
 
             
             <button type="submit">Add Question</button>
@@ -279,6 +277,14 @@
             alert("Question Added Successfully!");
             closeModal();
         };
+
+        document.querySelectorAll('.checkmark').forEach(check => {
+        check.addEventListener('click', function() {
+            document.querySelectorAll('.checkmark').forEach(c => c.textContent = '⬜'); // Reset all
+            this.textContent = '✅'; // Set selected
+            document.getElementById('correctOption').value = this.getAttribute('data-value'); // Update hidden input
+            });
+        });
     </script>
 </body>
 </html>
