@@ -229,14 +229,13 @@ if (json_last_error() !== JSON_ERROR_NONE) {
         #volume-control {
             display: flex;
             align-items: center;
-            left: 20px; /* Optional: Fine-tune button spacing */
+            margin-left: 24px;
         }
 
         #volume-icon {
             width: 40px;
             height: 40px;
             cursor: pointer;
-            margin-right: 10px;
         }
 
         #volume-slider {
