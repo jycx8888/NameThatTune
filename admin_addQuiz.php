@@ -315,58 +315,87 @@ $conn->close();
     <script>
         function openModal() {
             document.getElementById("quizModal").style.display = "block";
+                
+            // Reset all checkmarks
+            document.querySelectorAll('.checkmark').forEach(check => {
+                check.classList.remove('selected');
+                check.textContent = ""; // Clear checkmark
+            });
+        
+            // Reset correct answer input field
+            document.getElementById('correctOption').value = "";
         }
         
         function closeModal() {
             document.getElementById("quizModal").style.display = "none";
             document.getElementById("addQuestionForm").reset();
+
+            // Reset correct answer selection
+            document.querySelectorAll('.checkmark').forEach(check => {
+                check.classList.remove('selected');
+                check.textContent = "";
+            });
+        
+            // Clear correct option field
+            document.getElementById('correctOption').value = "";
         }
         
         document.getElementById("addQuestionForm").onsubmit = function(e) {
             e.preventDefault();
 
-            // Validate MP3 file duration
+            // Get values from the form
+            const options = document.querySelectorAll('.option-container input[type="text"]');
+            const correctOption = document.getElementById("correctOption").value;
             const songUpload = document.getElementById("songUpload").files[0];
-            if (!songUpload) {
-                alert("Please upload an MP3 file.");
-                return;
-            }
-        
-            // Validate song photo upload
             const songPhoto = document.getElementById("songPhoto").files[0];
-            if (!songPhoto) {
-                alert("Please upload a song photo.");
+
+            // Check if we're editing an existing row
+            const editingRow = document.querySelector('[data-editing="true"]');
+
+            if (!editingRow) {
+                // Only validate files for new questions
+                if (!songUpload) {
+                    alert("Please upload an MP3 file.");
+                    return;
+                }
+
+                if (!songPhoto) {
+                    alert("Please upload a song photo.");
+                    return;
+                }
+
+                const audio = new Audio(URL.createObjectURL(songUpload));
+                audio.onloadedmetadata = function() {
+                    if (audio.duration > 8) {
+                        alert("The uploaded MP3 must be 8 seconds or less.");
+                        return;
+                    }
+                };
+            }
+        
+            if (!correctOption) {
+                alert("Please select the correct answer.");
                 return;
             }
         
-            const audio = new Audio(URL.createObjectURL(songUpload));
-            audio.onloadedmetadata = function() {
-                if (audio.duration > 8) {
-                    alert("The uploaded MP3 must be **8 seconds or less**.");
-                    return;
-                }
-            
-                // Get values from the form
-                const options = document.querySelectorAll('.option-container input[type="text"]');
-                const correctOption = document.getElementById("correctOption").value;
-            
-                if (!correctOption) {
-                    alert("Please select the correct answer.");
-                    return;
-                }
-            
-                // Convert options to a comma-separated string
-                const optionTexts = [];
-                options.forEach(option => optionTexts.push(option.value));
-            
-                // Find the correct answer text
-                const correctAnswerText = document.querySelector('.checkmark.selected').previousElementSibling.value;
-            
-                // Generate new quiz number
+            // Convert options to array
+            const optionTexts = [];
+            options.forEach(option => optionTexts.push(option.value));
+        
+            // Find the correct answer text
+            const correctAnswerText = document.querySelector('.checkmark.selected').previousElementSibling.value;
+        
+            if (editingRow) {
+                // Update existing row
+                editingRow.cells[1].textContent = optionTexts.join(", ");
+                editingRow.cells[2].textContent = correctAnswerText;
+                if (songUpload) editingRow.cells[3].textContent = songUpload.name;
+                if (songPhoto) editingRow.cells[4].textContent = songPhoto.name;
+                editingRow.removeAttribute('data-editing');
+            } else {
+                // Create new row
                 const table = document.querySelector("table tbody");
                 const newQuizNo = table.rows.length + 1;
-            
-                // Create a new row
                 const newRow = document.createElement("tr");
                 newRow.innerHTML = `
                     <td>${newQuizNo}</td>
@@ -380,12 +409,11 @@ $conn->close();
                     </td>
                 `;
                 table.appendChild(newRow);
-
-                // Close modal and reset form
-                closeModal();
-            };
+            }
+        
+            // Close modal and reset form
+            closeModal();
         };
-
 
         // Replace the existing deleteQuestion function with this:
 
@@ -416,6 +444,7 @@ $conn->close();
         // Function to edit a question 
         function editQuestion(link) {
             const row = link.closest("tr");
+            row.setAttribute('data-editing', 'true'); // Mark the row being edited
             const cells = row.getElementsByTagName("td");
 
             const quizNo = cells[0].textContent;
@@ -438,12 +467,15 @@ $conn->close();
                 check.textContent = "";
                 if (check.previousElementSibling.value === correctAnswer) {
                     check.classList.add('selected');
-                    check.textContent = "\u2714"; // Checkmark
+                    check.textContent = "\u2714";
                     document.getElementById('correctOption').value = check.getAttribute('data-value');
                 }
             });
         
             // Display existing file names
+            document.getElementById("songUpload").value = ""; // Clear file input
+            document.getElementById("songPhoto").value = ""; // Clear file input
+        
             const songFileLabel = document.getElementById("existingSongFile");
             if (!songFileLabel) {
                 const newLabel = document.createElement("p");
@@ -464,7 +496,6 @@ $conn->close();
                 photoFileLabel.textContent = "Current Photo: " + existingPhotoFileName;
             }
         }
-
 
 
 
