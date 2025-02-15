@@ -117,14 +117,14 @@
         }
 
         .option-container div {
-        display: flex;
-        align-items: center;
-        background-color:rgb(166, 92, 176);
-        border-radius: 20px;
-        padding: 10px;
-        margin-bottom: 10px;
-        position: relative;
-        border: 2px solidrgb(130, 185, 229);
+            display: flex;
+            align-items: center;
+            background-color: rgb(194, 194, 194);
+            border-radius: 20px;
+            padding: 10px;
+            margin-bottom: 10px;
+            position: relative;
+            border: 2px solid rgb(130, 185, 229);
         }
 
         .option-container input[type="text"] {
@@ -136,17 +136,30 @@
             outline: none;
         }
 
-        .option-container input[type="radio"] {
-            position: absolute;
-            right: 10px;
-            width: 20px;
-            height: 20px;
-            accent-color: green;
+        .checkmark {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            border: 2px solid #aaa;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 20px;
+            color: transparent;
+            margin-left: 10px;
         }
 
-        .option-container .icon {
-            margin-right: 10px;
-            font-size: 16px;
+        .checkmark:hover {
+            background-color: #ddd;
+        }
+
+        .checkmark.selected {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+            content: "\25CF"; /* Unicode for a filled circle */
         }
 
         .close {
@@ -171,7 +184,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>Question ID</th>
+                    <th>New Quiz No</th>
                     <th>Options</th>
                     <th>Answer</th>
                     <th>Action</th>
@@ -202,7 +215,7 @@
             <h2>Add New Question</h2>
             <form id="addQuestionForm">
                 <div style="margin: 15px;">
-                    <label for="questionId">Question ID:</label>
+                    <label for="questionId">New Quiz Name:</label>
                     <input type="text" id="questionId" name="questionId" required>
                 </div>
                 <div style="margin: 15px;">
@@ -214,49 +227,35 @@
                         <option value="korean">Korean</option>
                     </select>
                 </div>
-                <div style="margin: 15px;">
-                    <label for="answer">Correct Answer:</label>
-                    <input type="text" id="answer" name="answer" required>
-                </div>
+    
             </form>
-
-            <label for="category">Category:</label>
-            <input type="text" id="category" name="category" required>
-
-            <label for="songName">Song Name:</label>
-            <input type="text" id="songName" name="songName" required>
-
-            <label for="songUpload">Song Upload (8 secs):</label>
+            <label for="songUpload">Correct Song Upload (8 secs):</label>
             <input type="file" id="songUpload" name="songUpload" accept="audio/mp3">
 
-            <label for="songPhoto">Song Photo:</label>
+            <label for="songPhoto">Song Photo (Photos related to Options only):</label>
             <input type="file" id="songPhoto" name="songPhoto" accept="image/*">
             
             <label>Options:</label>
-            <div class="option-container">
-                <div>
-                    <span class="icon">↗</span>
-                    <input type="text" name="option1" value="Never Gonna Give You Up" readonly>
-                    <input type="radio" name="correctOption" value="option1" checked>
-                </div>
-                <div>
-                    <span class="icon">↗</span>
-                    <input type="text" name="option2" value="Niggas in Paris" readonly>
-                    <input type="radio" name="correctOption" value="option2">
-                </div>
-                <div>
-                    <span class="icon">↗</span>
-                    <input type="text" name="option3" value="Blank Space" readonly>
-                    <input type="radio" name="correctOption" value="option3">
-                </div>
-                <div>
-                    <span class="icon">↗</span>
-                    <input type="text" name="option4" value="YMCA" readonly>
-                    <input type="radio" name="correctOption" value="option4">
-                </div>
+                <div class="option-container">
+            <div>
+                <input type="text" name="option1" placeholder="Enter option 1" required>
+                <span class="checkmark" data-value="option1"></span>
             </div>
+            <div>
+                <input type="text" name="option2" placeholder="Enter option 2" required>
+                <span class="checkmark" data-value="option2"></span>
+            </div>
+            <div>
+                <input type="text" name="option3" placeholder="Enter option 3" required>
+                <span class="checkmark" data-value="option3"></span>
+            </div>
+            <div>
+                <input type="text" name="option4" placeholder="Enter option 4" required>
+                <span class="checkmark" data-value="option4"></span>
+            </div>
+            <input type="hidden" id="correctOption" name="correctOption">
+        </div>
 
-            
             <button type="submit">Add Question</button>
             <button type="button" onclick="closeModal()">Cancel</button>
         </form>
@@ -279,6 +278,18 @@
             alert("Question Added Successfully!");
             closeModal();
         };
+
+        document.querySelectorAll('.checkmark').forEach(check => {
+            check.addEventListener('click', function() {
+                document.querySelectorAll('.checkmark').forEach(c => {
+                    c.classList.remove('selected');
+                    c.textContent = ""; // Reset all
+                });
+                this.classList.add('selected');
+                this.textContent = "\u2714"; // Unicode for check mark
+                document.getElementById('correctOption').value = this.getAttribute('data-value');
+            });
+        });
     </script>
 </body>
 </html>

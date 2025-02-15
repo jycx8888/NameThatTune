@@ -167,44 +167,49 @@ if (isset($_GET['question_id'])) {
             <input type="hidden" name="question_id" value="<?php echo htmlspecialchars($question['QuestionID']); ?>">
             <form id="quiz-form">
             <button type="button" id="closePopupButton" onclick="closePopup()">Close</button>
+
+            <?php
+            // Fetch question data based on question_id
+            $question_id = $_GET['question_id'];
+            // Fetch data from the database
+
+            // Return only the dynamic content
+            ?>
             <div class="form-group">
-                        <label for="song-name">Song Name</label>
-                        <input type="text" id="song-name" name="song_name" placeholder="Enter Song Name" value="<?php echo htmlspecialchars($question['SongName'] ?? ''); ?>">
-                    </div>
+                <label for="song-name">Song Name</label>
+                <input type="text" id="song-name" name="song_name" value="<?php echo htmlspecialchars($question['SongName'] ?? ''); ?>">
+            </div>
 
-                    <div class="form-group">
-                        <label for="song-photo">Song Photo</label>
-                        <input type="file" id="song-photo" name="song_photo" accept="image/*">
-                        <div id="song-photo-display" style="margin-top: 10px;">
-                            <?php if (!empty($question['SongPhoto'])): ?>
-                                <img src="<?php echo htmlspecialchars($question['SongPhoto']); ?>" alt="Song Photo" style="max-width: 200px;">
-                            <?php endif; ?>
-                        </div>
-                    </div>
+            <div class="form-group">
+                <label for="song-photo">Song Photo</label>
+                <input type="file" id="song-photo" name="song_photo" accept="image/*">
+                <?php if (!empty($question['SongPhoto'])): ?>
+                    <img src="<?php echo htmlspecialchars($question['SongPhoto']); ?>" alt="Song Photo" style="max-width: 200px;">
+                <?php endif; ?>
+            </div>
 
-                    <div class="form-group">
-                        <label for="song-mp3">Song MP3</label>
-                        <input type="file" id="song-mp3" name="song_mp3" accept=".mp3">
-                        <div id="mp3-display" style="margin-top: 10px;">
-                            <?php if (!empty($question['SongMP3'])): ?>
-                                <audio controls src="<?php echo htmlspecialchars($question['SongMP3']); ?>"></audio>
-                            <?php endif; ?>
-                        </div>
-                    </div>
+            <div class="form-group">
+                <label for="song-mp3">Song MP3</label>
+                <input type="file" id="song-mp3" name="song_mp3" accept=".mp3">
+                <?php if (!empty($question['SongMP3'])): ?>
+                    <audio controls src="<?php echo htmlspecialchars($question['SongMP3']); ?>"></audio>
+                <?php endif; ?>
+            </div>
 
-                    <div class="form-group options">
-                        <label>Options</label>
-                        <?php
-                        $options = json_decode($question['Options'] ?? '[]', true); // Assuming options are stored as JSON
-                        for ($i = 0; $i < 4; $i++):
-                            $option = $options[$i] ?? '';
-                            $isCorrect = ($option === $question['CorrectAnswer']);
-                        ?>
-                            <div class="option-item">
-                                <input type="text" name="option_<?php echo $i + 1; ?>" placeholder="Option <?php echo $i + 1; ?>" value="<?php echo htmlspecialchars($option); ?>">
-                                <img src="Icon/<?php echo $isCorrect ? 'select.png' : 'no_select.png'; ?>" alt="Correct Icon" class="correct-icon" onclick="toggleCorrect(this)">
-                            </div>
-                        <?php endfor; ?>
+            <div class="form-group options">
+                <label>Options</label>
+                <?php
+                $options = json_decode($question['Options'] ?? '[]', true);
+                for ($i = 0; $i < 4; $i++):
+                    $option = $options[$i] ?? '';
+                    $isCorrect = ($option === $question['CorrectAnswer']);
+                ?>
+                    <div class="option-item">
+                        <input type="text" name="option_<?php echo $i + 1; ?>" placeholder="Option <?php echo $i + 1; ?>" value="<?php echo htmlspecialchars($option); ?>">
+                        <img src="Icon/<?php echo $isCorrect ? 'select.png' : 'no_select.png'; ?>" alt="Correct Icon" class="correct-icon" onclick="toggleCorrect(this)">
+                    </div>
+                <?php endfor; ?>
+</div>
                         <div id="loading" style="display: none;">Loading...</div>
                     </div>
 

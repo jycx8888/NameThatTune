@@ -349,9 +349,9 @@ function openEditQuizPopup(questionId) {
 }
 
 // Function to close the popup
-function closePopup() {
-    document.getElementById('editQuizPopup').style.display = 'none';
-    document.getElementById('overlay').style.display = 'none';
+function closeEditQuizPopup() {
+    document.getElementById('closePopupButton').addEventListener('click', closeEditQuizPopup);
+document.getElementById('overlay').addEventListener('click', closeEditQuizPopup);
 }
 
 // Event listener for the close button
@@ -378,12 +378,16 @@ document.getElementById('overlay').addEventListener('click', closePopup);
     <form method="POST" action="admin_quiz_management.php?quiz_id=<?php echo $quiz['QuizID']; ?>">
     <h2 class="edit-quiz-header"><?php echo isset($quiz) ? 'Edit Quiz' : 'Add Song'; ?></h2>
 
-    <!-- Overlay and Popup -->
+   <!-- Overlay and Popup -->
     <div id="overlay"></div>
     <div id="editQuizPopup">
-        <div id="popupContent">
-            <!-- Content from page3 will be inserted here -->
-        </div>
+        <h2>Edit Quiz</h2>
+        <form id="quiz-form">
+            <div id="popupContent">
+                <!-- Dynamic content from admin_quiz_management_3.php will be inserted here -->
+            </div>
+            <button type="submit" class="submit-button">Confirm</button>
+        </form>
         <button id="closePopupButton" onclick="closeEditQuizPopup()">Close</button>
     </div>
 
@@ -494,15 +498,6 @@ document.getElementById('overlay').addEventListener('click', closePopup);
     </form>
     <button id="closePopupButton">Close</button>
 </div>
-
-<!-- Edit Quiz Popup -->
-    <div id="overlay"></div>
-    <div id="editQuizPopup">
-        <div id="popupContent">
-            <!-- Content from page3 will be inserted here -->
-        </div>
-        <button id="closePopupButton" onclick="closeEditQuizPopup()">Close</button>
-    </div>
 
     </main>
 
@@ -748,18 +743,21 @@ document.getElementById('overlay').addEventListener('click', closePopup);
     }
 }
 
-// Function to open the popup and load page3 content
+// Function to open the popup and load dynamic content
 function openEditQuizPopup(questionId) {
     fetch('admin_quiz_management_3.php?question_id=' + questionId)
         .then(response => response.text())
         .then(data => {
+            // Insert the dynamic content into the popup
             document.getElementById('popupContent').innerHTML = data;
+            // Show the popup and overlay
             document.getElementById('editQuizPopup').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
         })
         .catch(error => console.error('Error loading page3:', error));
 }
 
+// Function to close the popup
 function closeEditQuizPopup() {
     document.getElementById('editQuizPopup').style.display = 'none';
     document.getElementById('overlay').style.display = 'none';
@@ -775,7 +773,7 @@ document.getElementById('overlay').addEventListener('click', closeEditQuizPopup)
 const songPhotoInput = document.getElementById('song-photo');
 const songPhotoDisplay = document.getElementById('song-photo-display');
 
-songPhotoInput.addEventListener('change', (event) => {
+songPhotoInput?.addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (file && file.type.startsWith('image/')) {
         const reader = new FileReader();
@@ -799,7 +797,7 @@ songPhotoInput.addEventListener('change', (event) => {
 const songMp3Input = document.getElementById('song-mp3');
 const mp3Display = document.getElementById('mp3-display');
 
-songMp3Input.addEventListener('change', (event) => {
+songMp3Input?.addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (file && file.type === "audio/mpeg") {
         const fileURL = URL.createObjectURL(file);
