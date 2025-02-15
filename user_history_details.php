@@ -28,33 +28,39 @@ include 'user_fetch_profile.php';
     <link rel="stylesheet" href="user_footer.css">
     <style>
         #content {
+            font-family: "Lalezar", system-ui;
             margin: 24px 64px;
             min-height: 100vh;
             justify-content: center;
-            font-family: "Lalezar", system-ui;
             font-style: normal;
         }
 
         #details {
-            width: 75vw;
-            height: 50vh;
-            min-width: fit-content;
-            min-height: fit-content;
+            width: fit-content;
+            height: fit-content;
+            min-width: 75vw;
+            min-height: 50vh;
             justify-self: center;
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
             padding-left: clamp(28px, 8vw, 40px);
             padding-right: clamp(28px, 8vw, 40px);
-            padding-top: clamp(28px, 8vw, 40px);
-            padding-bottom: clamp(28px, 8vw, 40px);
-            margin: 48px 84px 24px 84px;
+            padding-top: 12px;
+            padding-bottom: 24px;
+            margin: 24px 84px 24px 84px;
         }
 
         #title {
             font-size: clamp(24px, 3vw, 32px);
             font-weight: 1000;
-            font-family: 'Lalezar', system-ui;
+        }
+
+        p {
+            font-family: "Lalezar", system-ui;
+            font-weight: 500;
+            line-height: 140%;
+            font-size: clamp(14px, 2vw, 18px)
         }
 
         table {
@@ -66,10 +72,9 @@ include 'user_fetch_profile.php';
 
         td, th {
             padding: 10px;
-            border: 1px solid black;
+            border: 2px solid black;
             text-align: center;
-            font-family: 'Lalezar', system-ui;
-            font-size: clamp(16px, 2vw, 18px);
+            font-size: clamp(14px, 2vw, 18px);
         }
 
         td {
@@ -78,6 +83,21 @@ include 'user_fetch_profile.php';
 
         th {
             font-weight: 700;
+        }
+
+        input[type=button] {
+            display: block;
+            justify-self: center;
+            background-color: rgb(91, 75, 193);
+            font-family: 'Lalezar', system-ui;
+            font-weight: 700;
+            color: white;
+            border-radius: 10px;
+            padding: 12px 24px;
+            margin: 24px 0 0 0;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
         }
 
     </style>
@@ -98,12 +118,12 @@ include 'user_fetch_profile.php';
         <div id='details'>
             <h1 id='title'>History Details</h1>
             <div>
-                <span>Quiz ID: Q002</span><br>
-                <span>Quiz Name: Korean Quiz 1</span><br>
-                <span>Result: 4/5</span><br>
-                <span>Time Used: 30s</span><br>
-                <span>Answer Date: 2021-07-01 21:24:11</span>
-            </div><br>
+                <p>Quiz ID: Q002 <br>
+                Quiz Name: Korean Quiz 1 <br>
+                Result: 4/5 <br>
+                Time Used: 30s <br>
+                Answer Date: 2021-07-01 21:24:11</p>
+            </div>
             <table>
                 <tr>
                     <th>Question</th>
@@ -142,6 +162,7 @@ include 'user_fetch_profile.php';
                     <td>Correct</td>
                 </tr>
             </table>
+            <input type="button" value="Back" onclick="directToHistory()">
 
         </div>
     </div>
@@ -157,4 +178,10 @@ include 'user_fetch_profile.php';
     </div>
 
 </body>
+
+<script>
+    function directToHistory() {
+        window.location.href = "user_history.php";
+    }
+</script>
 </html>

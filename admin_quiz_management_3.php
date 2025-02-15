@@ -213,6 +213,20 @@ if (isset($_GET['question_id'])) {
         </div>
     </div>
 
+    <!-- Overlay -->
+    <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000;"></div>
+
+    <!-- Pop-up Container -->
+    <div id="editQuizPopup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; z-index: 1001;">
+        <!-- Your existing form content goes here -->
+        <h2>Edit Quiz</h2>
+        <form id="quiz-form">
+            <!-- Form fields -->
+            <button type="button" id="closePopupButton" onclick="closePopup()">Close</button>
+            <!-- Rest of the form -->
+        </form>
+    </div>
+
     <div id="hamburger-menu">
         <div class="close-btn" onclick="toggleMenu()">×</div>
         <div class="profile-container">
@@ -295,6 +309,13 @@ if (isset($_GET['question_id'])) {
             <button class="no" onclick="closeLogoutPopup()">No</button>
         </div>
     </div>
+
+    <script>
+        function closePopup() {
+            document.getElementById('editQuizPopup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+    </script>
 
     <script>
         const songPhotoInput = document.getElementById('song-photo');
@@ -461,23 +482,75 @@ if (isset($_GET['question_id'])) {
     </script>
 
 <script>
+    function validateForm() {
+    const songName = document.getElementById('song-name').value;
+    const songPhoto = document.getElementById('song-photo').files[0];
+    const songMp3 = document.getElementById('song-mp3').files[0];
+    const options = document.querySelectorAll('.option-item input[type="text"]');
+
+    if (!songName) {
+        alert('Please enter a song name.');
+        return false;
+    }
+
+    if (!songPhoto) {
+        alert('Please select a song photo.');
+        return false;
+    }
+
+    if (!songMp3) {
+        alert('Please select a song MP3.');
+        return false;
+    }
+
+    for (let i = 0; i < options.length; i++) {
+        if (!options[i].value) {
+            alert('Please fill in all options.');
+            return false;
+        }
+    }
+
+    return true;
+}
+</script>
+
+<script>
 document.getElementById('quiz-form').addEventListener('submit', function (event) {
     event.preventDefault(); // Prevent the default form submission
 
+    // Validate the form before submission
+    if (!validateForm()) {
+        return;
+    }
+
+    // Show loading indicator
+    const loadingIndicator = document.getElementById('loading');
+    loadingIndicator.style.display = 'block';
+
+    // Prepare form data
     const formData = new FormData(this);
 
+    // Send the form data to the server
     fetch('update_question.php', {
         method: 'POST',
         body: formData
     })
-    .then(response => response.text())
+    .then(response => response.json()) // Parse the JSON response
     .then(data => {
-        alert(data); // Show success or error message
-        if (data.includes("successfully")) {
-            closePopup(); // Close the popup if the update is successful
+        // Hide loading indicator
+        loadingIndicator.style.display = 'none';
+
+        // Show success or error message
+        alert(data.message);
+
+        // Close the popup if the update is successful
+        if (data.status === 'success') {
+            closePopup();
         }
     })
     .catch(error => {
+        // Hide loading indicator and show error message
+        loadingIndicator.style.display = 'none';
         console.error('Error:', error);
         alert('An error occurred while updating the question.');
     });
