@@ -403,7 +403,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             if (currentQuestionIndex >= questions.length) {
                 // Calculate the total time taken
                 let endTime = new Date();
-                let timeTaken = (endTime - startTime) / 1000; // Time in seconds
+                let timeTaken = ((endTime - startTime) / 1000).toFixed(1); // Time in seconds
 
                 // Save the record and record_question data to the database
                 fetch('save_record.php', {
