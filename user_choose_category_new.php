@@ -60,8 +60,7 @@ $conn->close();
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100%;
+            height: 100vh;
         }
 
         .category-dropdown {
@@ -69,7 +68,8 @@ $conn->close();
             font-weight: 1000;
             font-size: 16px;
             padding: 10px;
-            border: 2px solid #000000;
+            margin-top: 96px;
+            border: 2px solid black;
             border-radius: 10px;
             background-color: white;
             color: black;
@@ -96,7 +96,6 @@ $conn->close();
             justify-content: center;
             align-items: center;
             height: calc(50vh - 100px);
-            
         }
 
         #quiz-gallery {
@@ -157,7 +156,7 @@ $conn->close();
         }
 
         #start-button {
-            margin-top: 20px;
+            margin: 24px 0 96px 0;
             padding: 20px 15px;
             font-size: 25px;
             border-radius: 50px;
@@ -185,22 +184,19 @@ $conn->close();
             display: flex; /* Align buttons */
             justify-content: space-between; /* Align one button to the left and the other to the right */
             align-items: center;
-            padding: 0 20px;
-            z-index: 9999; /* Ensures the controls stay above other elements */
             background-color: transparent; /* Optional: Makes the background transparent */
         }
 
         #volume-control {
             display: flex;
             align-items: center;
-            left: 20px; /* Optional: Fine-tune button spacing */
+            margin-left: 24px;
         }
 
         #volume-icon {
             width: 40px;
             height: 40px;
             cursor: pointer;
-            margin-right: 10px;
         }
 
         #volume-slider {
@@ -215,9 +211,7 @@ $conn->close();
             display: flex;
             align-items: center;
             position: sticky; /* Ensures it stays in place */
-            bottom: 20px; /* Keep it at the bottom */
-            right: 10px; /* Adjust this value to move it left */
-            z-index: 9999; /* Keeps it above other content */
+            margin-right: 24px;
         }
 
         #fullscreen-icon {
