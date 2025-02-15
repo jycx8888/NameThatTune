@@ -217,13 +217,6 @@ $conn->close();
         </div>
     </div>
 
-    <div id="warningPopup" class="overlay">
-        <div class="popup">
-            <span class="close-btn" onclick="closeWarningPopup()">&times;</span>
-            <p id="warningMessage"></p>
-        </div>
-    </div>
-
     <script>
         function validateForm() {
             const username = document.getElementById('Username').value;
