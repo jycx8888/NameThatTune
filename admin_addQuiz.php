@@ -223,26 +223,19 @@ $conn->close();
             </select>
         </div>
     </div>
-
+        
         <table>
             <thead>
                 <tr>
                     <th>New Quiz No</th>
                     <th>Options</th>
                     <th>Answer</th>
+                    <th>MP3 File</th>
+                    <th>Photo File</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Q001</td>
-                    <td>Never Gonna Give You Up, Niggas in Paris, Blank Space, YMCA</td>
-                    <td>Never Gonna Give You Up</td>
-                    <td class="actions">
-                        <a href="edit_question.php?question_id=Q001">Edit</a> |
-                        <a href="delete_question.php?question_id=Q001">Delete</a>
-                    </td>
-                </tr>
             </tbody>
         </table>
         <br><br>
@@ -302,10 +295,149 @@ $conn->close();
         
         document.getElementById("addQuestionForm").onsubmit = function(e) {
             e.preventDefault();
-            // Here you would typically add AJAX call to save the question
-            alert("Question Added Successfully!");
-            closeModal();
+
+            // Validate MP3 file duration
+            const songUpload = document.getElementById("songUpload").files[0];
+            if (!songUpload) {
+                alert("Please upload an MP3 file.");
+                return;
+            }
+        
+            // Validate song photo upload
+            const songPhoto = document.getElementById("songPhoto").files[0];
+            if (!songPhoto) {
+                alert("Please upload a song photo.");
+                return;
+            }
+        
+            const audio = new Audio(URL.createObjectURL(songUpload));
+            audio.onloadedmetadata = function() {
+                if (audio.duration > 8) {
+                    alert("The uploaded MP3 must be **8 seconds or less**.");
+                    return;
+                }
+            
+                // Get values from the form
+                const options = document.querySelectorAll('.option-container input[type="text"]');
+                const correctOption = document.getElementById("correctOption").value;
+            
+                if (!correctOption) {
+                    alert("Please select the correct answer.");
+                    return;
+                }
+            
+                // Convert options to a comma-separated string
+                const optionTexts = [];
+                options.forEach(option => optionTexts.push(option.value));
+            
+                // Find the correct answer text
+                const correctAnswerText = document.querySelector('.checkmark.selected').previousElementSibling.value;
+            
+                // Generate new quiz number
+                const table = document.querySelector("table tbody");
+                const newQuizNo = table.rows.length + 1;
+            
+                // Create a new row
+                const newRow = document.createElement("tr");
+                newRow.innerHTML = `
+                    <td>${newQuizNo}</td>
+                    <td>${optionTexts.join(", ")}</td>
+                    <td>${correctAnswerText}</td>
+                    <td>${songUpload.name}</td>
+                    <td>${songPhoto.name}</td>
+                    <td class="actions">
+                        <a href="#" onclick="editQuestion(this)">Edit</a> |
+                        <a href="#" onclick="deleteQuestion(this)">Delete</a>
+                    </td>
+                `;
+                table.appendChild(newRow);
+
+                // Close modal and reset form
+                closeModal();
+            };
         };
+
+
+        // Replace the existing deleteQuestion function with this:
+
+        function deleteQuestion(link) {
+            if (confirm("Are you sure you want to delete this question?")) {
+                // Get the row to be deleted
+                const row = link.closest("tr");
+
+                // Remove the row from the table
+                row.parentNode.removeChild(row);
+
+                // Update the quiz numbers for remaining rows
+                const rows = document.querySelectorAll("table tbody tr");
+                rows.forEach((row, index) => {
+                    row.cells[0].textContent = index + 1;  // Update the quiz number
+                });
+            }
+        }
+
+        // Function to update quiz numbers after deleting a row
+        function updateQuizNumbers() {
+            const rows = document.querySelectorAll("table tbody tr");
+            rows.forEach((row, index) => {
+                row.cells[0].textContent = index + 1;
+            });
+        }
+
+        // Function to edit a question 
+        function editQuestion(link) {
+            const row = link.closest("tr");
+            const cells = row.getElementsByTagName("td");
+
+            const quizNo = cells[0].textContent;
+            const optionsText = cells[1].textContent.split(", ");
+            const correctAnswer = cells[2].textContent;
+            const existingSongFileName = cells[3].textContent;
+            const existingPhotoFileName = cells[4].textContent;
+
+            openModal();
+
+            // Populate option fields
+            const options = document.querySelectorAll('.option-container input[type="text"]');
+            options.forEach((option, index) => {
+                option.value = optionsText[index] || "";
+            });
+        
+            // Select the correct answer
+            document.querySelectorAll('.checkmark').forEach(check => {
+                check.classList.remove('selected');
+                check.textContent = "";
+                if (check.previousElementSibling.value === correctAnswer) {
+                    check.classList.add('selected');
+                    check.textContent = "\u2714"; // Checkmark
+                    document.getElementById('correctOption').value = check.getAttribute('data-value');
+                }
+            });
+        
+            // Display existing file names
+            const songFileLabel = document.getElementById("existingSongFile");
+            if (!songFileLabel) {
+                const newLabel = document.createElement("p");
+                newLabel.id = "existingSongFile";
+                newLabel.textContent = "Current MP3: " + existingSongFileName;
+                document.getElementById("songUpload").insertAdjacentElement("afterend", newLabel);
+            } else {
+                songFileLabel.textContent = "Current MP3: " + existingSongFileName;
+            }
+        
+            const photoFileLabel = document.getElementById("existingPhotoFile");
+            if (!photoFileLabel) {
+                const newLabel = document.createElement("p");
+                newLabel.id = "existingPhotoFile";
+                newLabel.textContent = "Current Photo: " + existingPhotoFileName;
+                document.getElementById("songPhoto").insertAdjacentElement("afterend", newLabel);
+            } else {
+                photoFileLabel.textContent = "Current Photo: " + existingPhotoFileName;
+            }
+        }
+
+
+
 
         document.querySelectorAll('.checkmark').forEach(check => {
             check.addEventListener('click', function() {
