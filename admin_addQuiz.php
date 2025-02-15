@@ -343,6 +343,14 @@ $conn->close();
         document.getElementById("addQuestionForm").onsubmit = function(e) {
             e.preventDefault();
 
+            const tableBody = document.querySelector("table tbody");
+    
+            // Ensure we're counting only tbody rows
+            if (tableBody.rows.length >= 5) {
+                alert("You can only add up to 5 quizzes.");
+                return;
+            }
+
             // Get values from the form
             const options = document.querySelectorAll('.option-container input[type="text"]');
             const correctOption = document.getElementById("correctOption").value;
@@ -351,6 +359,8 @@ $conn->close();
 
             // Check if we're editing an existing row
             const editingRow = document.querySelector('[data-editing="true"]');
+            console.log("Editing Row:", editingRow);
+            console.log("Table Rows:", tableBody.rows.length);
 
             if (!editingRow) {
                 // Only validate files for new questions
@@ -419,19 +429,12 @@ $conn->close();
 
         function deleteQuestion(link) {
             if (confirm("Are you sure you want to delete this question?")) {
-                // Get the row to be deleted
                 const row = link.closest("tr");
-
-                // Remove the row from the table
                 row.parentNode.removeChild(row);
-
-                // Update the quiz numbers for remaining rows
-                const rows = document.querySelectorAll("table tbody tr");
-                rows.forEach((row, index) => {
-                    row.cells[0].textContent = index + 1;  // Update the quiz number
-                });
+                updateQuizNumbers();
             }
         }
+
 
         // Function to update quiz numbers after deleting a row
         function updateQuizNumbers() {
