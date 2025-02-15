@@ -97,7 +97,6 @@ $conn->close();
     <link rel="icon" href="icon/logo.jpg" type="image/png">
     <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_footer.css">
-    <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
 
         #startQuiz-container {
@@ -170,26 +169,7 @@ $conn->close();
         </div>
     </div>
 
-    <div id="hamburger-menu">
-        <div class="close-btn" onclick="toggleMenu()">×</div>
-        <div class="profile-container">
-            <img src="<?php echo htmlspecialchars($profile_picture_path); ?>" alt="Profile Picture" id="profilePicture" onclick="showPopup('profilePopup')"> <!-- Display the profile picture -->
-            <img src="Icon/pencil.png" alt="Edit" class="edit-icon" style="width: 60px; height: 60px;" onclick="showPopup('profilePopup')">
-        </div>
-        <div class="username" id="username"><?php echo htmlspecialchars($username); ?></div>
-        <div class="menu-item" onclick="directToHistory()">History</div>
-        <div class="menu-item" onclick="showPopup('usernamePopup')">Change Username</div>
-        <div class="menu-item" onclick="showPopup('passwordPopup')">Change Password</div>
-        <div class="menu-item" onclick="toggleSubmenu('settings-submenu')">Settings</div>
-        <div id="settings-submenu" class="submenu">
-            <div class="submenu-item" onclick="toggleVolumeControl()">Volume</div>
-            <div class="volume-control" id="volumeControl">
-                <input type="range" min="0" max="100" value="50" id="volumeSlider">
-            </div>
-            <div class="submenu-item">Dark Mode</div>
-        </div>
-        <button class="logout-btn" onclick="confirmLogout()">Log Out</button>
-    </div>
+    <?php include 'user_hamburger_menu.php'; ?>
 
     <!-- Profile Popup -->
     <div id="profilePopup" class="overlay">
@@ -276,119 +256,11 @@ $conn->close();
     </div>
 
     <script>
-        function validateNewUsername() {
-            const username = document.getElementById('usernameInput').value;
-            
-            if (username === "") {
-                showWarning('Username cannot be empty.');
-                return false;
-            }
-
-            return true;
-        }
-
-        function validateNewPassword() {
-            const password = document.getElementById('newPasswordInput').value;
-            const confirmPassword = document.getElementById('confirmPasswordInput').value;
-            const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%#*?&])[A-Za-z\d@$!%#*?&]{8,14}$/;
-
-            if (password === "") {
-                showWarning('New Password cannot be empty.');
-                return false;
-            }
-
-            if (confirmPassword === "") {
-                showWarning('Confirm Password cannot be empty.');
-                return false;
-            }
-
-            if (password !== confirmPassword) {
-                showWarning('Passwords do not match.');
-                return false;
-            }
-
-            if (!passwordRegex.test(password)) {
-                showWarning('Password must be 8-14 characters long, include at least one capital letter, one number, and one special character.');
-                return false;
-            }
-
-            return true;
-        }
-
-        document.getElementById('login').addEventListener('click', function() {
-            document.getElementById('hamburger-menu').classList.toggle('open');
-        });
-
-        function showPopup(popupId) {
-            document.getElementById(popupId).classList.add('show');
-        }
-
-        function closePopup(popupId) {
-            document.getElementById(popupId).classList.remove('show');
-        }
-
-        function togglePasswordVisibility(fieldId, iconElement) {
-            const passwordField = document.getElementById(fieldId);
-            const icon = document.getElementById(iconElement);
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                iconElement.src = 'Icon/show.png'; // Change to the open eye icon
-            } else {
-                passwordField.type = 'password';
-                iconElement.src = 'Icon/hide.png'; // Change to the closed eye icon
-            }
-        }
-
-        function toggleMenu() {
-            document.getElementById('hamburger-menu').classList.toggle('open');
-        }
-
-        function toggleSubmenu(submenuId) {
-            const submenu = document.getElementById(submenuId);
-            submenu.style.display = submenu.style.display === 'flex' ? 'none' : 'flex';
-        }
-
-        function toggleVolumeControl() {
-            const volumeControl = document.getElementById('volumeControl');
-            volumeControl.style.display = volumeControl.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function confirmLogout() {
-            document.getElementById('logoutOverlay').classList.add('show');
-        }
-
-        function closeLogoutPopup() {
-            document.getElementById('logoutOverlay').classList.remove('show');
-        }
-
-        function logout() {
-            window.location.href = 'logout.php'; // Redirect to the logout script
-        }
-
-        document.getElementById('volumeSlider').addEventListener('input', function() {
-            const volume = this.value;
-            console.log('Volume:', volume); // Replace with actual volume control logic
-        });
-
-        function showWarning(message) {
-            const warningPopup = document.getElementById('warningPopup');
-            const warningMessage = document.getElementById('warningMessage');
-            warningMessage.textContent = message;
-            warningPopup.classList.add('show');
-        }
-        
-        function closeWarningPopup() {
-            const warningPopup = document.getElementById('warningPopup');
-            warningPopup.classList.remove('show');
-        }
 
         function directToChooseCategory() {
             window.location.href = 'user_choose_category_new.php';
         }
 
-        function directToHistory() {
-            window.location.href = 'user_history.php';
-        }
     </script>
 </body>
 </html>

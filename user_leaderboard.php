@@ -6,6 +6,10 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
+if (!isset($_GET['quizId'])) {
+    die("Quiz ID not provided.");
+}
+
 $servername = "localhost";
 $dbusername = "root"; // Database username
 $dbpassword = ""; // Database password
@@ -20,6 +24,7 @@ if ($conn->connect_error) {
 }
 
 $username = $_SESSION['username'];
+$quiz_id = $_GET['quizId'];
 
 include 'user_fetch_profile.php';
 
@@ -154,7 +159,6 @@ include 'user_fetch_profile.php';
         <div id="leaderboard">
             <h1>Leaderboard</h1>
             <?php
-            $quiz_id = $_POST['quiz_id'];
             $sql1 = "SELECT UserID, Result, TimeUsed FROM record WHERE QuizID = '$quiz_id' ORDER BY Result DESC, TimeUsed ASC";
             $result1 = mysqli_query($conn, $sql1);
         
