@@ -131,6 +131,12 @@ include 'user_fetch_profile.php';
                     <th>Correct Answer</th>
                     <th>Result</th>
                 </tr>
+
+                <?php
+                
+                    
+                
+                ?>
                 <tr>
                     <td>1</td>
                     <td>Answer 1</td>
