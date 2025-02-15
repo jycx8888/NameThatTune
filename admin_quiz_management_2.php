@@ -112,7 +112,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <style>
         main {
             flex: 1;
+            margin: 40px;
             padding: 20px;
+            width: 1100px;
+            align-self: center;
             background-color: #f0f0f0; /* Grey background for the form */
             border-radius: 10px;
         }

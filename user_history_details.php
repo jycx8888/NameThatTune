@@ -112,64 +112,70 @@ include 'user_fetch_profile.php';
         </div>
     </div>
 
-    <?php include 'user_hamburger_menu.php'; ?>
+    <?php
+    include 'user_hamburger_menu.php'; 
 
-    <div id='content'>
+    $record_id = $_GET['record_id'];
+    $sql1 = "SELECT * FROM record WHERE RecordID = '$record_id'";
+    $result1 = mysqli_query($conn, $sql1);
+    $row1 = mysqli_fetch_assoc($result1);
+    $quiz_id = $row1['QuizID'];
+    $result = $row1['Result'];
+    $time_used = $row1['TimeUsed'];
+    $answer_date = $row1['Time'];
+
+    $sql2 = "SELECT QuizName FROM quiz WHERE QuizID = '$quiz_id'";
+    $result2 = mysqli_query($conn, $sql2);
+    $row2 = mysqli_fetch_assoc($result2);
+    $quiz_name = $row2['QuizName'];
+
+    $sql3 = "SELECT * FROM record_question WHERE RecordID = '$record_id'";
+    $result3 = mysqli_query($conn, $sql3);
+    
+    echo"<div id='content'>
         <div id='details'>
             <h1 id='title'>History Details</h1>
             <div>
-                <p>Quiz ID: Q002 <br>
-                Quiz Name: Korean Quiz 1 <br>
-                Result: 4/5 <br>
-                Time Used: 30s <br>
-                Answer Date: 2021-07-01 21:24:11</p>
+                <p>Quiz ID: $quiz_id <br>
+                Quiz Name: $quiz_name <br>
+                Result: $result/5 <br>
+                Time Used: $time_used"; echo"s <br>
+                Answer Date: $answer_date </p>
             </div>
             <table>
                 <tr>
                     <th>Question</th>
-                    <th>User Answer</th>
+                    <th>Your Answer</th>
                     <th>Correct Answer</th>
                     <th>Result</th>
-                </tr>
+                </tr>";
 
-                <?php
-                
-                    
-                
-                ?>
-                <tr>
-                    <td>1</td>
-                    <td>Answer 1</td>
-                    <td>Answer 1</td>
-                    <td>Correct</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Answer 2</td>
-                    <td>Answer 2</td>
-                    <td>Correct</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>Answer 3</td>
-                    <td>Answer 2</td>
-                    <td>Wrong</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>Answer 4</td>
-                    <td>Answer 4</td>
-                    <td>Correct</td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td>Answer 5</td>
-                    <td>Answer 5</td>
-                    <td>Correct</td>
-                </tr>
+                while ($row3 = mysqli_fetch_assoc($result3)) {
+                    $question_id = $row3['QuestionID'];
+                    $user_answer = $row3['UserAnswer'];
+
+                    $sql4 = "SELECT CorrectAnswer FROM question WHERE QuestionID = '$question_id'";
+                    $result4 = mysqli_query($conn, $sql4);
+                    $row4 = mysqli_fetch_assoc($result4);
+                    $correct_answer = $row4['CorrectAnswer'];
+
+                    if ($user_answer == $correct_answer) {
+                        $isCorrect = "Correct";
+                    } else {
+                        $isCorrect = "Wrong";
+                    }
+
+                    echo "<tr>
+                        <td>$question_id</td>
+                        <td>$user_answer</td>
+                        <td>$correct_answer</td>
+                        <td>$isCorrect</td>
+                    </tr>";
+                }
+    ?>
+
             </table>
-            <input type="button" value="Back" onclick="directToHistory()">
-
+            <input type='button' value='Back' onclick='directToHistory()'>
         </div>
     </div>
 

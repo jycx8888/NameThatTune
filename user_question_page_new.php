@@ -508,8 +508,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
         let userAnswers = [];
         let correctAnswersCount = 0;
         
-
-
         // Function to handle selecting an option
         function selectOption(button) {
             const currentQuestion = questions[currentQuestionIndex - 1];

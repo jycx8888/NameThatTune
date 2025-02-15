@@ -137,7 +137,7 @@ include 'user_fetch_profile.php';
                     <td>$quiz_result/5</td>
                     <td>$time_used s</td>
                     <td>$time</td>
-                    <td><a href='user_history_details.php'>View Details</a></td>
+                    <td><a href='user_history_details.php?record_id=$record_id'>View Details</a></td>
                 </tr>";
                 }
             }
