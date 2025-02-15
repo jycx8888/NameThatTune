@@ -430,16 +430,6 @@ document.getElementById('overlay').addEventListener('click', closePopup);
     </table>
 <?php endif; ?>
 
-<!-- Popup Container -->
-<div id="overlay"></div>
-<div id="editQuizPopup">
-    <h2>Edit Quiz</h2>
-    <form id="quiz-form">
-        <div id="popupContent"></div> <!-- Content from page3 will be loaded here -->
-    </form>
-    <button id="closePopupButton">Close</button>
-</div>
-
     <!-- Buttons -->
     <div class="button-container">
         <button type="button" class="cancel" onclick="window.location.href='admin_quiz_management.php';">Cancel</button>
@@ -754,16 +744,16 @@ function openEditQuizPopup() {
 }
 
 // Function to close the popup
-function closePopup() {
+function closeEditQuizPopup() {
     document.getElementById('editQuizPopup').style.display = 'none';
     document.getElementById('overlay').style.display = 'none';
 }
 
 // Event listener for the close button
-document.getElementById('closePopupButton').addEventListener('click', closePopup);
+document.getElementById('closePopupButton').addEventListener('click', closeEditQuizPopup);
 
 // Event listener to close the popup when clicking outside
-document.getElementById('overlay').addEventListener('click', closePopup);
+document.getElementById('overlay').addEventListener('click', closeEditQuizPopup);
 
 // Handle song photo selection
 const songPhotoInput = document.getElementById('song-photo');
