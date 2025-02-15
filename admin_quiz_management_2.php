@@ -204,14 +204,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         #editQuizPopup {
             display: none;
             position: fixed;
-            top: 50%;
+            top: 10%; /* Adjust this value to leave space for the header */
             left: 50%;
-            transform: translate(-50%, -50%);
-            width: 500px;
+            transform: translateX(-50%);
+            width: 500px; /* Keep your existing width */
+            max-height: 80vh; /* Maximum height */
+            overflow-y: auto; /* Enable scrolling */
             padding: 20px;
             background-color: white;
-            border-radius: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 30px; /* Keep your existing border-radius */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Keep your existing box-shadow */
             z-index: 1000;
         }
 
@@ -347,9 +349,9 @@ function openEditQuizPopup(questionId) {
 }
 
 // Function to close the popup
-function closePopup() {
-    document.getElementById('editQuizPopup').style.display = 'none';
-    document.getElementById('overlay').style.display = 'none';
+function closeEditQuizPopup() {
+    document.getElementById('closePopupButton').addEventListener('click', closeEditQuizPopup);
+document.getElementById('overlay').addEventListener('click', closeEditQuizPopup);
 }
 
 // Event listener for the close button
@@ -375,6 +377,19 @@ document.getElementById('overlay').addEventListener('click', closePopup);
     <main>
     <form method="POST" action="admin_quiz_management.php?quiz_id=<?php echo $quiz['QuizID']; ?>">
     <h2 class="edit-quiz-header"><?php echo isset($quiz) ? 'Edit Quiz' : 'Add Song'; ?></h2>
+
+   <!-- Overlay and Popup -->
+    <div id="overlay"></div>
+    <div id="editQuizPopup">
+        <h2>Edit Quiz</h2>
+        <form id="quiz-form">
+            <div id="popupContent">
+                <!-- Dynamic content from admin_quiz_management_3.php will be inserted here -->
+            </div>
+            <button type="submit" class="submit-button">Confirm</button>
+        </form>
+        <button id="closePopupButton" onclick="closeEditQuizPopup()">Close</button>
+    </div>
 
      <!-- Display Quiz ID -->
      <p>Quiz ID: <?= isset($quiz['QuizID']) && !empty($quiz['QuizID']) ? htmlspecialchars($quiz['QuizID']) : 'No Quiz Found'; ?></p>
@@ -416,7 +431,7 @@ document.getElementById('overlay').addEventListener('click', closePopup);
                         <td><?php echo htmlspecialchars($question['QuestionID']); ?></td>
                         <td><?php echo htmlspecialchars($question['CorrectAnswer']); ?></td>
                         <td class="actions">
-                            <button onclick="openEditQuizPopup('<?php echo $question['QuestionID']; ?>')">Edit</button> |
+                        <button type="button" onclick="openEditQuizPopup('<?php echo $question['QuestionID']; ?>')">Edit</button> |
                             <button onclick="deleteQuestion('<?php echo $question['QuestionID']; ?>')">Delete</button>
                         </td>
                     </tr>
@@ -429,16 +444,6 @@ document.getElementById('overlay').addEventListener('click', closePopup);
         </tbody>
     </table>
 <?php endif; ?>
-
-<!-- Popup Container -->
-<div id="overlay"></div>
-<div id="editQuizPopup">
-    <h2>Edit Quiz</h2>
-    <form id="quiz-form">
-        <div id="popupContent"></div> <!-- Content from page3 will be loaded here -->
-    </form>
-    <button id="closePopupButton">Close</button>
-</div>
 
     <!-- Buttons -->
     <div class="button-container">
@@ -738,13 +743,12 @@ document.getElementById('overlay').addEventListener('click', closePopup);
     }
 }
 
-// Function to open the popup and load page3 content
-function openEditQuizPopup() {
-    // Fetch the content of page3
-    fetch('admin_quiz_management_3.php')
+// Function to open the popup and load dynamic content
+function openEditQuizPopup(questionId) {
+    fetch('admin_quiz_management_3.php?question_id=' + questionId)
         .then(response => response.text())
         .then(data => {
-            // Insert the content into the popup
+            // Insert the dynamic content into the popup
             document.getElementById('popupContent').innerHTML = data;
             // Show the popup and overlay
             document.getElementById('editQuizPopup').style.display = 'block';
@@ -754,22 +758,22 @@ function openEditQuizPopup() {
 }
 
 // Function to close the popup
-function closePopup() {
+function closeEditQuizPopup() {
     document.getElementById('editQuizPopup').style.display = 'none';
     document.getElementById('overlay').style.display = 'none';
 }
 
 // Event listener for the close button
-document.getElementById('closePopupButton').addEventListener('click', closePopup);
+document.getElementById('closePopupButton').addEventListener('click', closeEditQuizPopup);
 
 // Event listener to close the popup when clicking outside
-document.getElementById('overlay').addEventListener('click', closePopup);
+document.getElementById('overlay').addEventListener('click', closeEditQuizPopup);
 
 // Handle song photo selection
 const songPhotoInput = document.getElementById('song-photo');
 const songPhotoDisplay = document.getElementById('song-photo-display');
 
-songPhotoInput.addEventListener('change', (event) => {
+songPhotoInput?.addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (file && file.type.startsWith('image/')) {
         const reader = new FileReader();
@@ -793,7 +797,7 @@ songPhotoInput.addEventListener('change', (event) => {
 const songMp3Input = document.getElementById('song-mp3');
 const mp3Display = document.getElementById('mp3-display');
 
-songMp3Input.addEventListener('change', (event) => {
+songMp3Input?.addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (file && file.type === "audio/mpeg") {
         const fileURL = URL.createObjectURL(file);
