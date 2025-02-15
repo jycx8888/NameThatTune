@@ -46,8 +46,8 @@ $conn->close();
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             width: 90%;
             max-width: 1000px;
-            text-align: center;
             margin-top: 20px;
+            text-align: left; /* Change from center to left */
         }
         table {
             width: 100%;
@@ -204,7 +204,26 @@ $conn->close();
     </div>
 
     <div class="container">
-        <h2>Add New Quiz</h2>
+    <h2 style="text-align: left;">Add New Quiz</h2>
+
+    <div style="margin: 15px; text-align: left;">
+        <div style="max-width: 300px; margin-bottom: 20px;">  <!-- Changed from 600px to 300px -->
+            <label for="questionId" style="display: block; text-align: left; margin-bottom: 5px;">Add New Quiz Name:</label>
+            <input type="text" id="questionId" name="questionId" required style="width: 100%;">
+        </div>
+        <div style="max-width: 300px;">  <!-- Changed from 600px to 300px -->
+            <label for="options" style="display: block; text-align: left; margin-bottom: 5px;">Add New Quiz Category:</label>
+            <select id="options" name="options" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">Select a category</option>
+                <?php foreach ($genres as $genre): ?>
+                    <option value="<?php echo htmlspecialchars($genre['GenreID']); ?>">
+                        <?php echo htmlspecialchars($genre['GenreName']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </div>
+
         <table>
             <thead>
                 <tr>
@@ -238,23 +257,6 @@ $conn->close();
         <span class="close" onclick="closeModal()">&times;</span>
         <h2>Add New Quiz</h2>
         <form id="addQuestionForm">
-            <div style="margin: 15px;">
-                <label for="questionId">Add New Quiz Name:</label>
-                <input type="text" id="questionId" name="questionId" required>
-            </div>
-            <div style="margin: 15px;">
-                <label for="options">Add New Quiz Category:</label>
-                <select id="options" name="options" required style="width: 80%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px;">
-                    <option value="">Select a category</option>
-                    <?php foreach ($genres as $genre): ?>
-                        <option value="<?php echo htmlspecialchars($genre['GenreID']); ?>">
-                            <?php echo htmlspecialchars($genre['GenreName']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-    
-            </form>
             <label for="songUpload">Correct Song Upload (8 secs):</label>
             <input type="file" id="songUpload" name="songUpload" accept="audio/mp3">
             <br><br>
