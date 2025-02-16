@@ -269,8 +269,9 @@ $conn->close();
         </table>
         <br><br>
 
-        <button type="button" onclick="openModal()">Add Quiz</button>
+        <button type="button" onclick="openModal()">Add Question</button>
         <button type="button" onclick="window.location.href='admin_quiz_management.php'">Cancel</button>
+        <button type="button">Upload</button>
     </div>
 
     <!-- Modal -->
@@ -282,7 +283,7 @@ $conn->close();
             <label for="songUpload">Correct Song Upload (8 secs):</label>
             <input type="file" id="songUpload" name="songUpload" accept="audio/mp3">
             <br><br>
-            <label for="songPhoto">Song Photo (Photos related to Options only):</label>
+            <label for="songPhoto">Correct Song Photo (Photos related to Options only):</label>
             <input type="file" id="songPhoto" name="songPhoto" accept="image/*">
             <br><br>
             <label>Options:</label>
@@ -306,6 +307,7 @@ $conn->close();
             <input type="hidden" id="correctOption" name="correctOption">
         </div>
             
+            <!-- Replace the existing buttons section -->
             <button type="submit">Add Question</button>
             <button type="button" onclick="closeModal()">Cancel</button>
         </form>
