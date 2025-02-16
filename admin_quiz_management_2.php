@@ -601,6 +601,31 @@ function deleteImage() {
     imageDisplay.innerHTML = '';
     imageInput.value = '';
 }
+
+function handleAudioSelection(input) {
+    const file = input.files[0];
+    const audioDisplay = document.getElementById('song-mp3-display');
+
+    if (file && file.type === "audio/mpeg") {
+        const fileURL = URL.createObjectURL(file);
+        audioDisplay.innerHTML = `
+            <p>Selected MP3: ${file.name}</p>
+            <audio controls src="${fileURL}"></audio>
+            <button type="button" onclick="deleteAudio()">Delete</button>
+        `;
+    } else {
+        alert("Please select a valid MP3 file.");
+    }
+}
+
+function deleteAudio() {
+    const audioDisplay = document.getElementById('song-mp3-display');
+    const audioInput = document.getElementById('song-mp3');
+
+    // Clear the displayed audio and reset the file input
+    audioDisplay.innerHTML = '';
+    audioInput.value = '';
+}
     </script>
 
 <?php 

@@ -189,11 +189,15 @@ if (isset($_GET['question_id'])) {
                 <?php endif; ?>
             </div>
 
+            
             <div class="form-group">
-                <label for="song-mp3">Song MP3</label>
-                <input type="file" id="song-mp3" name="song_mp3" accept=".mp3">
+            <label for="song-mp3">Song MP3</label>
+            <input type="file" id="song-mp3" name="song_mp3" accept=".mp3" onchange="handleAudioSelection(this)">
+            <div id="song-mp3-display" style="margin-top: 10px;">
                 <?php if (!empty($question['SongMP3'])): ?>
+                    <p>Selected MP3: <?php echo basename($question['SongMP3']); ?></p>
                     <audio controls src="<?php echo htmlspecialchars($question['SongMP3']); ?>"></audio>
+                    <button type="button" onclick="deleteAudio()">Delete</button>
                 <?php endif; ?>
             </div>
 
