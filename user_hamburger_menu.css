@@ -24,7 +24,7 @@
     margin-bottom: 10px;
 }
 
-#hamburger-menu .username {
+#hamburger-menu #username {
     font-family: "Lalezar", system-ui;
     font-weight: 1000;
     margin-bottom: 20px;

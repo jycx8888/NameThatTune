@@ -98,7 +98,7 @@ include 'user_fetch_profile.php';
         <h1 id='title'>History</h1>
         <table>
             <tr>
-                <th>Number</th>
+                <th>Record ID</th>
                 <th>Quiz ID</th>
                 <th>Quiz Name</th>
                 <th>Result</th>
@@ -115,11 +115,11 @@ include 'user_fetch_profile.php';
                 $row1 = mysqli_fetch_assoc($result1);
                 $user_id = $row1['UserID'];
 
-                $sql2 = "SELECT Result, TimeUsed, Time, QuizID FROM record WHERE UserID = '$user_id' ORDER BY Time DESC";
+                $sql2 = "SELECT RecordID, Result, TimeUsed, Time, QuizID FROM record WHERE UserID = '$user_id' ORDER BY Time DESC";
 			    $result2 = mysqli_query($conn, $sql2);
 
-                $count = 1;
                 while ($row2 = mysqli_fetch_assoc($result2)) {
+                    $record_id = $row2['RecordID'];
                     $quiz_result = $row2['Result'];
                     $time_used = $row2['TimeUsed'];
                     $quiz_id = $row2['QuizID'];
@@ -131,16 +131,14 @@ include 'user_fetch_profile.php';
                     $quiz_name = $row3['QuizName'];
 
                     echo "<tr>
-                    <td>$count</td>
+                    <td>$record_id</td>
                     <td>$quiz_id</td>
                     <td>$quiz_name</td>
                     <td>$quiz_result/5</td>
                     <td>$time_used s</td>
                     <td>$time</td>
-                    <td><a href='user_history_details.php'>View Details</a></td>
+                    <td><a href='user_history_details.php?record_id=$record_id'>View Details</a></td>
                 </tr>";
-
-                $count++;
                 }
             }
             ?>

@@ -1,3 +1,55 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['username'])) {
+    header("Location: admin_login.php");
+    exit();
+}
+
+$servername = "localhost";
+$dbusername = "root"; // Database username
+$dbpassword = ""; // Database password
+$dbname = "namethattune";
+
+// Create connection
+$conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$username = $_SESSION['username'];
+
+// Fetch user data from the database
+$stmt = $conn->prepare("SELECT ProfilePicture FROM admin WHERE Username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $profile_picture_path = $row['ProfilePicture'];
+} else {
+    // Handle case where user data is not found
+    $profile_picture_path = 'Icon/account.png'; // Default profile picture
+}
+
+// Fetch genres from database
+$sql = "SELECT GenreID, GenreName FROM genre";
+$result = $conn->query($sql);
+
+// Store genres in an array
+$genres = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $genres[] = $row;
+    }
+}
+$stmt->close();
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,19 +63,19 @@
             background-color: #d1a3ff;
             display: flex;
             flex-direction: column;
-            align-items: center;
             min-height: 100vh;
             margin: 0;
         }
         .container {
             background-color: white;
+            align-self: center;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             width: 90%;
             max-width: 1000px;
-            text-align: center;
-            margin-top: 20px;
+            margin-top: 60px;
+            text-align: left; /* Change from center to left */
         }
         table {
             width: 100%;
@@ -179,27 +231,40 @@
         </div>
     </div>
 
+    <?php include 'admin_hamburger_menu.php'; ?>
+
     <div class="container">
-        <h2>Add New Quiz</h2>
+        <h2 style="text-align: left;">Add New Quiz</h2>
+    
+        <div style="margin: 15px; text-align: left;">
+            <div style="max-width: 300px; margin-bottom: 20px;">  <!-- Changed from 600px to 300px -->
+                <label for="questionId" style="display: block; text-align: left; margin-bottom: 5px;">Add New Quiz Name:</label>
+                <input type="text" id="questionId" name="questionId" required style="width: 100%;">
+            </div>
+            <div style="max-width: 300px;">  <!-- Changed from 600px to 300px -->
+                <label for="options" style="display: block; text-align: left; margin-bottom: 5px;">Add New Quiz Category:</label>
+                <select id="options" name="options" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">Select a category</option>
+                    <?php foreach ($genres as $genre): ?>
+                        <option value="<?php echo htmlspecialchars($genre['GenreID']); ?>">
+                            <?php echo htmlspecialchars($genre['GenreName']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
         <table>
             <thead>
                 <tr>
                     <th>New Quiz No</th>
                     <th>Options</th>
                     <th>Answer</th>
+                    <th>MP3 File</th>
+                    <th>Photo File</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Q001</td>
-                    <td>Never Gonna Give You Up, Niggas in Paris, Blank Space, YMCA</td>
-                    <td>Never Gonna Give You Up</td>
-                    <td class="actions">
-                        <a href="edit_question.php?question_id=Q001">Edit</a> |
-                        <a href="delete_question.php?question_id=Q001">Delete</a>
-                    </td>
-                </tr>
             </tbody>
         </table>
         <br><br>
@@ -210,31 +275,16 @@
 
     <!-- Modal -->
     <div id="quizModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Add New Question</h2>
-            <form id="addQuestionForm">
-                <div style="margin: 15px;">
-                    <label for="questionId">New Quiz Name:</label>
-                    <input type="text" id="questionId" name="questionId" required>
-                </div>
-                <div style="margin: 15px;">
-                    <label for="options">New Quiz Category:</label>
-                    <select id="options" name="options" required style="width: 80%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px;">
-                        <option value="">Select a category</option>
-                        <option value="english">English</option>
-                        <option value="japanese">Japanese</option>
-                        <option value="korean">Korean</option>
-                    </select>
-                </div>
-    
-            </form>
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Add New Quiz</h2>
+        <form id="addQuestionForm">
             <label for="songUpload">Correct Song Upload (8 secs):</label>
             <input type="file" id="songUpload" name="songUpload" accept="audio/mp3">
-
+            <br><br>
             <label for="songPhoto">Song Photo (Photos related to Options only):</label>
             <input type="file" id="songPhoto" name="songPhoto" accept="image/*">
-            
+            <br><br>
             <label>Options:</label>
                 <div class="option-container">
             <div>
@@ -255,7 +305,7 @@
             </div>
             <input type="hidden" id="correctOption" name="correctOption">
         </div>
-
+            
             <button type="submit">Add Question</button>
             <button type="button" onclick="closeModal()">Cancel</button>
         </form>
@@ -265,19 +315,192 @@
     <script>
         function openModal() {
             document.getElementById("quizModal").style.display = "block";
+                
+            // Reset all checkmarks
+            document.querySelectorAll('.checkmark').forEach(check => {
+                check.classList.remove('selected');
+                check.textContent = ""; // Clear checkmark
+            });
+        
+            // Reset correct answer input field
+            document.getElementById('correctOption').value = "";
         }
         
         function closeModal() {
             document.getElementById("quizModal").style.display = "none";
             document.getElementById("addQuestionForm").reset();
+
+            // Reset correct answer selection
+            document.querySelectorAll('.checkmark').forEach(check => {
+                check.classList.remove('selected');
+                check.textContent = "";
+            });
+        
+            // Clear correct option field
+            document.getElementById('correctOption').value = "";
         }
         
         document.getElementById("addQuestionForm").onsubmit = function(e) {
             e.preventDefault();
-            // Here you would typically add AJAX call to save the question
-            alert("Question Added Successfully!");
+
+            const tableBody = document.querySelector("table tbody");
+    
+            // Ensure we're counting only tbody rows
+            if (tableBody.rows.length >= 5) {
+                alert("You can only add up to 5 quizzes.");
+                return;
+            }
+
+            // Get values from the form
+            const options = document.querySelectorAll('.option-container input[type="text"]');
+            const correctOption = document.getElementById("correctOption").value;
+            const songUpload = document.getElementById("songUpload").files[0];
+            const songPhoto = document.getElementById("songPhoto").files[0];
+
+            // Check if we're editing an existing row
+            const editingRow = document.querySelector('[data-editing="true"]');
+            console.log("Editing Row:", editingRow);
+            console.log("Table Rows:", tableBody.rows.length);
+
+            if (!editingRow) {
+                // Only validate files for new questions
+                if (!songUpload) {
+                    alert("Please upload an MP3 file.");
+                    return;
+                }
+
+                if (!songPhoto) {
+                    alert("Please upload a song photo.");
+                    return;
+                }
+
+                const audio = new Audio(URL.createObjectURL(songUpload));
+                audio.onloadedmetadata = function() {
+                    if (audio.duration > 8) {
+                        alert("The uploaded MP3 must be 8 seconds or less.");
+                        return;
+                    }
+                };
+            }
+        
+            if (!correctOption) {
+                alert("Please select the correct answer.");
+                return;
+            }
+        
+            // Convert options to array
+            const optionTexts = [];
+            options.forEach(option => optionTexts.push(option.value));
+        
+            // Find the correct answer text
+            const correctAnswerText = document.querySelector('.checkmark.selected').previousElementSibling.value;
+        
+            if (editingRow) {
+                // Update existing row
+                editingRow.cells[1].textContent = optionTexts.join(", ");
+                editingRow.cells[2].textContent = correctAnswerText;
+                if (songUpload) editingRow.cells[3].textContent = songUpload.name;
+                if (songPhoto) editingRow.cells[4].textContent = songPhoto.name;
+                editingRow.removeAttribute('data-editing');
+            } else {
+                // Create new row
+                const table = document.querySelector("table tbody");
+                const newQuizNo = table.rows.length + 1;
+                const newRow = document.createElement("tr");
+                newRow.innerHTML = `
+                    <td>${newQuizNo}</td>
+                    <td>${optionTexts.join(", ")}</td>
+                    <td>${correctAnswerText}</td>
+                    <td>${songUpload.name}</td>
+                    <td>${songPhoto.name}</td>
+                    <td class="actions">
+                        <a href="#" onclick="editQuestion(this)">Edit</a> |
+                        <a href="#" onclick="deleteQuestion(this)">Delete</a>
+                    </td>
+                `;
+                table.appendChild(newRow);
+            }
+        
+            // Close modal and reset form
             closeModal();
         };
+
+        // Replace the existing deleteQuestion function with this:
+
+        function deleteQuestion(link) {
+            if (confirm("Are you sure you want to delete this question?")) {
+                const row = link.closest("tr");
+                row.parentNode.removeChild(row);
+                updateQuizNumbers();
+            }
+        }
+
+
+        // Function to update quiz numbers after deleting a row
+        function updateQuizNumbers() {
+            const rows = document.querySelectorAll("table tbody tr");
+            rows.forEach((row, index) => {
+                row.cells[0].textContent = index + 1;
+            });
+        }
+
+        // Function to edit a question 
+        function editQuestion(link) {
+            const row = link.closest("tr");
+            row.setAttribute('data-editing', 'true'); // Mark the row being edited
+            const cells = row.getElementsByTagName("td");
+
+            const quizNo = cells[0].textContent;
+            const optionsText = cells[1].textContent.split(", ");
+            const correctAnswer = cells[2].textContent;
+            const existingSongFileName = cells[3].textContent;
+            const existingPhotoFileName = cells[4].textContent;
+
+            openModal();
+
+            // Populate option fields
+            const options = document.querySelectorAll('.option-container input[type="text"]');
+            options.forEach((option, index) => {
+                option.value = optionsText[index] || "";
+            });
+        
+            // Select the correct answer
+            document.querySelectorAll('.checkmark').forEach(check => {
+                check.classList.remove('selected');
+                check.textContent = "";
+                if (check.previousElementSibling.value === correctAnswer) {
+                    check.classList.add('selected');
+                    check.textContent = "\u2714";
+                    document.getElementById('correctOption').value = check.getAttribute('data-value');
+                }
+            });
+        
+            // Display existing file names
+            document.getElementById("songUpload").value = ""; // Clear file input
+            document.getElementById("songPhoto").value = ""; // Clear file input
+        
+            const songFileLabel = document.getElementById("existingSongFile");
+            if (!songFileLabel) {
+                const newLabel = document.createElement("p");
+                newLabel.id = "existingSongFile";
+                newLabel.textContent = "Current MP3: " + existingSongFileName;
+                document.getElementById("songUpload").insertAdjacentElement("afterend", newLabel);
+            } else {
+                songFileLabel.textContent = "Current MP3: " + existingSongFileName;
+            }
+        
+            const photoFileLabel = document.getElementById("existingPhotoFile");
+            if (!photoFileLabel) {
+                const newLabel = document.createElement("p");
+                newLabel.id = "existingPhotoFile";
+                newLabel.textContent = "Current Photo: " + existingPhotoFileName;
+                document.getElementById("songPhoto").insertAdjacentElement("afterend", newLabel);
+            } else {
+                photoFileLabel.textContent = "Current Photo: " + existingPhotoFileName;
+            }
+        }
+
+
 
         document.querySelectorAll('.checkmark').forEach(check => {
             check.addEventListener('click', function() {

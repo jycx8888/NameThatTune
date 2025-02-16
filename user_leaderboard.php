@@ -6,6 +6,10 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
+if (!isset($_GET['quizId'])) {
+    die("Quiz ID not provided.");
+}
+
 $servername = "localhost";
 $dbusername = "root"; // Database username
 $dbpassword = ""; // Database password
@@ -20,6 +24,7 @@ if ($conn->connect_error) {
 }
 
 $username = $_SESSION['username'];
+$quiz_id = $_GET['quizId'];
 
 include 'user_fetch_profile.php';
 
@@ -154,14 +159,14 @@ include 'user_fetch_profile.php';
         <div id="leaderboard">
             <h1>Leaderboard</h1>
             <?php
-            $quiz_id = $_POST['quiz_id'];
-            $sql1 = "SELECT UserID, Result, TimeUsed FROM record WHERE QuizID = '$quiz_id' ORDER BY Result DESC, TimeUsed ASC";
+            $sql1 = "SELECT RecordID, UserID, Result, TimeUsed FROM record WHERE QuizID = '$quiz_id' ORDER BY Result DESC, TimeUsed ASC";
             $result1 = mysqli_query($conn, $sql1);
         
             if (mysqli_num_rows($result1) > 0) {
                 $rank = 1;
                 while ($row1 = mysqli_fetch_assoc($result1)) {
                     $userID = $row1['UserID'];
+                    $record_id = $row1['RecordID'];
                     $sql2 = "SELECT Username FROM user WHERE UserID = '$userID'";
                     $result2 = mysqli_query($conn, $sql2);
                     $row2 = mysqli_fetch_assoc($result2);
@@ -172,9 +177,11 @@ include 'user_fetch_profile.php';
                         echo "<div class='circle'>";
                         echo "<h2>$rank</h2>";
                         echo "</div>";
-                        if ($username == $_SESSION['username']) {
+                        if ($record_id == $_GET['recordId']) {
                             echo "<h3 class='username'>$username(You)</h3>";
                             $user_rank = $rank;
+                            $user_result = $row1['Result'];
+                            $user_timeused = $row1['TimeUsed'];
                         } else {
                             echo "<h3 class='username'>$username</h3>";
                         }
@@ -182,16 +189,17 @@ include 'user_fetch_profile.php';
                         echo "</div>";
                     }
 
-                    if ($username == $_SESSION['username']) {
+                    if ($record_id == $_GET['recordId']) {
+                        $user_rank = $rank;
                         $user_result = $row1['Result'];
                         $user_timeused = $row1['TimeUsed'];
-                        $user_rank = $rank;
                     }
 
                     $rank++;
                 }
             }
 
+            $sql3 = "SELECT Result, TimeUsed FROM record WHERE RecordID = '$record_id'";
             echo "<div class='record'>";
             echo "<div class='circle'>";
             echo "<h2>$user_rank</h2>";

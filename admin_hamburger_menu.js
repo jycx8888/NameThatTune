@@ -92,7 +92,7 @@ function closeLogoutPopup() {
 }
 
 function logout() {
-    window.location.href = 'logout.php';
+    window.location.href = 'admin_logout.php';
 }
 
 document.getElementById('volumeSlider').addEventListener('input', function() {
