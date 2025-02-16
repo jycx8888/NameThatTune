@@ -201,7 +201,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
         </select>
         <input type="text" id="search" placeholder="Search....">
         <button onclick="performSearch()">Search</button>
-        <button id="addSongBtn" onclick="moveToAddSong()" style="background-color: grey; color: white;">Add Song</button>
+        <button id="addSongBtn" onclick="moveToAddSong()" style="background-color: grey; color: white;">Add New Quiz</button>
 
     </div>
         <!-- Table Section -->
