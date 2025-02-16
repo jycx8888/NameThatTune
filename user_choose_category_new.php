@@ -52,7 +52,6 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NameThatTune</title>
     <link rel="icon" href="icon/logo.jpg" type="image/png">
-    <link rel="stylesheet" href="hamburger_menu.css">
     <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_footer.css">
     <style>
@@ -61,7 +60,8 @@ $conn->close();
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100vh;
+            height: fit-content;
+            min-height: 100vh;
         }
 
         .category-dropdown {
@@ -90,19 +90,36 @@ $conn->close();
             padding: 5px;
         }
 
+        @media (max-width: 1024px) {
+            .category-dropdown {
+                font-size: 14px;
+                padding: 8px;
+                margin-top: 48px;
+                background-position: right 25px center;
+                background-size: 20px;
+                padding-right: 36px;
+            }
+
+            .category-dropdown option {
+                font-size: 14px;
+                padding: 4px;
+            }
+        }
+
         #quiz-gallery-container {
-            overflow: hidden;
-            width: 100%;
             display: flex;
+            width: 80vw;
+            height: fit-content;
+            min-height: 30vh;
+            margin: 24px 0;
             justify-content: center;
-            align-items: center;
-            height: calc(50vh - 100px);
         }
 
         #quiz-gallery {
             display: flex;
-            gap: 50px;
-            white-space: nowrap;
+            flex-wrap: wrap;
+            /* padding: 24px; */
+            justify-content: space-evenly;
         }
 
         @keyframes scroll-left {
@@ -118,9 +135,9 @@ $conn->close();
             font-family: "Lalezar", system-ui;
             font-weight: 1000;
             font-size: small;
-            display: inline-block;
             width: 200px;
             height: 200px;
+            margin: 12px;
             background-color: rgb(72, 87, 227);
             color: white;
             text-align: center;
@@ -128,11 +145,10 @@ $conn->close();
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
             cursor: pointer;
             overflow: hidden;
-            margin: 30px;
             transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
         }
 
-        .quiz-box span {
+        .quiz-box div {
             display: block;
             padding: 8px 5px; /* Reduce padding */
             font-size: 1.1rem; /* Adjust font size */
@@ -141,9 +157,14 @@ $conn->close();
             top: 5px; /* Maintain slight downward position */
         }
 
-        @media (max-width: 600px) {
-            .quiz-box span {
-                font-size: 0.9rem; /* Smaller text for mobile */
+        @media (max-width: 1024px) {
+            #quiz-gallery{
+                padding: 0 12px;
+                margin-bottom: 12px;
+            }
+
+            .quiz-box div {
+                font-size: 0.8rem; /* Smaller text for mobile */
                 padding: 5px; /* Adjust padding */
             }
         }
@@ -177,12 +198,21 @@ $conn->close();
             box-shadow: 0 8px 15px rgba(26, 5, 115, 0.5); /* Add a shadow effect */
         }
 
+        @media (max-width: 1024px) {
+            #start-button {
+                padding: 15px 10px;
+                font-size: 20px;
+            }
+        }
+
         /* Volume and Fullscreen Controls */
         #controls {
-            width: 100%; /* Full width of the screen */
-            display: flex; /* Align buttons */
-            justify-content: space-between; /* Align one button to the left and the other to the right */
-            align-items: center;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-self: end;
+            align-content: center;
+            margin-bottom: 48px;
             background-color: transparent; /* Optional: Makes the background transparent */
         }
 
@@ -244,7 +274,8 @@ $conn->close();
         </select>
 
         <div id="quiz-gallery-container">
-            <div id="quiz-gallery"></div>
+            <div id="quiz-gallery">
+            </div>
         </div>
 
         <button id="start-button">Click to Start</button>
@@ -348,7 +379,7 @@ $conn->close();
                         const box = document.createElement('div');
                         box.classList.add('quiz-box');
                         box.innerHTML = `
-                            <span>${quiz.QuizName}</span>
+                            <div>${quiz.QuizName}</div>
                         `;
                         box.addEventListener('click', function () {
                             document.querySelectorAll('.quiz-box').forEach(b => b.classList.remove('selected'));

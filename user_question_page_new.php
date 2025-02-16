@@ -142,12 +142,10 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             background-color: white;
             border-radius: 15px;
             padding: 20px;
-            max-width: 600px;
-            width: 100%;
+            width: clamp(400px, 60vw, 600px);
             text-align: center;
             align-self: center;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-            position: relative;
         }
 
         .question-image {
@@ -158,7 +156,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             display: block; /* Center the image horizontally */
             margin-left: auto;
             margin-right: auto;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); /* Optional: Add shadow for better appearance */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
         }
 
         .question-box h2 {
@@ -213,7 +211,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             cursor: pointer;
             align-self: start;
             transition: background-color 0.3s, transform 0.2s;
-            z-index: 1001; /* Ensure it appears above other elements */
         }
 
         #backButton:hover {
