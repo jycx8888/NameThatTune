@@ -574,6 +574,33 @@ correctIcons.forEach(icon => {
     const selectedOption = icon.previousElementSibling.value;
     document.getElementById('correct-answer').value = selectedOption;
 }
+
+function handleImageSelection(input) {
+    const file = input.files[0];
+    const imageDisplay = document.getElementById('song-photo-display');
+
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            imageDisplay.innerHTML = `
+                <img src="${e.target.result}" alt="Selected Image" style="max-width: 200px;">
+                <button type="button" onclick="deleteImage()">Delete</button>
+            `;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        alert("Please select a valid image file.");
+    }
+}
+
+function deleteImage() {
+    const imageDisplay = document.getElementById('song-photo-display');
+    const imageInput = document.getElementById('song-photo');
+
+    // Clear the displayed image and reset the file input
+    imageDisplay.innerHTML = '';
+    imageInput.value = '';
+}
     </script>
 
 <?php 
