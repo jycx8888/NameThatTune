@@ -527,8 +527,6 @@ $conn->close();
             }
         }
 
-
-
         document.querySelectorAll('.checkmark').forEach(check => {
             check.addEventListener('click', function() {
                 document.querySelectorAll('.checkmark').forEach(c => {
