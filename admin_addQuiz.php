@@ -315,114 +315,138 @@ $conn->close();
     <script>
         function openModal() {
             document.getElementById("quizModal").style.display = "block";
-                
-            // Reset all checkmarks
-            document.querySelectorAll('.checkmark').forEach(check => {
-                check.classList.remove('selected');
-                check.textContent = ""; // Clear checkmark
-            });
-        
-            // Reset correct answer input field
-            document.getElementById('correctOption').value = "";
-        }
-        
-        function closeModal() {
-            document.getElementById("quizModal").style.display = "none";
+
+            // Reset form
             document.getElementById("addQuestionForm").reset();
 
-            // Reset correct answer selection
+            // Reset all checkmarks
             document.querySelectorAll('.checkmark').forEach(check => {
                 check.classList.remove('selected');
                 check.textContent = "";
             });
         
-            // Clear correct option field
+            // Reset correct answer input field
             document.getElementById('correctOption').value = "";
+
+            // Remove existing file labels if they exist
+            const existingSongLabel = document.getElementById("existingSongFile");
+            if (existingSongLabel) {
+                existingSongLabel.remove();
+            }
+
+            const existingPhotoLabel = document.getElementById("existingPhotoFile");
+            if (existingPhotoLabel) {
+                existingPhotoLabel.remove();
+            }
+        }
+        
+        // Add this function to your <script> section
+        function closeModal() {
+            document.getElementById("quizModal").style.display = "none";
+            document.getElementById("addQuestionForm").reset();
+            
+            // Reset all checkmarks
+            document.querySelectorAll('.checkmark').forEach(check => {
+                check.classList.remove('selected');
+                check.textContent = "";
+            });
+            
+            // Reset correct answer input field
+            document.getElementById('correctOption').value = "";
+            
+            // Remove existing file labels
+            const existingSongLabel = document.getElementById("existingSongFile");
+            if (existingSongLabel) {
+                existingSongLabel.remove();
+            }
+            
+            const existingPhotoLabel = document.getElementById("existingPhotoFile");
+            if (existingPhotoLabel) {
+                existingPhotoLabel.remove();
+            }
         }
         
         document.getElementById("addQuestionForm").onsubmit = function(e) {
             e.preventDefault();
-
+                
             const tableBody = document.querySelector("table tbody");
-    
-            // Ensure we're counting only tbody rows
-            if (tableBody.rows.length >= 5) {
-                alert("You can only add up to 5 quizzes.");
-                return;
-            }
-
-            // Get values from the form
+            const editingRow = document.querySelector('[data-editing="true"]');
+            const currentRowCount = tableBody.getElementsByTagName("tr").length;
             const options = document.querySelectorAll('.option-container input[type="text"]');
             const correctOption = document.getElementById("correctOption").value;
             const songUpload = document.getElementById("songUpload").files[0];
             const songPhoto = document.getElementById("songPhoto").files[0];
-
-            // Check if we're editing an existing row
-            const editingRow = document.querySelector('[data-editing="true"]');
-            console.log("Editing Row:", editingRow);
-            console.log("Table Rows:", tableBody.rows.length);
-
+                
+            // Only check row limit for new additions, not for edits
+            if (!editingRow && currentRowCount >= 5) {
+                alert("You can only add up to 5 quizzes.");
+                return;
+            }
+        
+            // Check if editing or adding new
             if (!editingRow) {
-                // Only validate files for new questions
+                // Validation for new entries
                 if (!songUpload) {
                     alert("Please upload an MP3 file.");
                     return;
                 }
-
+            
                 if (!songPhoto) {
                     alert("Please upload a song photo.");
                     return;
                 }
-
+            
+                // Audio duration check
                 const audio = new Audio(URL.createObjectURL(songUpload));
                 audio.onloadedmetadata = function() {
                     if (audio.duration > 8) {
                         alert("The uploaded MP3 must be 8 seconds or less.");
                         return;
                     }
+                    proceedWithSubmission();
                 };
-            }
-        
-            if (!correctOption) {
-                alert("Please select the correct answer.");
-                return;
-            }
-        
-            // Convert options to array
-            const optionTexts = [];
-            options.forEach(option => optionTexts.push(option.value));
-        
-            // Find the correct answer text
-            const correctAnswerText = document.querySelector('.checkmark.selected').previousElementSibling.value;
-        
-            if (editingRow) {
-                // Update existing row
-                editingRow.cells[1].textContent = optionTexts.join(", ");
-                editingRow.cells[2].textContent = correctAnswerText;
-                if (songUpload) editingRow.cells[3].textContent = songUpload.name;
-                if (songPhoto) editingRow.cells[4].textContent = songPhoto.name;
-                editingRow.removeAttribute('data-editing');
             } else {
-                // Create new row
-                const table = document.querySelector("table tbody");
-                const newQuizNo = table.rows.length + 1;
-                const newRow = document.createElement("tr");
-                newRow.innerHTML = `
-                    <td>${newQuizNo}</td>
-                    <td>${optionTexts.join(", ")}</td>
-                    <td>${correctAnswerText}</td>
-                    <td>${songUpload.name}</td>
-                    <td>${songPhoto.name}</td>
-                    <td class="actions">
-                        <a href="#" onclick="editQuestion(this)">Edit</a> |
-                        <a href="#" onclick="deleteQuestion(this)">Delete</a>
-                    </td>
-                `;
-                table.appendChild(newRow);
+                // If editing, proceed directly
+                proceedWithSubmission();
             }
         
-            // Close modal and reset form
-            closeModal();
+            function proceedWithSubmission() {
+                if (!correctOption) {
+                    alert("Please select the correct answer.");
+                    return;
+                }
+            
+                const optionTexts = [];
+                options.forEach(option => optionTexts.push(option.value));
+                
+                const correctAnswerText = document.querySelector('.checkmark.selected').previousElementSibling.value;
+                
+                if (editingRow) {
+                    // Update existing row
+                    editingRow.cells[1].textContent = optionTexts.join(", ");
+                    editingRow.cells[2].textContent = correctAnswerText;
+                    if (songUpload) editingRow.cells[3].textContent = songUpload.name;
+                    if (songPhoto) editingRow.cells[4].textContent = songPhoto.name;
+                    editingRow.removeAttribute('data-editing');
+                } else {
+                    // Create new row
+                    const newRow = document.createElement("tr");
+                    newRow.innerHTML = `
+                        <td>${currentRowCount + 1}</td>
+                        <td>${optionTexts.join(", ")}</td>
+                        <td>${correctAnswerText}</td>
+                        <td>${songUpload.name}</td>
+                        <td>${songPhoto.name}</td>
+                        <td class="actions">
+                            <a href="#" onclick="editQuestion(this)">Edit</a> |
+                            <a href="#" onclick="deleteQuestion(this)">Delete</a>
+                        </td>
+                    `;
+                    tableBody.appendChild(newRow);
+                }
+                
+                closeModal();
+            }
         };
 
         // Replace the existing deleteQuestion function with this:
