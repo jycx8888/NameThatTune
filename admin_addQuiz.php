@@ -50,6 +50,7 @@ $stmt->close();
 $conn->close();
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -256,7 +257,7 @@ $conn->close();
         <table>
             <thead>
                 <tr>
-                    <th>New Quiz No</th>
+                    <th>New Question No</th>
                     <th>Options</th>
                     <th>Answer</th>
                     <th>MP3 File</th>
