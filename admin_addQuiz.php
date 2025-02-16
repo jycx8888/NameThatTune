@@ -399,7 +399,7 @@ $conn->close();
                 // Audio duration check
                 const audio = new Audio(URL.createObjectURL(songUpload));
                 audio.onloadedmetadata = function() {
-                    if (audio.duration > 8) {
+                    if (audio.duration > 9) {
                         alert("The uploaded MP3 must be 8 seconds or less.");
                         return;
                     }
