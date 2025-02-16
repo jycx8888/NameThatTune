@@ -305,62 +305,114 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         .submit-button:hover {
             background-color: #CBC3E3;
         }
-    </style>
-    
-<script>
-function deleteQuestion(questionId) {
-    if (confirm("Are you sure you want to delete this question?")) {
-        // Create an AJAX request
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", "admin_quiz_management_3.php", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-        // Define what happens on successful data submission
-        xhr.onload = function () {
-            if (xhr.status === 200) {
-                alert("Question deleted successfully!");
-                location.reload(); // Reload the page to reflect changes
-            } else {
-                alert("Error deleting question: " + xhr.responseText);
-            }
-        };
-
-        // Define what happens in case of an error
-        xhr.onerror = function () {
-            alert("Request failed. Please try again.");
-        };
-
-        // Send the request with the question ID
-        xhr.send("action=delete&question_id=" + questionId);
-    }
-}
-
-// Function to open the popup and load page3 content
-function openEditQuizPopup(questionId) {
-    // Fetch the content of page3 with the question ID as a parameter
-    fetch('admin_quiz_management_3.php?question_id=' + questionId)
-        .then(response => response.text())
-        .then(data => {
-            // Insert the content into the popup
-            document.getElementById('popupContent').innerHTML = data;
-            // Show the popup and overlay
-            document.getElementById('editQuizPopup').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        })
-        .catch(error => console.error('Error loading page3:', error));
-}
-
-// Function to close the popup
-
-function closeEditQuizPopup() {
-            document.getElementById('editQuizPopup').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow-y: auto; /* Add this to enable vertical scrolling */
         }
 
-        document.getElementById('closePopupButton').addEventListener('click', closeEditQuizPopup);
-        document.getElementById('overlay').addEventListener('click', closeEditQuizPopup);
-</script>
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 50%;
+            margin: 5% auto; /* Changed from 15% to 5% to position higher */
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            max-height: 90vh; /* Set maximum height */
+            overflow-y: auto; /* Enable scrolling within the modal content */
+        }
 
+        .modal-content input {
+            width: 80%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .modal-content label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .modal-content select {
+            width: 80%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        .modal-content select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .option-container div {
+            display: flex;
+            align-items: center;
+            background-color: rgb(194, 194, 194);
+            border-radius: 20px;
+            padding: 10px;
+            margin-bottom: 10px;
+            position: relative;
+            border: 2px solid rgb(130, 185, 229);
+        }
+
+        .option-container input[type="text"] {
+            flex-grow: 1;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            color: black;
+            outline: none;
+        }
+
+        .checkmark {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            border: 2px solid #aaa;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 20px;
+            color: transparent;
+            margin-left: 10px;
+        }
+
+        .checkmark:hover {
+            background-color: #ddd;
+        }
+
+        .checkmark.selected {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+            content: "\25CF"; /* Unicode for a filled circle */
+        }
+
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <!-- Header Section -->
@@ -379,18 +431,45 @@ function closeEditQuizPopup() {
     <form method="POST" action="admin_quiz_management.php?quiz_id=<?php echo $quiz['QuizID']; ?>">
     <h2 class="edit-quiz-header"><?php echo isset($quiz) ? 'Edit Quiz' : 'Add Song'; ?></h2>
 
-    <!-- Overlay and Popup -->
-<div id="overlay"></div>
-<div id="editQuizPopup">
-    <h2>Edit Quiz</h2>
-    <form id="quiz-form" action="admin_quiz_management_3.php" method="POST">
-        <div id="popupContent">
-            <!-- Dynamic content from admin_quiz_management_3.php will be inserted here -->
+    <!-- Modal -->
+    <div id="quizModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Edit Question</h2>
+        <form id="addQuestionForm">
+            <label for="songUpload">Correct Song Upload (8 secs):</label>
+            <input type="file" id="songUpload" name="songUpload" accept="audio/mp3">
+            <br><br>
+            <label for="songPhoto">Correct Song Photo (Photos related to Options only):</label>
+            <input type="file" id="songPhoto" name="songPhoto" accept="image/*">
+            <br><br>
+            <label>Options:</label>
+                <div class="option-container">
+            <div>
+                <input type="text" name="option1" placeholder="Enter option 1" required>
+                <span class="checkmark" data-value="option1"></span>
+            </div>
+            <div>
+                <input type="text" name="option2" placeholder="Enter option 2" required>
+                <span class="checkmark" data-value="option2"></span>
+            </div>
+            <div>
+                <input type="text" name="option3" placeholder="Enter option 3" required>
+                <span class="checkmark" data-value="option3"></span>
+            </div>
+            <div>
+                <input type="text" name="option4" placeholder="Enter option 4" required>
+                <span class="checkmark" data-value="option4"></span>
+            </div>
+            <input type="hidden" id="correctOption" name="correctOption">
         </div>
-        <button type="submit" class="submit-button">Confirm</button>
-    </form>
-    <button id="closePopupButton" onclick="closeEditQuizPopup()">Close</button>
-</div>
+            
+            <!-- Replace the existing buttons section -->
+            <button type="submit">Edit Question</button>
+            <button type="button" onclick="closeModal()">Cancel</button>
+        </form>
+        </div>
+    </div>
 
      <!-- Display Quiz ID -->
      <p>Quiz ID: <?= isset($quiz['QuizID']) && !empty($quiz['QuizID']) ? htmlspecialchars($quiz['QuizID']) : 'No Quiz Found'; ?></p>
