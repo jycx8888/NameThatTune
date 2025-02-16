@@ -210,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             top: 10%; /* Adjust this value to leave space for the header */
             left: 50%;
             transform: translateX(-50%);
-            width: 500px; /* Keep your existing width */
+            width: 600px; /* Increased width */
             max-height: 80vh; /* Maximum height */
             overflow-y: auto; /* Enable scrolling */
             padding: 20px;
@@ -219,7 +219,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Keep your existing box-shadow */
             z-index: 1000;
         }
-
         #closePopupButton {
             margin-top: 10px;
             padding: 10px 20px;
@@ -352,21 +351,18 @@ function openEditQuizPopup(questionId) {
 }
 
 // Function to close the popup
+
 function closeEditQuizPopup() {
-    document.getElementById('closePopupButton').addEventListener('click', closeEditQuizPopup);
-document.getElementById('overlay').addEventListener('click', closeEditQuizPopup);
-}
+            document.getElementById('editQuizPopup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
 
-// Event listener for the close button
-document.getElementById('closePopupButton').addEventListener('click', closePopup);
-
-// Event listener to close the popup when clicking outside
-document.getElementById('overlay').addEventListener('click', closePopup);
+        document.getElementById('closePopupButton').addEventListener('click', closeEditQuizPopup);
+        document.getElementById('overlay').addEventListener('click', closeEditQuizPopup);
 </script>
 
 </head>
 <body>
-
     <!-- Header Section -->
     <div id="header">
         <h1>NameThatTune</h1>
@@ -383,18 +379,18 @@ document.getElementById('overlay').addEventListener('click', closePopup);
     <form method="POST" action="admin_quiz_management.php?quiz_id=<?php echo $quiz['QuizID']; ?>">
     <h2 class="edit-quiz-header"><?php echo isset($quiz) ? 'Edit Quiz' : 'Add Song'; ?></h2>
 
-   <!-- Overlay and Popup -->
-    <div id="overlay"></div>
-    <div id="editQuizPopup">
-        <h2>Edit Quiz</h2>
-        <form id="quiz-form">
-            <div id="popupContent">
-                <!-- Dynamic content from admin_quiz_management_3.php will be inserted here -->
-            </div>
-            <button type="submit" class="submit-button">Confirm</button>
-        </form>
-        <button id="closePopupButton" onclick="closeEditQuizPopup()">Close</button>
-    </div>
+    <!-- Overlay and Popup -->
+<div id="overlay"></div>
+<div id="editQuizPopup">
+    <h2>Edit Quiz</h2>
+    <form id="quiz-form" action="admin_quiz_management_3.php" method="POST">
+        <div id="popupContent">
+            <!-- Dynamic content from admin_quiz_management_3.php will be inserted here -->
+        </div>
+        <button type="submit" class="submit-button">Confirm</button>
+    </form>
+    <button id="closePopupButton" onclick="closeEditQuizPopup()">Close</button>
+</div>
 
      <!-- Display Quiz ID -->
      <p>Quiz ID: <?= isset($quiz['QuizID']) && !empty($quiz['QuizID']) ? htmlspecialchars($quiz['QuizID']) : 'No Quiz Found'; ?></p>
@@ -456,57 +452,7 @@ document.getElementById('overlay').addEventListener('click', closePopup);
         <button type="submit" class="confirm"><?php echo isset($quiz) ? 'Save Changes' : 'Add Song'; ?></button>
     </div>
 </form>
-
-<!-- Edit Quiz Popup -->
-<div id="overlay"></div>
-<div id="editQuizPopup">
-    <h2>Edit Quiz</h2>
-    <form id="quiz-form">
-        <div class="form-group">
-            <label for="song-name">Song Name</label>
-            <input type="text" id="song-name" placeholder="Enter Song Name">
-        </div>
-
-        <div class="form-group">
-            <label for="song-photo">Song Photo</label>
-            <input type="file" id="song-photo" accept="image/*">
-            <div id="song-photo-display" style="margin-top: 10px;"></div>
-        </div>
-
-        <div class="form-group">
-            <label for="song-mp3">Song MP3</label>
-            <input type="file" id="song-mp3" accept=".mp3">
-            <div id="mp3-display" style="margin-top: 10px;"></div>
-        </div>
-
-        <div class="form-group options">
-            <label>Options</label>
-            <div class="option-item">
-                <input type="text" placeholder="Option 1">
-                <img src="Icon/no_select.png" alt="Correct Icon" class="correct-icon">
-            </div>
-            <div class="option-item">
-                <input type="text" placeholder="Option 2">
-                <img src="Icon/no_select.png" alt="Correct Icon" class="correct-icon">
-            </div>
-            <div class="option-item">
-                <input type="text" placeholder="Option 3">
-                <img src="Icon/no_select.png" alt="Correct Icon" class="correct-icon">
-            </div>
-            <div class="option-item">
-                <input type="text" placeholder="Option 4">
-                <img src="Icon/no_select.png" alt="Correct Icon" class="correct-icon">
-            </div>
-        </div>
-
-        <button type="submit" class="submit-button">Confirm</button>
-    </form>
-    <button id="closePopupButton">Close</button>
-</div>
-
     </main>
-
-    
 
     <!-- Script for Search Functionality -->
     <script>
@@ -558,32 +504,6 @@ document.getElementById('overlay').addEventListener('click', closePopup);
         noResultsRow.remove();
     }
 }
-
-// Function to open the popup and load dynamic content
-function openEditQuizPopup(questionId) {
-    fetch('admin_quiz_management_3.php?question_id=' + questionId)
-        .then(response => response.text())
-        .then(data => {
-            // Insert the dynamic content into the popup
-            document.getElementById('popupContent').innerHTML = data;
-            // Show the popup and overlay
-            document.getElementById('editQuizPopup').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        })
-        .catch(error => console.error('Error loading page3:', error));
-}
-
-// Function to close the popup
-function closeEditQuizPopup() {
-    document.getElementById('editQuizPopup').style.display = 'none';
-    document.getElementById('overlay').style.display = 'none';
-}
-
-// Event listener for the close button
-document.getElementById('closePopupButton').addEventListener('click', closeEditQuizPopup);
-
-// Event listener to close the popup when clicking outside
-document.getElementById('overlay').addEventListener('click', closeEditQuizPopup);
 
 // Handle song photo selection
 const songPhotoInput = document.getElementById('song-photo');
@@ -639,6 +559,73 @@ correctIcons.forEach(icon => {
         icon.classList.add('selected');
     });
 });
+    </script>
+
+    <script>
+        function toggleCorrect(icon) {
+    // Remove the 'selected' class from all icons
+    const correctIcons = document.querySelectorAll('.correct-icon');
+    correctIcons.forEach(icon => icon.classList.remove('selected'));
+
+    // Add the 'selected' class to the clicked icon
+    icon.classList.add('selected');
+
+    // Update the hidden input field with the correct answer
+    const selectedOption = icon.previousElementSibling.value;
+    document.getElementById('correct-answer').value = selectedOption;
+}
+
+function handleImageSelection(input) {
+    const file = input.files[0];
+    const imageDisplay = document.getElementById('song-photo-display');
+
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            imageDisplay.innerHTML = `
+                <img src="${e.target.result}" alt="Selected Image" style="max-width: 200px;">
+                <button type="button" onclick="deleteImage()">Delete</button>
+            `;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        alert("Please select a valid image file.");
+    }
+}
+
+function deleteImage() {
+    const imageDisplay = document.getElementById('song-photo-display');
+    const imageInput = document.getElementById('song-photo');
+
+    // Clear the displayed image and reset the file input
+    imageDisplay.innerHTML = '';
+    imageInput.value = '';
+}
+
+function handleAudioSelection(input) {
+    const file = input.files[0];
+    const audioDisplay = document.getElementById('song-mp3-display');
+
+    if (file && file.type === "audio/mpeg") {
+        const fileURL = URL.createObjectURL(file);
+        audioDisplay.innerHTML = `
+            <p>Selected MP3: ${file.name}</p>
+            <audio controls src="${fileURL}"></audio>
+            <button type="button" onclick="deleteAudio()">Delete</button>
+        `;
+    } else {
+        alert("Please select a valid MP3 file.");
+    }
+}
+
+function deleteAudio() {
+    const audioDisplay = document.getElementById('song-mp3-display');
+    const audioInput = document.getElementById('song-mp3');
+
+    // Clear the displayed audio and reset the file input
+    audioDisplay.innerHTML = '';
+    audioInput.value = '';
+}
     </script>
 
 <?php 

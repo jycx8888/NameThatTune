@@ -252,7 +252,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
 
         <!-- Back Button -->
       <!-- Back Button -->
-    <button onclick="admin_adminDashboard.php" class="back-button">Back</button>
+    <button onclick="back()" class="back-button">Back to Dashboard</button>
 
     </div>
 
@@ -309,6 +309,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
 
         function moveToAddSong() {
             window.location.href = 'admin_addQuiz.php';
+        }
+
+        function back(){
+            window.location.href = 'admin_adminDashboard.php';
         }
     </script>
     

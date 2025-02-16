@@ -166,7 +166,6 @@ if (isset($_GET['question_id'])) {
             <h2>Edit Quiz</h2>
             <input type="hidden" name="question_id" value="<?php echo htmlspecialchars($question['QuestionID']); ?>">
             <form id="quiz-form">
-            <button type="button" id="closePopupButton" onclick="closePopup()">Close</button>
 
             <?php
             // Fetch question data based on question_id
@@ -181,18 +180,24 @@ if (isset($_GET['question_id'])) {
             </div>
 
             <div class="form-group">
-                <label for="song-photo">Song Photo</label>
-                <input type="file" id="song-photo" name="song_photo" accept="image/*">
+            <label for="song-photo">Song Photo</label>
+            <input type="file" id="song-photo" name="song_photo" accept="image/*" onchange="handleImageSelection(this)">
+            <div id="song-photo-display" style="margin-top: 10px;">
                 <?php if (!empty($question['SongPhoto'])): ?>
                     <img src="<?php echo htmlspecialchars($question['SongPhoto']); ?>" alt="Song Photo" style="max-width: 200px;">
+                    <button type="button" onclick="deleteImage()">Delete</button>
                 <?php endif; ?>
             </div>
 
+            
             <div class="form-group">
-                <label for="song-mp3">Song MP3</label>
-                <input type="file" id="song-mp3" name="song_mp3" accept=".mp3">
+            <label for="song-mp3">Song MP3</label>
+            <input type="file" id="song-mp3" name="song_mp3" accept=".mp3" onchange="handleAudioSelection(this)">
+            <div id="song-mp3-display" style="margin-top: 10px;">
                 <?php if (!empty($question['SongMP3'])): ?>
+                    <p>Selected MP3: <?php echo basename($question['SongMP3']); ?></p>
                     <audio controls src="<?php echo htmlspecialchars($question['SongMP3']); ?>"></audio>
+                    <button type="button" onclick="deleteAudio()">Delete</button>
                 <?php endif; ?>
             </div>
 
@@ -212,11 +217,24 @@ if (isset($_GET['question_id'])) {
 </div>
                         <div id="loading" style="display: none;">Loading...</div>
                     </div>
-
-                <button type="submit" class="submit-button">Confirm</button>
             </form>
         </div>
     </div>
+
+    <script>
+        function toggleCorrect(icon) {
+            // Remove the 'selected' class from all icons
+            const correctIcons = document.querySelectorAll('.correct-icon');
+            correctIcons.forEach(icon => icon.classList.remove('selected'));
+
+            // Add the 'selected' class to the clicked icon
+            icon.classList.add('selected');
+
+            // Update the hidden input field with the correct answer
+            const selectedOption = icon.previousElementSibling.value;
+            document.getElementById('correct-answer').value = selectedOption;
+        }
+    </script>
 
     <!-- Overlay -->
     <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000;"></div>
@@ -229,6 +247,8 @@ if (isset($_GET['question_id'])) {
             <!-- Form fields -->
             <button type="button" id="closePopupButton" onclick="closePopup()">Close</button>
             <!-- Rest of the form -->
+
+            <input type="file" id="song-photo" name="song_photo" accept="image/*" onchange="handleImageSelection(this)">
         </form>
     </div>
 
