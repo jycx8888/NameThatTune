@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             flex: 1;
             margin: 40px;
             padding: 20px;
-            width: 1100px;
+            width: 1200px;
             align-self: center;
             background-color: #f0f0f0; /* Grey background for the form */
             border-radius: 10px;
@@ -412,6 +412,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             font-weight: bold;
             cursor: pointer;
         }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            min-width: 120px;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -500,19 +517,59 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <thead>
             <tr>
                 <th>Question ID</th>
-                <th>Question</th>
+                <th>Options</th>
+                <th>Correct Answer</th>
+                <th>Song Audio</th>
+                <th>Song Image</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             <?php if ($result_questions->num_rows > 0): ?>
                 <?php while ($question = $result_questions->fetch_assoc()): ?>
+                    <?php
+                        // Fetch options for the current question
+                        $stmt_options = $conn->prepare("SELECT OptionName FROM option WHERE QuestionID = ?");
+                        $stmt_options->bind_param("s", $question['QuestionID']);
+                        $stmt_options->execute();
+                        $result_options = $stmt_options->get_result();
+                        $options = [];
+                        while ($option = $result_options->fetch_assoc()) {
+                            $options[] = htmlspecialchars($option['OptionName']);
+                        }
+                        $options_text = implode(", ", $options);
+                    ?>
+                    <?php
+                        // Fetch song for the current question
+                        $stmt_song = $conn->prepare("SELECT SongAudio, SongImage FROM song WHERE QuestionID = ?");
+                        $stmt_song->bind_param("s", $question['QuestionID']);
+                        $stmt_song->execute();
+                        $result_song = $stmt_song->get_result();
+                        $song = $result_song->fetch_assoc();
+                    ?>
                     <tr>
                         <td><?php echo htmlspecialchars($question['QuestionID']); ?></td>
+                        <td><?php echo $options_text; ?></td>
                         <td><?php echo htmlspecialchars($question['CorrectAnswer']); ?></td>
+                        <td>
+                            <?php if (!empty($song['SongAudio'])): ?>
+                                <audio controls>
+                                <source src="data:audio/mpeg;base64,<?php echo base64_encode($song['SongAudio']); ?>" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                                </audio>
+                            <?php else: ?>
+                                No audio available
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <?php if (!empty($song['SongImage'])): ?>
+                                <img src="data:image/jpeg;base64,<?php echo base64_encode($song['SongImage']); ?>" alt="Song Image" style="max-width: 100px;">
+                            <?php else: ?>
+                                No image available
+                            <?php endif; ?>
+                        </td>
                         <td class="actions">
-                        <button type="button" onclick="openEditQuizPopup('<?php echo $question['QuestionID']; ?>')">Edit</button> |
-                            <button onclick="deleteQuestion('<?php echo $question['QuestionID']; ?>')">Delete</button>
+                            <button type="button" onclick="openModal()" style="align-items:center;">Edit</button>
                         </td>
                     </tr>
                 <?php endwhile; ?>
@@ -527,184 +584,224 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Buttons -->
     <div class="button-container">
+        <button type="button" onclick="openModal()">Add Question</button>
         <button type="button" class="cancel" onclick="window.location.href='admin_quiz_management.php';">Cancel</button>
         <button type="submit" class="confirm"><?php echo isset($quiz) ? 'Save Changes' : 'Add Song'; ?></button>
     </div>
 </form>
     </main>
 
-    <!-- Script for Search Functionality -->
+
     <script>
-        function performSearch() {
-    const searchInput = document.getElementById("search");
-    if (!searchInput) {
-        console.error("Error: Search input not found!");
-        return;
-    }
-    console.log("Searching for: " + searchInput.value);
+        function openModal() {
+            document.getElementById("quizModal").style.display = "block";
 
-    const filter = document.getElementById("filter").value;
-    const searchTerm = searchInput.value.toLowerCase();
-    const table = document.getElementById("quizTable");
-    if (!table) {
-        console.error("Error: Quiz table not found!");
-        return;
-    }
+            // Reset form
+            document.getElementById("addQuestionForm").reset();
 
-    const rows = table.getElementsByTagName("tr");
-    let found = false;
-
-    for (let row of rows) {
-        const cells = row.getElementsByTagName("td");
-        if (cells.length === 0) continue;
-
-        let shouldDisplay = false;
-        if (filter === "id" && cells[0] && cells[0].textContent.toLowerCase().includes(searchTerm)) {
-            shouldDisplay = true;
-        } else if (filter === "genre" && cells[1] && cells[1].textContent.toLowerCase().includes(searchTerm)) {
-            shouldDisplay = true;
-        } else if (filter === "time" && cells[2] && cells[2].textContent.toLowerCase().includes(searchTerm)) {
-            shouldDisplay = true;
-        }
-
-        row.style.display = shouldDisplay ? "" : "none";
-        if (shouldDisplay) found = true;
-    }
-
-    let noResultsRow = document.getElementById("noResultsRow");
-    if (!found) {
-        if (!noResultsRow) {
-            noResultsRow = document.createElement("tr");
-            noResultsRow.id = "noResultsRow";
-            noResultsRow.innerHTML = `<td colspan="4" style="text-align:center;">No matching quizzes found.</td>`;
-            table.appendChild(noResultsRow);
-        }
-    } else if (noResultsRow) {
-        noResultsRow.remove();
-    }
-}
-
-// Handle song photo selection
-const songPhotoInput = document.getElementById('song-photo');
-const songPhotoDisplay = document.getElementById('song-photo-display');
-
-songPhotoInput?.addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            songPhotoDisplay.innerHTML = `
-                <img src="${e.target.result}" alt="Song Photo" style="max-width: 200px;">
-                <button id="delete-photo">Delete Photo</button>
-            `;
-            document.getElementById('delete-photo').addEventListener('click', () => {
-                songPhotoDisplay.innerHTML = '';
-                songPhotoInput.value = '';
+            // Reset all checkmarks
+            document.querySelectorAll('.checkmark').forEach(check => {
+                check.classList.remove('selected');
+                check.textContent = "";
             });
-        };
-        reader.readAsDataURL(file);
-    } else {
-        alert("Please select a valid image file.");
-    }
-});
+        
+            // Reset correct answer input field
+            document.getElementById('correctOption').value = "";
 
-// Handle MP3 file selection
-const songMp3Input = document.getElementById('song-mp3');
-const mp3Display = document.getElementById('mp3-display');
+            // Remove existing file labels if they exist
+            const existingSongLabel = document.getElementById("existingSongFile");
+            if (existingSongLabel) {
+                existingSongLabel.remove();
+            }
 
-songMp3Input?.addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    if (file && file.type === "audio/mpeg") {
-        const fileURL = URL.createObjectURL(file);
-        mp3Display.innerHTML = `
-            <p>Selected MP3: ${file.name}</p>
-            <audio controls src="${fileURL}"></audio>
-            <button id="delete-mp3">Delete</button>
-        `;
-        document.getElementById('delete-mp3').addEventListener('click', () => {
-            mp3Display.innerHTML = '';
-            songMp3Input.value = '';
+            const existingPhotoLabel = document.getElementById("existingPhotoFile");
+            if (existingPhotoLabel) {
+                existingPhotoLabel.remove();
+            }
+        }
+        
+        // Add this function to your <script> section
+        function closeModal() {
+            document.getElementById("quizModal").style.display = "none";
+            document.getElementById("addQuestionForm").reset();
+            
+            // Reset all checkmarks
+            document.querySelectorAll('.checkmark').forEach(check => {
+                check.classList.remove('selected');
+                check.textContent = "";
+            });
+            
+            // Reset correct answer input field
+            document.getElementById('correctOption').value = "";
+            
+            // Remove existing file labels
+            const existingSongLabel = document.getElementById("existingSongFile");
+            if (existingSongLabel) {
+                existingSongLabel.remove();
+            }
+            
+            const existingPhotoLabel = document.getElementById("existingPhotoFile");
+            if (existingPhotoLabel) {
+                existingPhotoLabel.remove();
+            }
+        }
+
+        // Function to update quiz numbers after deleting a row
+        function updateQuizNumbers() {
+            const rows = document.querySelectorAll("table tbody tr");
+            rows.forEach((row, index) => {
+                row.cells[0].textContent = index + 1;
+            });
+        }
+
+        // Function to edit a question 
+        function editQuestion(link) {
+            const row = link.closest("tr");
+            row.setAttribute('data-editing', 'true'); // Mark the row being edited
+            const cells = row.getElementsByTagName("td");
+
+            const questionId = cells[0].textContent.trim();
+            const optionsText = cells[1].textContent.split(", ").map(option => option.trim());
+            const correctAnswer = cells[2].textContent.trim();
+            const existingSongFileName = cells[3].querySelector("audio source") ? cells[3].querySelector("audio source").src : "";
+            const existingPhotoFileName = cells[4].querySelector("img") ? cells[4].querySelector("img").src : "";
+            openModal();
+
+            // Populate option fields
+            const options = document.querySelectorAll('.option-container input[type="text"]');
+            options.forEach((option, index) => {
+                option.value = optionsText[index] || "";
+            });
+        
+            // Select the correct answer
+            document.querySelectorAll('.checkmark').forEach(check => {
+                check.classList.remove('selected');
+                check.textContent = "";
+                if (check.previousElementSibling.value === correctAnswer) {
+                    check.classList.add('selected');
+                    check.textContent = "\u2714";
+                    document.getElementById('correctOption').value = check.getAttribute('data-value');
+                }
+            });
+        
+            // Display existing file names
+            document.getElementById("songUpload").value = ""; // Clear file input
+            document.getElementById("songPhoto").value = ""; // Clear file input
+        
+            const songFileLabel = document.getElementById("existingSongFile");
+            if (!songFileLabel) {
+                const newLabel = document.createElement("p");
+                newLabel.id = "existingSongFile";
+                newLabel.textContent = "Current MP3: " + existingSongFileName;
+                document.getElementById("songUpload").insertAdjacentElement("afterend", newLabel);
+            } else {
+                songFileLabel.textContent = "Current MP3: " + existingSongFileName;
+            }
+        
+            const photoFileLabel = document.getElementById("existingPhotoFile");
+            if (!photoFileLabel) {
+                const newLabel = document.createElement("p");
+                newLabel.id = "existingPhotoFile";
+                newLabel.textContent = "Current Photo: " + existingPhotoFileName;
+                document.getElementById("songPhoto").insertAdjacentElement("afterend", newLabel);
+            } else {
+                photoFileLabel.textContent = "Current Photo: " + existingPhotoFileName;
+            }
+        }
+
+        document.querySelectorAll('.checkmark').forEach(check => {
+            check.addEventListener('click', function() {
+                document.querySelectorAll('.checkmark').forEach(c => {
+                    c.classList.remove('selected');
+                    c.textContent = ""; // Reset all
+                });
+                this.classList.add('selected');
+                this.textContent = "\u2714"; // Unicode for check mark
+                document.getElementById('correctOption').value = this.getAttribute('data-value');
+            });
         });
-    } else {
-        alert("Please select a valid MP3 file.");
-    }
-});
 
-// Handle selecting the correct answer option
-const correctIcons = document.querySelectorAll('.correct-icon');
-correctIcons.forEach(icon => {
-    icon.addEventListener('click', () => {
-        correctIcons.forEach(icon => icon.classList.remove('selected'));
-        icon.classList.add('selected');
-    });
-});
-    </script>
-
-    <script>
-        function toggleCorrect(icon) {
-    // Remove the 'selected' class from all icons
-    const correctIcons = document.querySelectorAll('.correct-icon');
-    correctIcons.forEach(icon => icon.classList.remove('selected'));
-
-    // Add the 'selected' class to the clicked icon
-    icon.classList.add('selected');
-
-    // Update the hidden input field with the correct answer
-    const selectedOption = icon.previousElementSibling.value;
-    document.getElementById('correct-answer').value = selectedOption;
-}
-
-function handleImageSelection(input) {
-    const file = input.files[0];
-    const imageDisplay = document.getElementById('song-photo-display');
-
-    if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            imageDisplay.innerHTML = `
-                <img src="${e.target.result}" alt="Selected Image" style="max-width: 200px;">
-                <button type="button" onclick="deleteImage()">Delete</button>
-            `;
+        document.getElementById("addQuestionForm").onsubmit = function(e) {
+            e.preventDefault();
+                
+            const tableBody = document.querySelector("table tbody");
+            const editingRow = document.querySelector('[data-editing="true"]');
+            const currentRowCount = tableBody.getElementsByTagName("tr").length;
+            const options = document.querySelectorAll('.option-container input[type="text"]');
+            const correctOption = document.getElementById("correctOption").value;
+            const songUpload = document.getElementById("songUpload").files[0];
+            const songPhoto = document.getElementById("songPhoto").files[0];
+                
+            // Only check row limit for new additions, not for edits
+            if (!editingRow && currentRowCount >= 5) {
+                alert("You can only add up to 5 quizzes.");
+                return;
+            }
+        
+            // Check if editing or adding new
+            if (!editingRow) {
+                // Validation for new entries
+                if (!songUpload) {
+                    alert("Please upload an MP3 file.");
+                    return;
+                }
+            
+                if (!songPhoto) {
+                    alert("Please upload a song photo.");
+                    return;
+                }
+            
+                // Audio duration check
+                const audio = new Audio(URL.createObjectURL(songUpload));
+                audio.onloadedmetadata = function() {
+                    if (audio.duration > 9) {
+                        alert("The uploaded MP3 must be 8 seconds or less.");
+                        return;
+                    }
+                    proceedWithSubmission();
+                };
+            } else {
+                // If editing, proceed directly
+                proceedWithSubmission();
+            }
+        
+            function proceedWithSubmission() {
+                if (!correctOption) {
+                    alert("Please select the correct answer.");
+                    return;
+                }
+            
+                const optionTexts = [];
+                options.forEach(option => optionTexts.push(option.value));
+                
+                const correctAnswerText = document.querySelector('.checkmark.selected').previousElementSibling.value;
+                
+                if (editingRow) {
+                    // Update existing row
+                    editingRow.cells[1].textContent = optionTexts.join(", ");
+                    editingRow.cells[2].textContent = correctAnswerText;
+                    if (songUpload) editingRow.cells[3].textContent = songUpload.name;
+                    if (songPhoto) editingRow.cells[4].textContent = songPhoto.name;
+                    editingRow.removeAttribute('data-editing');
+                } else {
+                    // Create new row
+                    const newRow = document.createElement("tr");
+                    newRow.innerHTML = `
+                        <td>${currentRowCount + 1}</td>
+                        <td>${optionTexts.join(", ")}</td>
+                        <td>${correctAnswerText}</td>
+                        <td>${songUpload.name}</td>
+                        <td>${songPhoto.name}</td>
+                        <td class="actions">
+                            <a href="#" onclick="editQuestion(this)">Edit</a>
+                        </td>
+                    `;
+                    tableBody.appendChild(newRow);
+                }
+                
+                closeModal();
+            }
         };
-        reader.readAsDataURL(file);
-    } else {
-        alert("Please select a valid image file.");
-    }
-}
-
-function deleteImage() {
-    const imageDisplay = document.getElementById('song-photo-display');
-    const imageInput = document.getElementById('song-photo');
-
-    // Clear the displayed image and reset the file input
-    imageDisplay.innerHTML = '';
-    imageInput.value = '';
-}
-
-function handleAudioSelection(input) {
-    const file = input.files[0];
-    const audioDisplay = document.getElementById('song-mp3-display');
-
-    if (file && file.type === "audio/mpeg") {
-        const fileURL = URL.createObjectURL(file);
-        audioDisplay.innerHTML = `
-            <p>Selected MP3: ${file.name}</p>
-            <audio controls src="${fileURL}"></audio>
-            <button type="button" onclick="deleteAudio()">Delete</button>
-        `;
-    } else {
-        alert("Please select a valid MP3 file.");
-    }
-}
-
-function deleteAudio() {
-    const audioDisplay = document.getElementById('song-mp3-display');
-    const audioInput = document.getElementById('song-mp3');
-
-    // Clear the displayed audio and reset the file input
-    audioDisplay.innerHTML = '';
-    audioInput.value = '';
-}
     </script>
 
 <?php 
