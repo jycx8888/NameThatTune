@@ -166,7 +166,6 @@ if (isset($_GET['question_id'])) {
             <h2>Edit Quiz</h2>
             <input type="hidden" name="question_id" value="<?php echo htmlspecialchars($question['QuestionID']); ?>">
             <form id="quiz-form">
-            <button type="button" id="closePopupButton" onclick="closePopup()">Close</button>
 
             <?php
             // Fetch question data based on question_id
@@ -212,8 +211,6 @@ if (isset($_GET['question_id'])) {
 </div>
                         <div id="loading" style="display: none;">Loading...</div>
                     </div>
-
-                <button type="submit" class="submit-button">Confirm</button>
             </form>
         </div>
     </div>

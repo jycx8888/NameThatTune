@@ -351,45 +351,18 @@ function openEditQuizPopup(questionId) {
 }
 
 // Function to close the popup
+
 function closeEditQuizPopup() {
-    document.getElementById('closePopupButton').addEventListener('click', closeEditQuizPopup);
-document.getElementById('overlay').addEventListener('click', closeEditQuizPopup);
-}
+            document.getElementById('editQuizPopup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
 
-// Event listener for the close button
-document.getElementById('closePopupButton').addEventListener('click', closePopup);
-
-// Event listener to close the popup when clicking outside
-document.getElementById('overlay').addEventListener('click', closePopup);// Function to open the popup and load dynamic content
-function openEditQuizPopup(questionId) {
-    fetch('admin_quiz_management_3.php?question_id=' + questionId)
-        .then(response => response.text())
-        .then(data => {
-            // Insert the dynamic content into the popup
-            document.getElementById('popupContent').innerHTML = data;
-            // Show the popup and overlay
-            document.getElementById('editQuizPopup').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        })
-        .catch(error => console.error('Error loading page3:', error));
-}
-
-// Function to close the popup
-function closeEditQuizPopup() {
-    document.getElementById('editQuizPopup').style.display = 'none';
-    document.getElementById('overlay').style.display = 'none';
-}
-
-// Event listener for the close button
-document.getElementById('closePopupButton').addEventListener('click', closeEditQuizPopup);
-
-// Event listener to close the popup when clicking outside
-document.getElementById('overlay').addEventListener('click', closeEditQuizPopup);
+        document.getElementById('closePopupButton').addEventListener('click', closeEditQuizPopup);
+        document.getElementById('overlay').addEventListener('click', closeEditQuizPopup);
 </script>
 
 </head>
 <body>
-
     <!-- Header Section -->
     <div id="header">
         <h1>NameThatTune</h1>
@@ -410,7 +383,7 @@ document.getElementById('overlay').addEventListener('click', closeEditQuizPopup)
 <div id="overlay"></div>
 <div id="editQuizPopup">
     <h2>Edit Quiz</h2>
-    <form id="quiz-form">
+    <form id="quiz-form" action="admin_quiz_management_3.php" method="POST">
         <div id="popupContent">
             <!-- Dynamic content from admin_quiz_management_3.php will be inserted here -->
         </div>
@@ -479,57 +452,7 @@ document.getElementById('overlay').addEventListener('click', closeEditQuizPopup)
         <button type="submit" class="confirm"><?php echo isset($quiz) ? 'Save Changes' : 'Add Song'; ?></button>
     </div>
 </form>
-
-<!-- Edit Quiz Popup -->
-<div id="overlay"></div>
-<div id="editQuizPopup">
-    <h2>Edit Quiz</h2>
-    <form id="quiz-form">
-        <div class="form-group">
-            <label for="song-name">Song Name</label>
-            <input type="text" id="song-name" placeholder="Enter Song Name">
-        </div>
-
-        <div class="form-group">
-            <label for="song-photo">Song Photo</label>
-            <input type="file" id="song-photo" accept="image/*">
-            <div id="song-photo-display" style="margin-top: 10px;"></div>
-        </div>
-
-        <div class="form-group">
-            <label for="song-mp3">Song MP3</label>
-            <input type="file" id="song-mp3" accept=".mp3">
-            <div id="mp3-display" style="margin-top: 10px;"></div>
-        </div>
-
-        <div class="form-group options">
-            <label>Options</label>
-            <div class="option-item">
-                <input type="text" placeholder="Option 1">
-                <img src="Icon/no_select.png" alt="Correct Icon" class="correct-icon">
-            </div>
-            <div class="option-item">
-                <input type="text" placeholder="Option 2">
-                <img src="Icon/no_select.png" alt="Correct Icon" class="correct-icon">
-            </div>
-            <div class="option-item">
-                <input type="text" placeholder="Option 3">
-                <img src="Icon/no_select.png" alt="Correct Icon" class="correct-icon">
-            </div>
-            <div class="option-item">
-                <input type="text" placeholder="Option 4">
-                <img src="Icon/no_select.png" alt="Correct Icon" class="correct-icon">
-            </div>
-        </div>
-
-        <button type="submit" class="submit-button">Confirm</button>
-    </form>
-    <button id="closePopupButton">Close</button>
-</div>
-
     </main>
-
-    
 
     <!-- Script for Search Functionality -->
     <script>
