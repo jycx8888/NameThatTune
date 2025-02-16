@@ -561,6 +561,21 @@ correctIcons.forEach(icon => {
 });
     </script>
 
+    <script>
+        function toggleCorrect(icon) {
+    // Remove the 'selected' class from all icons
+    const correctIcons = document.querySelectorAll('.correct-icon');
+    correctIcons.forEach(icon => icon.classList.remove('selected'));
+
+    // Add the 'selected' class to the clicked icon
+    icon.classList.add('selected');
+
+    // Update the hidden input field with the correct answer
+    const selectedOption = icon.previousElementSibling.value;
+    document.getElementById('correct-answer').value = selectedOption;
+}
+    </script>
+
 <?php 
     // Close database connection at the very end of the page
     mysqli_close($conn);

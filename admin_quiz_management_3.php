@@ -215,6 +215,21 @@ if (isset($_GET['question_id'])) {
         </div>
     </div>
 
+    <script>
+        function toggleCorrect(icon) {
+            // Remove the 'selected' class from all icons
+            const correctIcons = document.querySelectorAll('.correct-icon');
+            correctIcons.forEach(icon => icon.classList.remove('selected'));
+
+            // Add the 'selected' class to the clicked icon
+            icon.classList.add('selected');
+
+            // Update the hidden input field with the correct answer
+            const selectedOption = icon.previousElementSibling.value;
+            document.getElementById('correct-answer').value = selectedOption;
+        }
+    </script>
+
     <!-- Overlay -->
     <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000;"></div>
 
