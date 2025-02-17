@@ -68,6 +68,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     if ($stmt->execute()) {
         echo "<script>alert('Quiz deleted successfully!'); window.location.href='admin_quiz_management.php';</script>";
     }
+}
 ?>
 
 <!DOCTYPE html>
