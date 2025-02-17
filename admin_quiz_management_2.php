@@ -524,7 +524,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
 <body>
     <!-- Header Section -->
     <div id="header">
-        <h1>NameThatTune</h1>
+        <h1><a href="admin_adminDashboard.php">NameThatTune</a></h1>
         <div id="login" onclick="">
             <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
             <p><?php echo htmlspecialchars($username); ?></p>

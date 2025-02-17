@@ -225,7 +225,7 @@ $conn->close();
 </head>
 <body>
     <div id="header">
-        <h1>NameThatTune</h1>
+        <h1><a href="admin_adminDashboard.php">NameThatTune</a></h1>
         <div id="login">
             <img src="<?php echo htmlspecialchars($profile_picture_path); ?>">
             <p><?php echo htmlspecialchars($username); ?></p>
