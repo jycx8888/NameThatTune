@@ -146,7 +146,7 @@ if (isset($_GET['search'])) {
     .table th, .table td {
         border: 1px solid #ccc;
         padding: 10px;
-        text-align: left;
+        text-align: center;
     }
 
     .table th {
@@ -167,7 +167,7 @@ if (isset($_GET['search'])) {
     }
 
     .action-button:hover {
-        background-color: #e04a4a;
+        background-color: darkred;
     }
 
     .edit-button {
@@ -183,7 +183,7 @@ if (isset($_GET['search'])) {
     }
 
     .edit-button:hover {
-        background-color: #4a6fe0;
+        background-color: #17066e;
     }
 
     .back-button {
