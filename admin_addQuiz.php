@@ -358,7 +358,7 @@ $conn->close();
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
         <h2>Add New Quiz</h2>
-        <form id="addQuestionForm">
+        <form id="addQuestionForm" enctype="multipart/form-data">
             <label for="songUpload">Correct Song Upload (8 secs):</label>
             <input type="file" id="songUpload" name="songUpload" accept="audio/mp3">
             <br><br>
@@ -622,53 +622,32 @@ $conn->close();
             const genreID = document.getElementById('options').value;
             const questions = [];
 
-            const rows = document.querySelectorAll('table tbody tr');
-            let processedRows = 0;
-        
-            if (!quizName || !genreID || rows.length === 0) {
+            document.querySelectorAll('table tbody tr').forEach(row => {
+                const options = row.cells[1].textContent.split(', ');
+                const correctAnswer = row.cells[2].textContent;
+                const songName = row.cells[3].textContent;
+                const songAudio = row.cells[4].textContent;
+                const songImage = row.cells[5].textContent;
+
+                questions.push({
+                    options,
+                    correctAnswer,
+                    songName,
+                    songAudio,
+                    songImage
+                });
+            });
+
+            if (!quizName || !genreID || questions.length === 0) {
                 alert('Please fill in all required fields.');
                 return;
             }
-        
-            rows.forEach(row => {
-                const options = row.cells[1].textContent.split(', ');
-                const correctAnswer = row.cells[2].textContent;
-        
-                const songFileInput = document.getElementById('songUpload').files[0];
-                const photoFileInput = document.getElementById('songPhoto').files[0];
-        
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const songAudio = event.target.result.split(',')[1]; // Get base64 string
-        
-                    const photoReader = new FileReader();
-                    photoReader.onload = function(event) {
-                        const songImage = event.target.result.split(',')[1]; // Get base64 string
 
-                        questions.push({
-                            options,
-                            correctAnswer,
-                            songAudio,
-                            songImage
-                        });
-                        
-                        processedRows++;
-                        if (processedRows === rows.length) {
-                            sendQuizData(quizName, genreID, questions);
-                        }
-                    };
-                    photoReader.readAsDataURL(photoFileInput);
-                };
-                reader.readAsDataURL(songFileInput);
-            });
-        }
-
-        function sendQuizData(quizName, genreID, questions) {
             const formData = new FormData();
             formData.append('quizName', quizName);
             formData.append('genreID', genreID);
             formData.append('questions', JSON.stringify(questions));
-        
+
             fetch('admin_addQuiz.php', {
                 method: 'POST',
                 body: formData
