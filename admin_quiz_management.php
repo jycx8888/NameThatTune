@@ -42,15 +42,9 @@ if (!$results) {
     die("Query failed: " . mysqli_error($connection));
 }
 
-
 // Check if delete action is requested
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $quiz_id = $_GET['id'];
-
-    // Validate input: Ensure it's a numeric value
-    if (!is_numeric($quiz_id)) {
-        die("Invalid Quiz ID.");
-    }
 
     // Use a prepared statement to prevent SQL injection
     $stmt = $connection->prepare("DELETE FROM quiz WHERE QuizID = ?");
