@@ -477,15 +477,34 @@ $conn->close();
                     return;
                 }
             
-                // Audio duration check
-                const audio = new Audio(URL.createObjectURL(songUpload));
-                audio.onloadedmetadata = function() {
-                    if (audio.duration > 9) {
-                        alert("The uploaded MP3 must be 8 seconds or less.");
-                        return;
-                    }
-                    proceedWithSubmission();
+                // Create a Promise to handle audio duration check
+                const checkAudioDuration = () => {
+                    return new Promise((resolve, reject) => {
+                        const audio = new Audio(URL.createObjectURL(songUpload));
+
+                        audio.addEventListener('loadedmetadata', () => {
+                            if (audio.duration > 9) {
+                                reject("The uploaded MP3 must be 8 seconds or less.");
+                            } else {
+                                resolve();
+                            }
+                        });
+                    
+                        audio.addEventListener('error', () => {
+                            reject("Error loading audio file.");
+                        });
+                    });
                 };
+            
+                // Use async/await to handle the audio check
+                checkAudioDuration()
+                    .then(() => {
+                        proceedWithSubmission();
+                    })
+                    .catch((error) => {
+                        alert(error);
+                        return;
+                    });
             } else {
                 // If editing, proceed directly
                 proceedWithSubmission();
@@ -620,40 +639,59 @@ $conn->close();
         function uploadQuiz() {
             const quizName = document.getElementById('questionId').value;
             const genreID = document.getElementById('options').value;
-            const questions = [];
-
             const rows = document.querySelectorAll('table tbody tr');
-            let processedRows = 0;
-        
-            if (!quizName || !genreID || rows.length === 0) {
-                alert('Please fill in all required fields.');
+            const questions = [];
+                
+            // Validation checks
+            if (!quizName) {
+                alert('Please enter a quiz name.');
                 return;
             }
+        
+            if (!genreID) {
+                alert('Please select a quiz category.');
+                return;
+            }
+        
+            // Check for exactly 5 rows
+            if (rows.length < 5) {
+                alert('You need exactly 5 questions. Please add ' + (5 - rows.length) + ' more question(s).');
+                return;
+            }
+        
+            if (rows.length > 5) {
+                alert('You can only have 5 questions. Please remove ' + (rows.length - 5) + ' question(s).');
+                return;
+            }
+        
+            // If we have exactly 5 rows, proceed with processing
+            let processedRows = 0;
         
             rows.forEach(row => {
                 const options = row.cells[1].textContent.split(', ');
                 const correctAnswer = row.cells[2].textContent;
-        
+            
+                // Get file inputs from the row's data attributes
                 const songFileInput = document.getElementById('songUpload').files[0];
                 const photoFileInput = document.getElementById('songPhoto').files[0];
-        
+            
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     const songAudio = event.target.result.split(',')[1]; // Get base64 string
-        
+                
                     const photoReader = new FileReader();
                     photoReader.onload = function(event) {
                         const songImage = event.target.result.split(',')[1]; // Get base64 string
-
+                    
                         questions.push({
                             options,
                             correctAnswer,
                             songAudio,
                             songImage
                         });
-                        
+                    
                         processedRows++;
-                        if (processedRows === rows.length) {
+                        if (processedRows === 5) {
                             sendQuizData(quizName, genreID, questions);
                         }
                     };
@@ -661,6 +699,35 @@ $conn->close();
                 };
                 reader.readAsDataURL(songFileInput);
             });
+        }
+
+        
+        function updateRemainingQuestions() {
+            const currentCount = document.querySelectorAll('table tbody tr').length;
+            const remaining = 5 - currentCount;
+
+            // Create or update the remaining questions counter
+            let counterDiv = document.getElementById('remainingCounter');
+            if (!counterDiv) {
+                counterDiv = document.createElement('div');
+                counterDiv.id = 'remainingCounter';
+                document.querySelector('.container').insertBefore(counterDiv, document.querySelector('table'));
+            }
+
+            counterDiv.textContent = `Questions remaining: ${remaining}`;
+            counterDiv.style.color = remaining > 0 ? '#dc3545' : '#28a745';
+            counterDiv.style.marginBottom = '10px';
+            counterDiv.style.fontWeight = 'bold';
+        }
+
+        
+        function deleteQuestion(link) {
+            if (confirm("Are you sure you want to delete this question?")) {
+                const row = link.closest("tr");
+                row.parentNode.removeChild(row);
+                updateQuizNumbers();
+                updateRemainingQuestions(); // Add this line
+            }
         }
 
         function sendQuizData(quizName, genreID, questions) {
