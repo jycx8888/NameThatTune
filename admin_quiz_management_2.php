@@ -1,6 +1,70 @@
 <?php
 session_start();
 
+if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
+    header('Content-Type: application/json');
+    
+    // Debug log
+    error_log("Received update request: " . print_r($_POST, true));
+    error_log("Files: " . print_r($_FILES, true));
+    
+    try {
+        $conn->begin_transaction();
+        
+        $questionId = $_POST['question_id'];
+        $correctAnswer = $_POST['correctOption'];
+        
+        // Debug log
+        error_log("Updating question ID: $questionId with correct answer: $correctAnswer");
+        
+        // Update correct answer in question table
+        $stmt = $conn->prepare("UPDATE question SET CorrectAnswer = ? WHERE QuestionID = ?");
+        $stmt->bind_param("ss", $correctAnswer, $questionId);
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to update correct answer: " . $stmt->error);
+        }
+        
+        // Update options
+        for ($i = 1; $i <= 4; $i++) {
+            $optionName = $_POST["option$i"];
+            $stmt = $conn->prepare("UPDATE `option` SET OptionName = ? WHERE QuestionID = ? AND OptionOrder = ?");
+            $stmt->bind_param("ssi", $optionName, $questionId, $i);
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to update option $i: " . $stmt->error);
+            }
+        }
+        
+        // Handle song audio upload
+        if (!empty($_FILES['songUpload']['tmp_name'])) {
+            $songAudio = file_get_contents($_FILES['songUpload']['tmp_name']);
+            $stmt = $conn->prepare("UPDATE song SET SongAudio = ? WHERE QuestionID = ?");
+            $stmt->bind_param("bs", $songAudio, $questionId);
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to update song audio: " . $stmt->error);
+            }
+        }
+        
+        // Handle song image upload
+        if (!empty($_FILES['songPhoto']['tmp_name'])) {
+            $songImage = file_get_contents($_FILES['songPhoto']['tmp_name']);
+            $stmt = $conn->prepare("UPDATE song SET SongImage = ? WHERE QuestionID = ?");
+            $stmt->bind_param("bs", $songImage, $questionId);
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to update song image: " . $stmt->error);
+            }
+        }
+        
+        $conn->commit();
+        echo json_encode(['success' => true, 'message' => 'Update successful']);
+        
+    } catch (Exception $e) {
+        $conn->rollback();
+        error_log("Error in update: " . $e->getMessage());
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+    exit;
+}
+
 if (!isset($_SESSION['username'])) {
     header("Location: admin_login.php");
     exit();
@@ -21,45 +85,67 @@ if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
     header('Content-Type: application/json');
     
     try {
+        // Start transaction
         $conn->begin_transaction();
+        
+        // Validate required fields
+        if (!isset($_POST['question_id']) || !isset($_POST['correctOption'])) {
+            throw new Exception('Missing required fields');
+        }
         
         $questionId = $_POST['question_id'];
         $correctAnswer = $_POST['correctOption'];
         
+        // Log incoming data
+        error_log("Updating question: " . print_r($_POST, true));
+        
         // Update correct answer
         $stmt = $conn->prepare("UPDATE question SET CorrectAnswer = ? WHERE QuestionID = ?");
         $stmt->bind_param("ss", $correctAnswer, $questionId);
-        $stmt->execute();
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to update correct answer: " . $stmt->error);
+        }
         
         // Update options
         for ($i = 1; $i <= 4; $i++) {
+            if (!isset($_POST["option$i"])) continue;
+            
             $optionName = $_POST["option$i"];
             $stmt = $conn->prepare("UPDATE `option` SET OptionName = ? WHERE QuestionID = ? AND OptionOrder = ?");
             $stmt->bind_param("ssi", $optionName, $questionId, $i);
-            $stmt->execute();
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to update option $i: " . $stmt->error);
+            }
         }
         
-        // Handle file uploads if provided
+        // Handle file uploads
         if (!empty($_FILES['songUpload']['tmp_name'])) {
             $songAudio = file_get_contents($_FILES['songUpload']['tmp_name']);
             $stmt = $conn->prepare("UPDATE song SET SongAudio = ? WHERE QuestionID = ?");
             $stmt->bind_param("bs", $songAudio, $questionId);
-            $stmt->execute();
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to update song audio: " . $stmt->error);
+            }
         }
         
         if (!empty($_FILES['songPhoto']['tmp_name'])) {
             $songImage = file_get_contents($_FILES['songPhoto']['tmp_name']);
             $stmt = $conn->prepare("UPDATE song SET SongImage = ? WHERE QuestionID = ?");
             $stmt->bind_param("bs", $songImage, $questionId);
-            $stmt->execute();
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to update song image: " . $stmt->error);
+            }
         }
         
+        // Commit transaction
         $conn->commit();
-        echo json_encode(['success' => true]);
+        
+        echo json_encode(['success' => true, 'message' => 'Update successful']);
         
     } catch (Exception $e) {
         $conn->rollback();
-        echo json_encode(['error' => $e->getMessage()]);
+        error_log("Error in update: " . $e->getMessage());
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
     exit;
 }
@@ -505,19 +591,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
             transition: all 0.3s ease;
         }
 
-        button:hover {
-            background-color: #0056b3;
+        .preview-container {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
         }
 
-        .preview-container {
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+        .preview-container p {
+            margin: 0 0 10px 0;
+            font-weight: bold;
         }
-        
+
         .preview-element {
-            margin-top: 5px;
+            display: block;
+            margin: 10px 0;
         }
     </style>
 </head>
@@ -544,37 +632,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
         <span class="close" onclick="closeModal()">&times;</span>
         <h2>Edit Question</h2>
         <form id="addQuestionForm" enctype="multipart/form-data">
-            <label for="songUpload">Song Audio (8 secs):</label>
-            <input type="file" id="songUpload" name="songUpload" accept="audio/mp3">
-            <br><br>
-            
-            <label for="songPhoto">Song Photo:</label>
-            <input type="file" id="songPhoto" name="songPhoto" accept="image/*">
-            <br><br>
-            
+            <input type="hidden" name="question_id" id="question_id">
             <input type="hidden" id="correctOption" name="correctOption">
-            <label>Options:</label>
+            
+            <!-- Audio Section -->
+            <div class="form-group">
+                <label for="songUpload">Song Audio (8 secs):</label>
+                <input type="file" id="songUpload" name="songUpload" accept="audio/mp3">
+                <div id="audioPreview"></div>
+            </div>
+            
+            <!-- Image Section -->
+            <div class="form-group">
+                <label for="songPhoto">Song Photo:</label>
+                <input type="file" id="songPhoto" name="songPhoto" accept="image/*">
+                <div id="imagePreview"></div>
+            </div>
+            
+            <!-- Options Section -->
             <div class="option-container">
+                <label>Options:</label>
                 <div>
-                    <input type="text" name="option1" placeholder="Enter option 1" required>
+                    <input type="text" name="option1" placeholder="Option 1" required>
                     <span class="checkmark" data-value="1"></span>
                 </div>
                 <div>
-                    <input type="text" name="option2" placeholder="Enter option 2" required>
+                    <input type="text" name="option2" placeholder="Option 2" required>
                     <span class="checkmark" data-value="2"></span>
                 </div>
                 <div>
-                    <input type="text" name="option3" placeholder="Enter option 3" required>
+                    <input type="text" name="option3" placeholder="Option 3" required>
                     <span class="checkmark" data-value="3"></span>
                 </div>
                 <div>
-                    <input type="text" name="option4" placeholder="Enter option 4" required>
+                    <input type="text" name="option4" placeholder="Option 4" required>
                     <span class="checkmark" data-value="4"></span>
                 </div>
             </div>
             
-            <button type="submit">Save Changes</button>
-            <button type="button" onclick="closeModal()">Cancel</button>
+            <div class="button-group">
+                <button type="submit">Save Changes</button>
+                <button type="button" onclick="closeModal()">Cancel</button>
+            </div>
         </form>
     </div>
 </div>
@@ -626,7 +725,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
                         $result_options = $stmt_options->get_result();
                         $options = [];
                         while ($option = $result_options->fetch_assoc()) {
-                            $options[] = htmlspecialchars($option['OptionName']);
+                            // Add html_entity_decode here
+                            $options[] = html_entity_decode(htmlspecialchars($option['OptionName']), ENT_QUOTES);
                         }
                         $options_text = implode(", ", $options);
                     ?>
@@ -675,7 +775,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
     <!-- Buttons -->
     <div class="button-container">
         <button type="button" class="cancel" onclick="window.location.href='admin_quiz_management.php';">Cancel</button>
-        <button type="submit" class="confirm"><?php echo isset($quiz) ? 'Save Changes' : 'Add Song'; ?></button>
     </div>
 </form>
     </main>
@@ -737,94 +836,67 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
 
         // Function to update quiz numbers after deleting a row
         function editQuestion(questionId) {
-            console.log('Editing question:', questionId);
-                
-            // Show the modal
-            const modal = document.getElementById("quizModal");
-            modal.style.display = "block";
-                
-            // Clear any existing previews
-            document.querySelectorAll('.preview-container').forEach(container => {
-                container.remove();
-            });
-            
-            // Remove any existing question ID input
-            const existingQuestionId = document.querySelector('input[name="question_id"]');
-            if (existingQuestionId) {
-                existingQuestionId.remove();
+    const modal = document.getElementById("quizModal");
+    modal.style.display = "block";
+    
+    // Find the question row
+    const questionRow = document.querySelector(`tr[data-question-id="${questionId}"]`);
+    if (!questionRow) return;
+    
+    // Set question ID
+    document.getElementById('question_id').value = questionId;
+    
+    // Get data from the row
+    const cells = questionRow.getElementsByTagName('td');
+    const options = cells[1].getAttribute('data-options').split(',').map(opt => opt.trim());
+    const correctAnswer = cells[2].getAttribute('data-correct');
+    
+    // Set options and mark correct answer
+    options.forEach((option, index) => {
+        const input = document.querySelector(`input[name="option${index + 1}"]`);
+        const checkmark = document.querySelector(`span[data-value="${index + 1}"]`);
+        
+        if (input && checkmark) {
+            input.value = option;
+            if (option === correctAnswer) {
+                checkmark.classList.add('selected');
+                checkmark.textContent = '✓';
+                document.getElementById('correctOption').value = option;
+            } else {
+                checkmark.classList.remove('selected');
+                checkmark.textContent = '';
             }
-            
-            // Find the question row
-            const questionRow = document.querySelector(`tr[data-question-id="${questionId}"]`);
-            if (!questionRow) {
-                console.error('Question row not found');
-                return;
-            }
-        
-            // Get the cells
-            const cells = questionRow.getElementsByTagName('td');
-            
-            // Get options and correct answer
-            const options = cells[1].getAttribute('data-options').split(',').map(opt => opt.trim());
-            const correctAnswer = cells[2].getAttribute('data-correct');
-            
-            console.log('Options:', options);
-            console.log('Correct Answer:', correctAnswer);
-        
-            // Set options in the modal
-            options.forEach((option, index) => {
-                const input = document.querySelector(`input[name="option${index + 1}"]`);
-                if (input) {
-                    input.value = option;
-                    
-                    // If this is the correct answer, mark it
-                    if (option === correctAnswer) {
-                        const checkmark = input.nextElementSibling;
-                        checkmark.classList.remove('selected');
-                        checkmark.textContent = '';
-                        checkmark.classList.add('selected');
-                        checkmark.textContent = '✓';
-                        document.getElementById('correctOption').value = (index + 1).toString();
-                    }
-                }
-            });
-        
-            // Handle audio preview
-            const audioSource = cells[3].querySelector('audio source');
-            if (audioSource) {
-                const existingAudio = document.createElement('audio');
-                existingAudio.controls = true;
-                existingAudio.className = 'preview-element';
-                existingAudio.innerHTML = audioSource.outerHTML;
-                const audioContainer = document.createElement('div');
-                audioContainer.className = 'preview-container';
-                audioContainer.innerHTML = '<p>Current Audio:</p>';
-                audioContainer.appendChild(existingAudio);
-                document.getElementById('songUpload').insertAdjacentElement('afterend', audioContainer);
-            }
-        
-            // Handle image preview
-            const existingImage = cells[4].querySelector('img');
-            if (existingImage) {
-                const imagePreview = document.createElement('img');
-                imagePreview.src = existingImage.src;
-                imagePreview.alt = 'Current Image';
-                imagePreview.style.maxWidth = '200px';
-                imagePreview.className = 'preview-element';
-                const imageContainer = document.createElement('div');
-                imageContainer.className = 'preview-container';
-                imageContainer.innerHTML = '<p>Current Image:</p>';
-                imageContainer.appendChild(imagePreview);
-                document.getElementById('songPhoto').insertAdjacentElement('afterend', imageContainer);
-            }
-        
-            // Add hidden question ID
-            let questionIdInput = document.createElement('input');
-            questionIdInput.type = 'hidden';
-            questionIdInput.name = 'question_id';
-            questionIdInput.value = questionId;
-            document.getElementById('addQuestionForm').appendChild(questionIdInput);
         }
+    });
+
+    // Show current audio/image with preview
+    const audioCell = cells[3];
+    const imageCell = cells[4];
+    
+    // Display current audio
+    const currentAudio = audioCell.querySelector('audio');
+    if (currentAudio) {
+        const audioPreview = document.getElementById('audioPreview');
+        audioPreview.innerHTML = `
+            <div class="preview-container">
+                <p>Current Audio:</p>
+                ${currentAudio.outerHTML}
+            </div>
+        `;
+    }
+    
+    // Display current image
+    const currentImage = imageCell.querySelector('img');
+    if (currentImage) {
+        const imagePreview = document.getElementById('imagePreview');
+        imagePreview.innerHTML = `
+            <div class="preview-container">
+                <p>Current Image:</p>
+                <img src="${currentImage.src}" alt="Current Image" style="max-width: 200px;">
+            </div>
+        `;
+    }
+}
         
                 document.querySelectorAll('.checkmark').forEach(check => {
                 check.addEventListener('click', function() {
@@ -844,33 +916,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
             });
         
             document.getElementById('addQuestionForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            if (!document.querySelector('.checkmark.selected')) {
-                alert('Please select a correct answer');
-                return;
-            }
-        
-            const formData = new FormData(this);
-            
-            fetch('admin_quiz_management_2.php?action=updateQuestion', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Question updated successfully!');
-                    location.reload();
-                } else {
-                    throw new Error(data.error || 'Failed to update question');
+                e.preventDefault();
+
+                if (!document.querySelector('.checkmark.selected')) {
+                    alert('Please select a correct answer');
+                    return;
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error updating question: ' + error.message);
+            
+                const formData = new FormData(this);
+
+                fetch('admin_quiz_management_2.php?action=updateQuestion', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Question updated successfully!');
+                        location.reload();
+                    } else {
+                        throw new Error(data.error || 'Update failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error updating question: ' + error.message);
+                });
             });
-        });
     </script>
 
 <?php 
