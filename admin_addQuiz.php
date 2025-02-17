@@ -46,6 +46,84 @@ if ($result->num_rows > 0) {
         $genres[] = $row;
     }
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $quizName = $_POST['quizName'];
+    $genreID = $_POST['genreID'];
+    $questions = json_decode($_POST['questions'], true);
+
+    if (empty($quizName) || empty($genreID) || empty($questions)) {
+        echo "<script>alert('Please fill in all required fields.'); window.history.back();</script>";
+        exit();
+    }
+
+    // Create connection
+    $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
+
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Generate new Quiz ID
+    $result = $conn->query("SELECT QuizID FROM quiz ORDER BY QuizID DESC LIMIT 1");
+    $lastQuizID = $result->fetch_assoc()['QuizID'];
+    $newQuizID = 'Q' . str_pad((int)substr($lastQuizID, 1) + 1, 3, '0', STR_PAD_LEFT);
+
+    // Insert into quiz table
+    $stmt = $conn->prepare("INSERT INTO quiz (QuizID, GenreID, CreatedTime, QuizName) VALUES (?, ?, NOW(), ?)");
+    $stmt->bind_param("sss", $newQuizID, $genreID, $quizName);
+    $stmt->execute();
+
+    // Generate new Question IDs and insert into question table
+    $result = $conn->query("SELECT QuestionID FROM question ORDER BY QuestionID DESC LIMIT 1");
+    $lastQuestionID = $result->fetch_assoc()['QuestionID'];
+    $newQuestionID = (int)substr($lastQuestionID, 1);
+
+    // Generate new Song IDs and insert into song table
+    $result = $conn->query("SELECT SongID FROM song ORDER BY SongID DESC LIMIT 1");
+    $lastSongID = $result->fetch_assoc()['SongID'];
+    $newSongID = (int)substr($lastSongID, 1);
+
+    // Generate new Option IDs and insert into option table
+    $result = $conn->query("SELECT OptionID FROM option ORDER BY OptionID DESC LIMIT 1");
+    $lastOptionID = $result->fetch_assoc()['OptionID'];
+    $newOptionID = (int)substr($lastOptionID, 1);
+
+    foreach ($questions as $index => $question) {
+        $newQuestionID++;
+        $questionID = 'T' . str_pad($newQuestionID, 3, '0', STR_PAD_LEFT);
+        $correctAnswer = $question['correctAnswer'];
+        $options = $question['options'];
+        $songName = $question['correctAnswer'];
+        $songAudio = $question['songAudio'];
+        $songImage = $question['songImage'];
+
+
+        // Insert into question table
+        $stmt = $conn->prepare("INSERT INTO question (QuestionID, QuizID, CorrectRate, CorrectAnswer, TotalAttempts) VALUES (?, ?, 0, ?, 0)");
+        $stmt->bind_param("sss", $questionID, $newQuizID, $correctAnswer);
+        $stmt->execute();
+
+        // Insert into song table
+        $newSongID++;
+        $songID = 'S' . str_pad($newSongID, 3, '0', STR_PAD_LEFT);
+        $stmt = $conn->prepare("INSERT INTO song (SongID, QuestionID, SongName, SongAudio, SongImage) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssss", $songID, $questionID, $songName, $songAudio, $songImage);
+        $stmt->execute();
+
+        // Insert into option table
+        foreach ($options as $option) {
+            $newOptionID++;
+            $optionID = 'O' . str_pad($newOptionID, 3, '0', STR_PAD_LEFT);
+            $stmt = $conn->prepare("INSERT INTO option (OptionID, QuestionID, OptionName) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $optionID, $questionID, $option);
+            $stmt->execute();
+        }
+    }
+    echo "<script>alert('Quiz saved successfully!'); window.location.href='admin_quiz_management.php';</script>";
+    exit();
+}
 $stmt->close();
 $conn->close();
 ?>
@@ -272,7 +350,7 @@ $conn->close();
 
         <button type="button" onclick="openModal()">Add Question</button>
         <button type="button" onclick="window.location.href='admin_quiz_management.php'">Cancel</button>
-        <button type="button">Upload</button>
+        <button type="button"onclick="uploadQuiz()">Upload</button>
     </div>
 
     <!-- Modal -->
@@ -538,6 +616,49 @@ $conn->close();
                 document.getElementById('correctOption').value = this.getAttribute('data-value');
             });
         });
+
+        function uploadQuiz() {
+            const quizName = document.getElementById('questionId').value;
+            const genreID = document.getElementById('options').value;
+            const questions = [];
+
+            document.querySelectorAll('table tbody tr').forEach(row => {
+                const options = row.cells[1].textContent.split(', ');
+                const correctAnswer = row.cells[2].textContent;
+                const songName = row.cells[3].textContent;
+                const songAudio = row.cells[4].textContent;
+                const songImage = row.cells[5].textContent;
+
+                questions.push({
+                    options,
+                    correctAnswer,
+                    songName,
+                    songAudio,
+                    songImage
+                });
+            });
+
+            if (!quizName || !genreID || questions.length === 0) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('quizName', quizName);
+            formData.append('genreID', genreID);
+            formData.append('questions', JSON.stringify(questions));
+
+            fetch('admin_addQuiz.php', {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    window.location.href = 'admin_quiz_management.php';
+                } else {
+                    alert('Failed to upload quiz.');
+                }
+            });
+        }
     </script>
 </body>
 </html>
