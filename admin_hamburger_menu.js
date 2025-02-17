@@ -1,9 +1,5 @@
-function redirectToLogin() {
-    window.location.href = "user_login.php";
-}
-
-function redirectToHistory() {
-    window.location.href = "user_history.php";
+function redirectToDashboard() {
+    window.location.href = "admin_adminDashboard.php";
 }
 
 function validateNewUsername() {

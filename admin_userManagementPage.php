@@ -121,7 +121,7 @@ if (isset($_GET['search'])) {
         align-self: center;
         margin-top: 24px;
         padding: 20px;
-        background-color: #e7e3e2;
+        background-color: white;
         border-radius: 8px;
         width: 80%;
         height: fit-content;
@@ -150,7 +150,8 @@ if (isset($_GET['search'])) {
     }
 
     .table th {
-        background-color: #bfb5b3;
+        background-color: #584cba;
+        color: white;
     }
 
     .action-button {
@@ -174,7 +175,7 @@ if (isset($_GET['search'])) {
         font-size: (14px, 2vw, 18px);
         font-weight: 700;
         padding: 6px 12px;
-        background-color: #5c85ff;
+        background-color: #584cba;
         color: white;
         border: none;
         border-radius: 4px;
@@ -305,7 +306,7 @@ if (isset($_GET['search'])) {
 </head>
 <body>
     <div id="header">
-        <h1>NameThatTune</h1>
+        <h1><a href="admin_adminDashboard.php">NameThatTune</a></h1>
         <div id="login" onclick="">
         <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
         <p><?php echo htmlspecialchars($username); ?></p>
@@ -375,6 +376,8 @@ if (isset($_GET['search'])) {
     </div>
     
     <script>
+    
+
     function openEditPopUpPage(userId, username, profilePicture) {
         // Set values in the pop-up
         document.getElementById('edit_user_id').value = userId;
@@ -433,11 +436,11 @@ if (isset($_GET['search'])) {
                 <td>${user.DateJoined}</td>
                 <td><img src="${user.ProfilePicture}" alt="Profile Picture" style="width:50px; height:50px; border-radius:50%;"></td>
                 <td>
+                    <button class='edit-button' onclick='openEditPopUpPage("${user.UserID}", "${user.Username}", "${user.ProfilePicture}")'>Edit</button>
                     <form method='POST' style='display: inline;'>
                         <input type='hidden' name='delete_user_id' value='${user.UserID}' />
                         <button type='submit' class='action-button'>Delete</button>
                     </form>
-                    <button class='edit-button' onclick='openEditPopUpPage("${user.UserID}", "${user.Username}", "${user.ProfilePicture}")'>Edit</button>
                 </td>
             </tr>`;
         tableBody.insertAdjacentHTML('beforeend', row);

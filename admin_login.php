@@ -189,7 +189,7 @@ $conn->close();
 </head>
 <body>
 <div id="header">
-        <h1>NameThatTune</h1>
+        <h1><a href="admin_login.php">NameThatTune</a></h1>
         <div id="login">
            <p>Login</p>
         </div>
