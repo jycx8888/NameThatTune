@@ -535,7 +535,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
 
     <!-- Main Content Section -->
     <main>
-    <form method="POST" action="admin_quiz_management.php?quiz_id=<?php echo $quiz['QuizID']; ?>">
+    <form method="POST" action="admin_quiz_management_2.php?quiz_id=<?php echo $quiz['QuizID']; ?>">
     <h2 class="edit-quiz-header"><?php echo isset($quiz) ? 'Edit Quiz' : 'Add Song'; ?></h2>
 
     <!-- Modal -->
@@ -736,136 +736,141 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
         }
 
         // Function to update quiz numbers after deleting a row
-        function updateQuizNumbers() {
-            const rows = document.querySelectorAll("table tbody tr");
-            rows.forEach((row, index) => {
-                row.cells[0].textContent = index + 1;
-            });
-        }
-
-        // Function to edit a question 
         function editQuestion(questionId) {
-    console.log('Editing question:', questionId); // Debug log
-    
-    // Show the modal
-    const modal = document.getElementById("quizModal");
-    modal.style.display = "block";
-    
-    // Find the question row
-    const questionRow = document.querySelector(`tr[data-question-id="${questionId}"]`);
-    if (!questionRow) {
-        console.error('Question row not found');
-        return;
-    }
-
-    // Get the cells
-    const cells = questionRow.getElementsByTagName('td');
-    
-    // Get options and correct answer
-    const options = cells[1].getAttribute('data-options').split(',').map(opt => opt.trim());
-    const correctAnswer = cells[2].getAttribute('data-correct');
-    
-    console.log('Options:', options); // Debug log
-    console.log('Correct Answer:', correctAnswer); // Debug log
-
-    // Set options in the modal
-    options.forEach((option, index) => {
-        const input = document.querySelector(`input[name="option${index + 1}"]`);
-        if (input) {
-            input.value = option;
-            
-            // If this is the correct answer, mark it
-            if (option === correctAnswer) {
-                const checkmark = input.nextElementSibling;
-                checkmark.classList.add('selected');
-                checkmark.textContent = '✓';
-                document.getElementById('correctOption').value = (index + 1).toString();
-            }
-        }
-    });
-
-    // Handle audio preview
-    const audioSource = cells[3].querySelector('audio source');
-    if (audioSource) {
-        const existingAudio = document.createElement('audio');
-        existingAudio.controls = true;
-        existingAudio.className = 'preview-element';
-        existingAudio.innerHTML = audioSource.outerHTML;
-        const audioContainer = document.createElement('div');
-        audioContainer.className = 'preview-container';
-        audioContainer.innerHTML = '<p>Current Audio:</p>';
-        audioContainer.appendChild(existingAudio);
-        document.getElementById('songUpload').insertAdjacentElement('afterend', audioContainer);
-    }
-
-    // Handle image preview
-    const existingImage = cells[4].querySelector('img');
-    if (existingImage) {
-        const imagePreview = document.createElement('img');
-        imagePreview.src = existingImage.src;
-        imagePreview.alt = 'Current Image';
-        imagePreview.style.maxWidth = '200px';
-        imagePreview.className = 'preview-element';
-        const imageContainer = document.createElement('div');
-        imageContainer.className = 'preview-container';
-        imageContainer.innerHTML = '<p>Current Image:</p>';
-        imageContainer.appendChild(imagePreview);
-        document.getElementById('songPhoto').insertAdjacentElement('afterend', imageContainer);
-    }
-
-    // Add hidden question ID
-    let questionIdInput = document.createElement('input');
-    questionIdInput.type = 'hidden';
-    questionIdInput.name = 'question_id';
-    questionIdInput.value = questionId;
-    document.getElementById('addQuestionForm').appendChild(questionIdInput);
-}
-
-        document.querySelectorAll('.checkmark').forEach(check => {
-        check.addEventListener('click', function() {
-            // Remove selection from all checkmarks
-            document.querySelectorAll('.checkmark').forEach(c => {
-                c.classList.remove('selected');
-                c.textContent = '';
+            console.log('Editing question:', questionId);
+                
+            // Show the modal
+            const modal = document.getElementById("quizModal");
+            modal.style.display = "block";
+                
+            // Clear any existing previews
+            document.querySelectorAll('.preview-container').forEach(container => {
+                container.remove();
             });
             
-            // Select clicked checkmark
-            this.classList.add('selected');
-            this.textContent = '✓';
+            // Remove any existing question ID input
+            const existingQuestionId = document.querySelector('input[name="question_id"]');
+            if (existingQuestionId) {
+                existingQuestionId.remove();
+            }
             
-            // Update hidden input
-            document.getElementById('correctOption').value = this.dataset.value;
-        });
-    });
-
-    document.getElementById('addQuestionForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    if (!document.querySelector('.checkmark.selected')) {
-        alert('Please select a correct answer');
-        return;
-    }
-
-    const formData = new FormData(this);
-    
-    fetch('admin_quiz_management_2.php?action=updateQuestion', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Question updated successfully!');
-            location.reload();
-        } else {
-            throw new Error(data.error || 'Failed to update question');
+            // Find the question row
+            const questionRow = document.querySelector(`tr[data-question-id="${questionId}"]`);
+            if (!questionRow) {
+                console.error('Question row not found');
+                return;
+            }
+        
+            // Get the cells
+            const cells = questionRow.getElementsByTagName('td');
+            
+            // Get options and correct answer
+            const options = cells[1].getAttribute('data-options').split(',').map(opt => opt.trim());
+            const correctAnswer = cells[2].getAttribute('data-correct');
+            
+            console.log('Options:', options);
+            console.log('Correct Answer:', correctAnswer);
+        
+            // Set options in the modal
+            options.forEach((option, index) => {
+                const input = document.querySelector(`input[name="option${index + 1}"]`);
+                if (input) {
+                    input.value = option;
+                    
+                    // If this is the correct answer, mark it
+                    if (option === correctAnswer) {
+                        const checkmark = input.nextElementSibling;
+                        checkmark.classList.remove('selected');
+                        checkmark.textContent = '';
+                        checkmark.classList.add('selected');
+                        checkmark.textContent = '✓';
+                        document.getElementById('correctOption').value = (index + 1).toString();
+                    }
+                }
+            });
+        
+            // Handle audio preview
+            const audioSource = cells[3].querySelector('audio source');
+            if (audioSource) {
+                const existingAudio = document.createElement('audio');
+                existingAudio.controls = true;
+                existingAudio.className = 'preview-element';
+                existingAudio.innerHTML = audioSource.outerHTML;
+                const audioContainer = document.createElement('div');
+                audioContainer.className = 'preview-container';
+                audioContainer.innerHTML = '<p>Current Audio:</p>';
+                audioContainer.appendChild(existingAudio);
+                document.getElementById('songUpload').insertAdjacentElement('afterend', audioContainer);
+            }
+        
+            // Handle image preview
+            const existingImage = cells[4].querySelector('img');
+            if (existingImage) {
+                const imagePreview = document.createElement('img');
+                imagePreview.src = existingImage.src;
+                imagePreview.alt = 'Current Image';
+                imagePreview.style.maxWidth = '200px';
+                imagePreview.className = 'preview-element';
+                const imageContainer = document.createElement('div');
+                imageContainer.className = 'preview-container';
+                imageContainer.innerHTML = '<p>Current Image:</p>';
+                imageContainer.appendChild(imagePreview);
+                document.getElementById('songPhoto').insertAdjacentElement('afterend', imageContainer);
+            }
+        
+            // Add hidden question ID
+            let questionIdInput = document.createElement('input');
+            questionIdInput.type = 'hidden';
+            questionIdInput.name = 'question_id';
+            questionIdInput.value = questionId;
+            document.getElementById('addQuestionForm').appendChild(questionIdInput);
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error updating question: ' + error.message);
-    });
-});
+        
+                document.querySelectorAll('.checkmark').forEach(check => {
+                check.addEventListener('click', function() {
+                    // Remove selection from all checkmarks
+                    document.querySelectorAll('.checkmark').forEach(c => {
+                        c.classList.remove('selected');
+                        c.textContent = '';
+                    });
+                    
+                    // Select clicked checkmark
+                    this.classList.add('selected');
+                    this.textContent = '✓';
+                    
+                    // Update hidden input
+                    document.getElementById('correctOption').value = this.dataset.value;
+                });
+            });
+        
+            document.getElementById('addQuestionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!document.querySelector('.checkmark.selected')) {
+                alert('Please select a correct answer');
+                return;
+            }
+        
+            const formData = new FormData(this);
+            
+            fetch('admin_quiz_management_2.php?action=updateQuestion', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Question updated successfully!');
+                    location.reload();
+                } else {
+                    throw new Error(data.error || 'Failed to update question');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating question: ' + error.message);
+            });
+        });
     </script>
 
 <?php 
