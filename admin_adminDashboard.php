@@ -99,7 +99,7 @@ $conn->close();
             <div class="option-box" onclick="window.location.href='admin_quiz_management.php'">
                 Quiz Management
             </div>
-            <div class="option-box" onclick="window.location.   href='admin_userManagementPage.php'">
+            <div class="option-box" onclick="window.location.href='admin_userManagementPage.php'">
                 User Management
             </div>
             <div class="option-box" onclick="window.location.href='admin_analyticPage.  php'">

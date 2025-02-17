@@ -508,6 +508,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
         button:hover {
             background-color: #0056b3;
         }
+
+        .preview-container {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .preview-element {
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -533,12 +544,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
         <span class="close" onclick="closeModal()">&times;</span>
         <h2>Edit Question</h2>
         <form id="addQuestionForm" enctype="multipart/form-data">
-            <label for="songUpload">Correct Song Upload (8 secs):</label>
+            <label for="songUpload">Song Audio (8 secs):</label>
             <input type="file" id="songUpload" name="songUpload" accept="audio/mp3">
             <br><br>
-            <label for="songPhoto">Correct Song Photo (Photos related to Options only):</label>
+            
+            <label for="songPhoto">Song Photo:</label>
             <input type="file" id="songPhoto" name="songPhoto" accept="image/*">
             <br><br>
+            
             <input type="hidden" id="correctOption" name="correctOption">
             <label>Options:</label>
             <div class="option-container">
@@ -560,12 +573,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
                 </div>
             </div>
             
-            <!-- Replace the existing buttons section -->
-            <button type="submit">Edit Question</button>
+            <button type="submit">Save Changes</button>
             <button type="button" onclick="closeModal()">Cancel</button>
         </form>
-        </div>
     </div>
+</div>
 
      <!-- Display Quiz ID -->
      <p>Quiz ID: <?= isset($quiz['QuizID']) && !empty($quiz['QuizID']) ? htmlspecialchars($quiz['QuizID']) : 'No Quiz Found'; ?></p>
@@ -626,31 +638,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
                         $result_song = $stmt_song->get_result();
                         $song = $result_song->fetch_assoc();
                     ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($question['QuestionID']); ?></td>
-                        <td><?php echo $options_text; ?></td>
-                        <td><?php echo htmlspecialchars($question['CorrectAnswer']); ?></td>
-                        <td>
-                            <?php if (!empty($song['SongAudio'])): ?>
-                                <audio controls>
+                    <tr data-question-id="<?php echo htmlspecialchars($question['QuestionID']); ?>">
+                    <td><?php echo htmlspecialchars($question['QuestionID']); ?></td>
+                    <td data-options="<?php echo htmlspecialchars($options_text); ?>"><?php echo $options_text; ?></td>
+                    <td data-correct="<?php echo htmlspecialchars($question['CorrectAnswer']); ?>"><?php echo htmlspecialchars($question['CorrectAnswer']); ?></td>
+                    <td>
+                        <?php if (!empty($song['SongAudio'])): ?>
+                            <audio controls>
                                 <source src="data:audio/mpeg;base64,<?php echo base64_encode($song['SongAudio']); ?>" type="audio/mpeg">
-                                Your browser does not support the audio element.
-                                </audio>
-                            <?php else: ?>
-                                No audio available
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <?php if (!empty($song['SongImage'])): ?>
-                                <img src="data:image/jpeg;base64,<?php echo base64_encode($song['SongImage']); ?>" alt="Song Image" style="max-width: 100px;">
-                            <?php else: ?>
-                                No image available
-                            <?php endif; ?>
-                        </td>
-                        <td class="actions">
-                            <button type="button" onclick="editQuestion('<?php echo htmlspecialchars($question['QuestionID']); ?>')" style="align-items:center;">Edit</button>
-                        </td>
-                    </tr>
+                            </audio>
+                        <?php else: ?>
+                            No audio available
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <?php if (!empty($song['SongImage'])): ?>
+                            <img src="data:image/jpeg;base64,<?php echo base64_encode($song['SongImage']); ?>" alt="Song Image" style="max-width: 100px;">
+                        <?php else: ?>
+                            No image available
+                        <?php endif; ?>
+                    </td>
+                    <td class="actions">
+                        <button type="button" onclick="editQuestion('<?php echo htmlspecialchars($question['QuestionID']); ?>')" style="align-items:center;">Edit</button>
+                    </td>
+                </tr>
                 <?php endwhile; ?>
             <?php else: ?>
                 <tr>
@@ -734,113 +745,127 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
 
         // Function to edit a question 
         function editQuestion(questionId) {
-            // Show the modal first
-            document.getElementById("quizModal").style.display = "block";
+    console.log('Editing question:', questionId); // Debug log
+    
+    // Show the modal
+    const modal = document.getElementById("quizModal");
+    modal.style.display = "block";
+    
+    // Find the question row
+    const questionRow = document.querySelector(`tr[data-question-id="${questionId}"]`);
+    if (!questionRow) {
+        console.error('Question row not found');
+        return;
+    }
 
-            // Add a hidden input for the question ID
-            let questionIdInput = document.createElement('input');
-            questionIdInput.type = 'hidden';
-            questionIdInput.name = 'question_id';
-            questionIdInput.value = questionId;
-            document.getElementById('addQuestionForm').appendChild(questionIdInput);
-        
-            // Find the row containing this question by matching the first cell (QuestionID)
-            const questionRow = Array.from(document.querySelectorAll('tr')).find(row => {
-                const firstCell = row.querySelector('td:first-child');
-                return firstCell && firstCell.textContent.trim() === questionId;
-            });
-        
-            if (questionRow) {
-                // Get all cells from the row
-                const cells = questionRow.getElementsByTagName("td");
+    // Get the cells
+    const cells = questionRow.getElementsByTagName('td');
+    
+    // Get options and correct answer
+    const options = cells[1].getAttribute('data-options').split(',').map(opt => opt.trim());
+    const correctAnswer = cells[2].getAttribute('data-correct');
+    
+    console.log('Options:', options); // Debug log
+    console.log('Correct Answer:', correctAnswer); // Debug log
 
-                // Get the options and correct answer
-                const optionsText = cells[1].textContent.split(", ").map(option => option.trim());
-                const correctAnswer = cells[2].textContent.trim();
-
-                // Clear any existing previews
-                const existingPreviews = document.querySelectorAll('.preview-element');
-                existingPreviews.forEach(preview => preview.remove());
-
-                // Reset checkmarks
-                document.querySelectorAll('.checkmark').forEach(check => {
-                    check.classList.remove('selected');
-                    check.textContent = "";
-                });
+    // Set options in the modal
+    options.forEach((option, index) => {
+        const input = document.querySelector(`input[name="option${index + 1}"]`);
+        if (input) {
+            input.value = option;
             
-                // Populate option fields and set correct answer
-                const optionInputs = document.querySelectorAll('.option-container input[type="text"]');
-                optionInputs.forEach((input, index) => {
-                    if (optionsText[index]) {
-                        input.value = optionsText[index];
-                        // If this option matches the correct answer, select its checkmark
-                        if (optionsText[index] === correctAnswer) {
-                            const checkmark = input.nextElementSibling;
-                            checkmark.classList.add('selected');
-                            checkmark.textContent = "✓";
-                            // Create hidden input for correct option if it doesn't exist
-                            let correctOptionInput = document.getElementById('correctOption');
-                            if (!correctOptionInput) {
-                                correctOptionInput = document.createElement('input');
-                                correctOptionInput.type = 'hidden';
-                                correctOptionInput.id = 'correctOption';
-                                correctOptionInput.name = 'correctOption';
-                                document.getElementById('addQuestionForm').appendChild(correctOptionInput);
-                            }
-                            correctOptionInput.value = index + 1; // Set the correct option value
-                        }
-                    }
-                });
-            
-                // Show existing audio preview if available
-                const audioElement = cells[3].querySelector('audio source');
-                if (audioElement) {
-                    const audioPreview = document.createElement('audio');
-                    audioPreview.controls = true;
-                    audioPreview.className = 'preview-element';
-                    audioPreview.innerHTML = audioElement.outerHTML;
-                    document.getElementById('songUpload').insertAdjacentElement('afterend', audioPreview);
-                }
-            
-                // Show existing image preview if available
-                const imageElement = cells[4].querySelector('img');
-                if (imageElement) {
-                    const imagePreview = document.createElement('img');
-                    imagePreview.src = imageElement.src;
-                    imagePreview.alt = 'Current Image';
-                    imagePreview.style.maxWidth = '200px';
-                    imagePreview.className = 'preview-element';
-                    document.getElementById('songPhoto').insertAdjacentElement('afterend', imagePreview);
-                }
-            } else {
-                console.error('Question row not found');
-                alert('Error: Could not find the selected question');
-                closeModal();
+            // If this is the correct answer, mark it
+            if (option === correctAnswer) {
+                const checkmark = input.nextElementSibling;
+                checkmark.classList.add('selected');
+                checkmark.textContent = '✓';
+                document.getElementById('correctOption').value = (index + 1).toString();
             }
         }
+    });
 
-            document.querySelectorAll('.checkmark').forEach(check => {
-            check.addEventListener('click', function() {
-                // Remove selection from all checkmarks
-                document.querySelectorAll('.checkmark').forEach(c => {
-                    c.classList.remove('selected');
-                    c.textContent = '';
-                });
-                
-                // Select clicked checkmark
-                this.classList.add('selected');
-                this.textContent = '✓';
-                
-                // Update hidden input with correct answer value
-                document.getElementById('correctOption').value = this.dataset.value;
-                
-                // Get the option text associated with this checkmark
-                const optionText = this.previousElementSibling.value;
-                
-                // Store the selected option text as the correct answer
-                document.getElementById('correctOption').setAttribute('data-text', optionText);
+    // Handle audio preview
+    const audioSource = cells[3].querySelector('audio source');
+    if (audioSource) {
+        const existingAudio = document.createElement('audio');
+        existingAudio.controls = true;
+        existingAudio.className = 'preview-element';
+        existingAudio.innerHTML = audioSource.outerHTML;
+        const audioContainer = document.createElement('div');
+        audioContainer.className = 'preview-container';
+        audioContainer.innerHTML = '<p>Current Audio:</p>';
+        audioContainer.appendChild(existingAudio);
+        document.getElementById('songUpload').insertAdjacentElement('afterend', audioContainer);
+    }
+
+    // Handle image preview
+    const existingImage = cells[4].querySelector('img');
+    if (existingImage) {
+        const imagePreview = document.createElement('img');
+        imagePreview.src = existingImage.src;
+        imagePreview.alt = 'Current Image';
+        imagePreview.style.maxWidth = '200px';
+        imagePreview.className = 'preview-element';
+        const imageContainer = document.createElement('div');
+        imageContainer.className = 'preview-container';
+        imageContainer.innerHTML = '<p>Current Image:</p>';
+        imageContainer.appendChild(imagePreview);
+        document.getElementById('songPhoto').insertAdjacentElement('afterend', imageContainer);
+    }
+
+    // Add hidden question ID
+    let questionIdInput = document.createElement('input');
+    questionIdInput.type = 'hidden';
+    questionIdInput.name = 'question_id';
+    questionIdInput.value = questionId;
+    document.getElementById('addQuestionForm').appendChild(questionIdInput);
+}
+
+        document.querySelectorAll('.checkmark').forEach(check => {
+        check.addEventListener('click', function() {
+            // Remove selection from all checkmarks
+            document.querySelectorAll('.checkmark').forEach(c => {
+                c.classList.remove('selected');
+                c.textContent = '';
             });
+            
+            // Select clicked checkmark
+            this.classList.add('selected');
+            this.textContent = '✓';
+            
+            // Update hidden input
+            document.getElementById('correctOption').value = this.dataset.value;
         });
+    });
+
+    document.getElementById('addQuestionForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (!document.querySelector('.checkmark.selected')) {
+        alert('Please select a correct answer');
+        return;
+    }
+
+    const formData = new FormData(this);
+    
+    fetch('admin_quiz_management_2.php?action=updateQuestion', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Question updated successfully!');
+            location.reload();
+        } else {
+            throw new Error(data.error || 'Failed to update question');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating question: ' + error.message);
+    });
+});
     </script>
 
 <?php 
