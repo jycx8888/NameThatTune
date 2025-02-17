@@ -477,15 +477,34 @@ $conn->close();
                     return;
                 }
             
-                // Audio duration check
-                const audio = new Audio(URL.createObjectURL(songUpload));
-                audio.onloadedmetadata = function() {
-                    if (audio.duration > 9) {
-                        alert("The uploaded MP3 must be 8 seconds or less.");
-                        return;
-                    }
-                    proceedWithSubmission();
+                // Create a Promise to handle audio duration check
+                const checkAudioDuration = () => {
+                    return new Promise((resolve, reject) => {
+                        const audio = new Audio(URL.createObjectURL(songUpload));
+
+                        audio.addEventListener('loadedmetadata', () => {
+                            if (audio.duration > 9) {
+                                reject("The uploaded MP3 must be 8 seconds or less.");
+                            } else {
+                                resolve();
+                            }
+                        });
+                    
+                        audio.addEventListener('error', () => {
+                            reject("Error loading audio file.");
+                        });
+                    });
                 };
+            
+                // Use async/await to handle the audio check
+                checkAudioDuration()
+                    .then(() => {
+                        proceedWithSubmission();
+                    })
+                    .catch((error) => {
+                        alert(error);
+                        return;
+                    });
             } else {
                 // If editing, proceed directly
                 proceedWithSubmission();
