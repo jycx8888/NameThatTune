@@ -87,20 +87,30 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
+        
         #content {
+            display: flex;
+            justify-content: center;
+            height: calc(100vh - 72px);
+        }
+
+        #edit-quiz-container {
+            display: flex;
+            flex-direction: column;
+            font-family: 'Lalezar', system-ui;
+            font-size: clamp(14px, 1.5vw, 16px);
             background-color: #f4f4f4;
             width: 80%;
             max-width: 1100px;
-            margin: 60px;
-            padding: 1rem;
+            padding: 1.5rem;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             align-self: center;
         }
 
         .section-title {
-            font-size: 1.2rem;
-            font-weight: bold;
+            font-size: clamp(24px, 1.5vw, 32px);
+            font-weight: 700;
             margin-bottom: 1rem;
             text-align: left;
         }
@@ -114,9 +124,17 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
             margin-bottom: 1rem;
         }
 
+        .search-bar label {
+            font-family: 'Lalezar', system-ui;
+            font-size: clamp(14px, 1.5vw, 20px);
+            font-weight: 500;
+        }
+
         .search-bar select, .search-bar input {
+            font-family: 'Lalezar', system-ui;
+            font-size: clamp(12px, 1.5vw, 16px);
+            font-weight: 500;
             padding: 0.5rem;
-            font-size: 1rem;
             border: 1px solid #ccc;
             border-radius: 5px;
             width: calc(50% - 0.5rem);
@@ -125,8 +143,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
 
         .search-bar button {
             padding: 0.5rem 1rem;
-            font-size: 1rem;
-            background-color: rgb(104, 99, 174);
+            font-family: 'Lalezar', system-ui;
+            font-size: clamp(14px, 1.5vw, 16px);
+            font-weight: 500;
+            background-color: #584cba;
             color: white;
             border: none;
             border-radius: 5px;
@@ -137,23 +157,26 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
             width: 100%;
             border-collapse: collapse;
             margin-top: 1rem;
-            font-size: 0.9rem;
+            font-family: 'Lalezar', system-ui;
+            font-weight: 500;
         }
 
         th, td {
+            font-size: (14px, 1.5vw, 16px);
             padding: 0.5rem;
             text-align: center;
             border: 1px solid #ddd;
         }
 
         th {
-            background-color: rgb(104, 99, 174);
+            font-weight: 700;
+            background-color: #584cba;
             color: white;
         }
 
         .actions a {
-            font-size: 0.85rem;
-            color: #ACD7EC;
+            font-size: clamp(14px, 1.5vw, 16px);
+            color: #584cba;
             text-decoration: none;
         }
 
@@ -163,19 +186,21 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
         }
 
         .back-button {
+            font-family: 'Lalezar', system-ui;
+            font-size: clamp(14px, 1.5vw, 16px);
+            font-weight: 500;
             display: block;
             width: fit-content;
             padding: 0.6rem 1rem;
-            background-color: blueviolet;
+            background-color: #584cba;
             color: white;
             text-align: center;
+            border-style: none;
             border-radius: 5px;
             margin: 1rem auto 0;
-            font-size: 0.9rem;
         }
         .back-button:hover{
-            text-decoration: underline;
-            background-color: #E39FF6;
+            background-color: #17066e;
         }
 
     </style>
@@ -188,7 +213,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
 </head>
 <body>
     <div id="header">
-        <h1>NameThatTune</h1>
+        <h1><a href="admin_adminDashboard.php">NameThatTune</a></h1>
         <div id="login" onclick="">
             <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
             <p><?php echo htmlspecialchars($username); ?></p>
@@ -199,70 +224,74 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
 
     <!-- Content -->
     <div id="content">
+        <div id="edit-quiz-container">
         <div class="section-title">Edit Quiz</div>
 
-        <!-- Search Filter Section -->
-    <div class="search-bar">
-        <label for="filter">Search by:</label>
-        <select id="filter">
-            <option value="id">Quiz ID</option>
-            <option value="genre">Genre ID</option>
-            <option value="time">Created Time</option>
-        </select>
-        <input type="text" id="search" placeholder="Search....">
-        <button onclick="performSearch()">Search</button>
-        <button id="addSongBtn" onclick="moveToAddSong()" style="background-color: grey; color: white;">Add New Quiz</button>
+<!-- Search Filter Section -->
+<div class="search-bar">
+<label for="filter">Search by:</label>
+<select id="filter">
+    <option value="id">Quiz ID</option>
+    <option value="genre">Genre ID</option>
+    <option value="time">Created Time</option>
+</select>
+<input type="text" id="search" placeholder="Search....">
+<button onclick="performSearch()">Search</button>
+<button id="addSongBtn" onclick="moveToAddSong()">Add New Quiz</button>
 
-    </div>
-        <!-- Table Section -->
-        <table>
-    <thead>
-        <tr>
-            <th>Quiz ID</th>
-            <th>Genre ID</th>
-            <th>Created Time</th>
-            <th>Action</th>
-        </tr>
-        
+</div>
+<!-- Table Section -->
+<table>
+<thead>
+<tr>
+    <th>Quiz ID</th>
+    <th>Genre ID</th>
+    <th>Created Time</th>
+    <th>Action</th>
+</tr>
+
 <script>
-        document.addEventListener("DOMContentLoaded", function() {
-    var button = document.getElementById("addSong");
-    if (button) {
-        button.addEventListener("click", function() {
-            console.log("Redirecting to admin_quiz_management_2.php");
-            window.location.href = 'admin_quiz_management_2.php';
-        });
-    } else {
-        console.log("Button not found.");
-    }
+document.addEventListener("DOMContentLoaded", function() {
+var button = document.getElementById("addSong");
+if (button) {
+button.addEventListener("click", function() {
+    console.log("Redirecting to admin_quiz_management_2.php");
+    window.location.href = 'admin_quiz_management_2.php';
+});
+} else {
+console.log("Button not found.");
+}
 });
 </script>
 
-    </thead>
-    <tbody id="quizTable">
-        <?php if (mysqli_num_rows($results) > 0): ?>
-            <?php while ($row = mysqli_fetch_assoc($results)): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($row['quiz_id']); ?></td>
-                    <td><?php echo htmlspecialchars($row['genre_id']); ?></td>
-                    <td><?php echo htmlspecialchars($row['created_time']); ?></td>
-                    <td class="actions">
-                    <a href="admin_quiz_management_2.php?quiz_id=<?php echo urlencode($row['quiz_id']); ?>">Edit</a>
-                        <a href="admin_quiz_management.php?action=delete&id=<?php echo urlencode($row['quiz_id']); ?>" onclick="return confirm('Are you sure you want to delete this quiz?');">Delete</a>
-                    </td>
-                </tr>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <tr>
-                <td colspan="4">No quizzes found.</td>
-            </tr>
-        <?php endif; ?>
-    </tbody>
+</thead>
+<tbody id="quizTable">
+<?php if (mysqli_num_rows($results) > 0): ?>
+    <?php while ($row = mysqli_fetch_assoc($results)): ?>
+        <tr>
+            <td><?php echo htmlspecialchars($row['quiz_id']); ?></td>
+            <td><?php echo htmlspecialchars($row['genre_id']); ?></td>
+            <td><?php echo htmlspecialchars($row['created_time']); ?></td>
+            <td class="actions">
+            <a href="admin_quiz_management_2.php?quiz_id=<?php echo urlencode($row['quiz_id']); ?>">Edit</a>
+                <a href="admin_quiz_management.php?action=delete&id=<?php echo urlencode($row['quiz_id']); ?>" onclick="return confirm('Are you sure you want to delete this quiz?');">Delete</a>
+            </td>
+        </tr>
+    <?php endwhile; ?>
+<?php else: ?>
+    <tr>
+        <td colspan="4">No quizzes found.</td>
+    </tr>
+<?php endif; ?>
+</tbody>
 </table>
 
-        <!-- Back Button -->
-      <!-- Back Button -->
-    <button onclick="back()" class="back-button">Back to Dashboard</button>
+<!-- Back Button -->
+<!-- Back Button -->
+<button onclick="back()" class="back-button">Back to Dashboard</button>
+
+        </div>
+
 
     </div>
 

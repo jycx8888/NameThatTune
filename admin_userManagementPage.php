@@ -110,25 +110,32 @@ if (isset($_GET['search'])) {
     <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
+
     main {
+        display: flex;
+        flex-direction: column;
         font-family: "Lalezar", system-ui;
-        font-size: 20px;
         font-weight: 1000;
         font-style: normal;
-        margin: 20px;
-        margin-right: auto;
-        margin-left: auto;
+        justify-self: center;
+        align-self: center;
+        margin-top: 24px;
         padding: 20px;
-        background-color: #e7e3e2;
+        background-color: white;
         border-radius: 8px;
         width: 80%;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        min-height: 82vh; /* Ensures proper spacing */
+        height: fit-content;
+        min-height: 80vh;
+    }
+
+    main h2 {
+        font-size: clamp(24px, 2vw, 32px);
+        margin: 0 0 24px 0;
     }
 
     .table {
         font-family: "Lalezar", system-ui;
-        font-size: 18px;
+        font-size: clamp(14px, 2vw, 18px);
         font-weight: 700;
         font-style: normal;
         margin: 0;
@@ -143,10 +150,14 @@ if (isset($_GET['search'])) {
     }
 
     .table th {
-        background-color: #bfb5b3;
+        background-color: #584cba;
+        color: white;
     }
 
     .action-button {
+        font-family: 'Lalezar', system-ui;
+        font-size: (14px, 2vw, 18px);
+        font-weight: 700;
         padding: 6px 12px;
         background-color: #ff5c5c;
         color: white;
@@ -160,8 +171,11 @@ if (isset($_GET['search'])) {
     }
 
     .edit-button {
+        font-family: 'Lalezar', system-ui;
+        font-size: (14px, 2vw, 18px);
+        font-weight: 700;
         padding: 6px 12px;
-        background-color: #5c85ff;
+        background-color: #584cba;
         color: white;
         border: none;
         border-radius: 4px;
@@ -173,20 +187,19 @@ if (isset($_GET['search'])) {
     }
 
     .back-button {
-        display: inline-block;
-        margin-top: 20px;
-        padding: 12px 24px; /* Increased padding */
-        font-size: 16px; /* Increased font size */
+        display: block;
+        padding: 12px 0; /* Increased padding */
+        font-family: 'Lalezar', system-ui;
+        font-size: clamp(14px, 2vw, 16px);
+        font-weight: 700;
         background-color: #4CAF50; /* Green background */
         color: white; /* White text */
         border: none; /* Remove borders */
         border-radius: 4px; /* Rounded corners */
-        cursor: pointer; /* Pointer cursor */
-        text-decoration: none; /* No underline */
-        display: inline-block; /* Inline-block for button-like behavior */
-        box-shadow: 0 2px #999; /* Subtle shadow effect */
-        width: 250px; /* Increased width */
+        cursor: pointer; 
+        width: clamp(160px, 20vw, 200px);
         text-align: center; /* Center text */
+        justify-self: center;
     }
 
     .back-button:hover {
@@ -200,26 +213,26 @@ if (isset($_GET['search'])) {
     }
 
     .search-bar {
-        margin-bottom: 30px;
-        width: 100%; /* Make the search bar larger */
-        max-width: 1000px; /* Set a maximum width */
-        padding: 10px; /* Add padding for better appearance */
-        font-size: 16px; /* Increase font size */
-        border: 2px solid #ccc; /* Add border */
+        margin-bottom: 24px;
         border-radius: 10px; /* Add border radius */
     }
 
-    .search-bar input[type="text"] {
-        width: 80%; /* Increase width */
-        padding: 15px; /* Increase padding */
-        font-size: 18px; /* Increase font size */
+    .search-bar input {
+        width: 30vw;
+        min-width: 200px;
+        padding: 10px 12px;
+        font-family: 'Lalezar', system-ui;
+        font-weight: 700;
+        font-size: clamp(14px, 2vw, 16px);
         border: 1px solid #ccc; /* Add border */
         border-radius: 4px; /* Add border radius */
     }
 
     .search-bar button {
-        padding: 15px 20px; /* Increase padding */
-        font-size: 18px; /* Increase font size */
+        padding: 10px 20px; /* Increase padding */
+        font-family: 'Lalezar', system-ui;
+        font-size: clamp(14px, 2vw, 16px);
+        font-weight: 700;
         background-color: #4CAF50; /* Green background */
         color: white; /* White text */
         border: none; /* Remove borders */
@@ -293,7 +306,7 @@ if (isset($_GET['search'])) {
 </head>
 <body>
     <div id="header">
-        <h1>NameThatTune</h1>
+        <h1><a href="admin_adminDashboard.php">NameThatTune</a></h1>
         <div id="login" onclick="">
         <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
         <p><?php echo htmlspecialchars($username); ?></p>
@@ -304,13 +317,15 @@ if (isset($_GET['search'])) {
 
     <main>
     <h2>User Information</h2>
+
     <div class="search-bar">
         <form method="GET" action="">
-            <input type="text" name="search" placeholder="Search by username or user ID" value="<?php echo htmlspecialchars($search_query); ?>" style="width: 500px;">
+            <input type="text" name="search" placeholder="Search by username or user ID" value="<?php echo htmlspecialchars($search_query); ?>">
             <button type="submit">Search</button>
         </form>
     </div>
-    <div id="table-container" style="overflow-y: auto; max-height: 400px;">
+
+    <div id="table-container">
     <table class="table" id="user-table">
         <thead>
             <tr>
@@ -326,13 +341,14 @@ if (isset($_GET['search'])) {
         </tbody>
     </table>
 </div>
-<div id="pagination-controls" style="margin-top: 20px; text-align: center;">
-    <button onclick="previousPage()" id="prev-btn" class="pagination-button" style="display: none;">Previous</button>
-    <button onclick="nextPage()" id="next-btn" class="pagination-button" style="display: none;">Next</button>
+
+<div id="pagination-controls">
+    <button onclick="previousPage()" id="prev-btn" class="pagination-button">Previous</button>
+    <button onclick="nextPage()" id="next-btn" class="pagination-button">Next</button>
 </div>
 
 <!-- Back to First Page Button -->
-<div id="back-to-first-page" style="text-align: center; margin-top: 20px; display: none;">
+<div id="back-to-first-page">
     <button onclick="resetSearch()" class="back-button">Back to Full List</button>
 </div>
 
@@ -352,7 +368,7 @@ if (isset($_GET['search'])) {
                 <label for="edit_username">Enter New Username:</label>
                 <input type="text" id="edit_username" name="edit_username" required>
                 <br><br><label for="edit_profile_picture">Profile Picture:</label></br></br>
-                <br><img id="current_profile_picture" src="" alt="Current Profile Picture" style="width:50px; height:50px; border-radius:50%; margin-top:-100px;"></br>
+                <br><img id="current_profile_picture" src="" alt="Current Profile Picture"></br>
                 <input type="file" id="edit_profile_picture" name="edit_profile_picture" accept="image/*">
                 <br><br><button type="submit" class="edit-button">Save Changes</button></br></br>
             </form>
@@ -360,6 +376,8 @@ if (isset($_GET['search'])) {
     </div>
     
     <script>
+    
+
     function openEditPopUpPage(userId, username, profilePicture) {
         // Set values in the pop-up
         document.getElementById('edit_user_id').value = userId;
@@ -418,11 +436,11 @@ if (isset($_GET['search'])) {
                 <td>${user.DateJoined}</td>
                 <td><img src="${user.ProfilePicture}" alt="Profile Picture" style="width:50px; height:50px; border-radius:50%;"></td>
                 <td>
+                    <button class='edit-button' onclick='openEditPopUpPage("${user.UserID}", "${user.Username}", "${user.ProfilePicture}")'>Edit</button>
                     <form method='POST' style='display: inline;'>
                         <input type='hidden' name='delete_user_id' value='${user.UserID}' />
                         <button type='submit' class='action-button'>Delete</button>
                     </form>
-                    <button class='edit-button' onclick='openEditPopUpPage("${user.UserID}", "${user.Username}", "${user.ProfilePicture}")'>Edit</button>
                 </td>
             </tr>`;
         tableBody.insertAdjacentHTML('beforeend', row);

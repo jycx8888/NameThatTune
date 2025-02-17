@@ -59,7 +59,7 @@ $conn->close();
     <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Lalezar', system-ui;
         }
         h1 {
             text-align: center;
@@ -81,6 +81,8 @@ $conn->close();
             background-color: white; /* White background for the table */
         }
         th, td {
+            font-family: 'Lalezar', system-ui;
+            font-weight: 500;
             border: 1px solid #ddd;
             padding: 8px;
             text-align: center;
@@ -162,7 +164,7 @@ $conn->close();
         <body>
    <!-- Header Section -->
    <div id="header">
-        <h1>NameThatTune</h1>
+        <h1><a href="admin_adminDashboard.php">NameThatTune</a></h1>
         <div id="login" onclick="">
             <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
             <p><?php echo htmlspecialchars($username); ?></p>
