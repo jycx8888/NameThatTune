@@ -246,6 +246,8 @@ if (isset($_GET['search'])) {
 
     /* Pop-Up styles */
     .editPopUpPage {
+        font-family: 'Lalezar', system-ui;
+        font-weight: 700;
         display: none;
         position: fixed;
         z-index: 1;
@@ -302,6 +304,37 @@ if (isset($_GET['search'])) {
     .pagination-button:hover {
         background-color: #45a049; /* Slightly darker green on hover */
     }
+
+    #edit-user-form {
+
+    }
+
+    #profile-picture-label {
+
+    }
+
+    #current_profile_picture {
+        
+        width: 10rem;
+        height: 10rem;
+    }
+
+    #edit_user_id {
+
+    }
+
+    #new-username-label {
+
+    }
+
+    #edit_profile_picture {
+
+    }
+
+    #save-changes-button {
+
+    }
+
 </style>
 </head>
 <body>
@@ -363,14 +396,14 @@ if (isset($_GET['search'])) {
         <div class="editPopUpPage-content">
             <span class="close" onclick="closeEditPopUpPage()">&times;</span>
             <h2>Edit User</h2>
-            <form method="POST" action="" enctype="multipart/form-data">
+            <form id=edit-user-form method="POST" action="" enctype="multipart/form-data">
                 <input type="hidden" id="edit_user_id" name="edit_user_id">
-                <label for="edit_username">Enter New Username:</label>
+                <label id="new-username-label" for="edit_username">Enter New Username:</label>
                 <input type="text" id="edit_username" name="edit_username" required>
-                <br><br><label for="edit_profile_picture">Profile Picture:</label></br></br>
+                <br><br><label id="profile-picture-label" for="edit_profile_picture">Profile Picture:</label></br></br>
                 <br><img id="current_profile_picture" src="" alt="Current Profile Picture"></br>
                 <input type="file" id="edit_profile_picture" name="edit_profile_picture" accept="image/*">
-                <br><br><button type="submit" class="edit-button">Save Changes</button></br></br>
+                <br><br><button id="save-changes-button" type="submit" class="edit-button">Save Changes</button></br></br>
             </form>
         </div>
     </div>

@@ -42,7 +42,6 @@ if (!$results) {
     die("Query failed: " . mysqli_error($connection));
 }
 
-
 // Check if delete action is requested
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $quiz_id = $_GET['id'];
