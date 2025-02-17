@@ -117,13 +117,13 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
         .search-bar label {
             font-family: 'Lalezar', system-ui;
             font-size: clamp(14px, 1.5vw, 20px);
-            font-weight: 500;
+            font-weight: 700;
         }
 
         .search-bar select, .search-bar input {
             font-family: 'Lalezar', system-ui;
             font-size: clamp(12px, 1.5vw, 16px);
-            font-weight: 500;
+            font-weight: 700;
             padding: 0.5rem;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -135,7 +135,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
             padding: 0.5rem 1rem;
             font-family: 'Lalezar', system-ui;
             font-size: clamp(14px, 1.5vw, 16px);
-            font-weight: 500;
+            font-weight: 700;
             background-color: #584cba;
             color: white;
             border: none;
@@ -143,12 +143,16 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
             cursor: pointer;
         }
 
+        .search-bar button:hover {
+            background-color: #17066e;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 1rem;
             font-family: 'Lalezar', system-ui;
-            font-weight: 500;
+            font-weight: 700;
         }
 
         th, td {
@@ -166,19 +170,32 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
 
         .actions a {
             font-size: clamp(14px, 1.5vw, 16px);
+        }
+
+        .actions #edit-link {
             color: #584cba;
             text-decoration: none;
         }
 
-        .actions a:hover {
+        .actions #edit-link:hover {
+            color: #17066e;
             text-decoration: underline;
-            color: blue;
+        }
+
+        .actions #delete-link {
+            color: red;
+            text-decoration: none;
+        }
+
+        .actions #delete-link:hover {
+            color: darkred;
+            text-decoration: underline;
         }
 
         .back-button {
             font-family: 'Lalezar', system-ui;
             font-size: clamp(14px, 1.5vw, 16px);
-            font-weight: 500;
+            font-weight: 700;
             display: block;
             width: fit-content;
             padding: 0.6rem 1rem;
@@ -263,8 +280,10 @@ console.log("Button not found.");
             <td><?php echo htmlspecialchars($row['genre_id']); ?></td>
             <td><?php echo htmlspecialchars($row['created_time']); ?></td>
             <td class="actions">
-            <a href="admin_quiz_management_2.php?quiz_id=<?php echo urlencode($row['quiz_id']); ?>">Edit</a>
-                <a href="admin_quiz_management.php?action=delete&id=<?php echo urlencode($row['quiz_id']); ?>" onclick="return confirm('Are you sure you want to delete this quiz?');">Delete</a>
+                <button onclick="window.location.href='admin_quiz_management_2.php?quiz_id=<?php echo urlencode($row['quiz_id']); ?>'">Edit
+                </button>
+                <button onclick="return confirm('Are you sure you want to delete this quiz?');window.loaction.href='admin_quiz_management.php?action=delete&id=<?php echo urlencode($row['quiz_id']); ?>'">Delete</button>
+                <a id="delete-link" href="admin_quiz_management.php?action=delete&id=<?php echo urlencode($row['quiz_id']); ?>" onclick="return confirm('Are you sure you want to delete this quiz?');">Delete</a>
             </td>
         </tr>
     <?php endwhile; ?>
