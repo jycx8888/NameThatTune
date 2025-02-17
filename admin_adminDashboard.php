@@ -48,38 +48,40 @@ $conn->close();
     <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
+
         main {
-            flex: 1;
-            display: grid;
-            grid-template-columns: repeat(3, auto);
-            gap: 20px;
-            place-items: center; /* Centers items horizontally and vertically */
-            min-height: 92vh; /* Ensures proper spacing */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 72px);
+        }
+
+        #options {
+            display: flex;
+            width: 80vw;
+            min-width: 300px;
+            justify-content: space-evenly;
         }
 
         .option-box {
-            height: 150px;
-            width: 150px;
-            background-color: brown;
+            height: clamp(120px, 20vw, 300px);
+            width: clamp(120px, 20vw, 300px);
+            background-color: #584cba;
             border-radius: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
             color: white;
-            font-family: Arial, sans-serif;
-            font-size: 18px;
+            font-family: "Lalezar", system-ui;
+            font-weight: 700;
+            font-size: clamp(12px, 3vw, 32px);
             text-align: center;
             cursor: pointer;
             transition: background-color 0.3s;
         }
 
         .option-box:hover {
-            background-color: #555;
-        }
-
-        h1 {
-            font-family: "Lalezar", system-ui;
-            font-weight: 1000;
+            background-color: #17066e;
         }
     </style>
 </head>
@@ -93,17 +95,18 @@ $conn->close();
     </div>
 
     <main>
-        <div class="option-box" onclick="window.location.href='admin_quiz_management.php'">
-            Quiz 
-            <br>Management</br>
+        <div id="options">
+            <div class="option-box" onclick="window.location.href='admin_quiz_management.   php'">
+                Quiz Management
+            </div>
+            <div class="option-box" onclick="window.location.   href='admin_userManagementPage.php'">
+                User Management
+            </div>
+            <div class="option-box" onclick="window.location.href='admin_analyticPage.  php'">
+                Analytics
+            </div>
         </div>
-        <div class="option-box" onclick="window.location.href='admin_userManagementPage.php'">
-            User
-            <br>Management</br>
-        </div>
-        <div class="option-box" onclick="window.location.href='admin_analyticPage.php'">
-            Analytics
-        </div>
+
     </main>
 
     <?php include 'admin_hamburger_menu.php'; ?>
