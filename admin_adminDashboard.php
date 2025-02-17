@@ -72,6 +72,7 @@ $conn->close();
             justify-content: center;
             align-items: center;
             color: white;
+            padding: 8px;
             font-family: "Lalezar", system-ui;
             font-weight: 700;
             font-size: clamp(12px, 3vw, 32px);
@@ -102,7 +103,7 @@ $conn->close();
             <div class="option-box" onclick="window.location.href='admin_userManagementPage.php'">
                 User Management
             </div>
-            <div class="option-box" onclick="window.location.href='admin_analyticPage.  php'">
+            <div class="option-box" onclick="window.location.href='admin_analyticPage.php'">
                 Analytics
             </div>
         </div>
