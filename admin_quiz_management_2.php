@@ -626,7 +626,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
                         $result_options = $stmt_options->get_result();
                         $options = [];
                         while ($option = $result_options->fetch_assoc()) {
-                            $options[] = htmlspecialchars($option['OptionName']);
+                            // Add html_entity_decode here
+                            $options[] = html_entity_decode(htmlspecialchars($option['OptionName']), ENT_QUOTES);
                         }
                         $options_text = implode(", ", $options);
                     ?>

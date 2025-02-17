@@ -47,14 +47,24 @@ if (!$results) {
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $quiz_id = $_GET['id'];
 
-    // Validate input: Ensure it's a numeric value
-    if (!is_numeric($quiz_id)) {
-        die("Invalid Quiz ID.");
-    }
-
     // Use a prepared statement to prevent SQL injection
+    $stmt = $connection->prepare("DELETE FROM song WHERE QuestionID IN (SELECT QuestionID FROM question WHERE QuizID = ?)");
+    $stmt->bind_param("s", $quiz_id);
+    $stmt->execute();
+    $stmt->close();
+
+    $stmt = $connection->prepare("DELETE FROM `option` WHERE QuestionID IN (SELECT QuestionID FROM question WHERE QuizID = ?)");
+    $stmt->bind_param("s", $quiz_id);
+    $stmt->execute();
+    $stmt->close();
+
+    $stmt = $connection->prepare("DELETE FROM question WHERE QuizID = ?");
+    $stmt->bind_param("s", $quiz_id);
+    $stmt->execute();
+    $stmt->close();
+
     $stmt = $connection->prepare("DELETE FROM quiz WHERE QuizID = ?");
-    $stmt->bind_param("i", $quiz_id);
+    $stmt->bind_param("s", $quiz_id);
 
     if ($stmt->execute()) {
         echo "<script>alert('Quiz deleted successfully!'); window.location.href='admin_quiz_management.php';</script>";
