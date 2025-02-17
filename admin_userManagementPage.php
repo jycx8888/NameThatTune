@@ -306,33 +306,16 @@ if (isset($_GET['search'])) {
     }
 
     #edit-user-form {
-
-    }
-
-    #profile-picture-label {
-
+        font-size: clamp(14px, 1.5vw, 16px);
     }
 
     #current_profile_picture {
-        
         width: 10rem;
         height: 10rem;
     }
 
-    #edit_user_id {
-
-    }
-
-    #new-username-label {
-
-    }
-
-    #edit_profile_picture {
-
-    }
-
     #save-changes-button {
-
+        font-size: clamp(14px, 1.5vw, 16px);
     }
 
 </style>
