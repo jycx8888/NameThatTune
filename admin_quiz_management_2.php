@@ -17,6 +17,53 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
+    header('Content-Type: application/json');
+    
+    try {
+        $conn->begin_transaction();
+        
+        $questionId = $_POST['question_id'];
+        $correctAnswer = $_POST['correctOption'];
+        
+        // Update correct answer
+        $stmt = $conn->prepare("UPDATE question SET CorrectAnswer = ? WHERE QuestionID = ?");
+        $stmt->bind_param("ss", $correctAnswer, $questionId);
+        $stmt->execute();
+        
+        // Update options
+        for ($i = 1; $i <= 4; $i++) {
+            $optionName = $_POST["option$i"];
+            $stmt = $conn->prepare("UPDATE `option` SET OptionName = ? WHERE QuestionID = ? AND OptionOrder = ?");
+            $stmt->bind_param("ssi", $optionName, $questionId, $i);
+            $stmt->execute();
+        }
+        
+        // Handle file uploads if provided
+        if (!empty($_FILES['songUpload']['tmp_name'])) {
+            $songAudio = file_get_contents($_FILES['songUpload']['tmp_name']);
+            $stmt = $conn->prepare("UPDATE song SET SongAudio = ? WHERE QuestionID = ?");
+            $stmt->bind_param("bs", $songAudio, $questionId);
+            $stmt->execute();
+        }
+        
+        if (!empty($_FILES['songPhoto']['tmp_name'])) {
+            $songImage = file_get_contents($_FILES['songPhoto']['tmp_name']);
+            $stmt = $conn->prepare("UPDATE song SET SongImage = ? WHERE QuestionID = ?");
+            $stmt->bind_param("bs", $songImage, $questionId);
+            $stmt->execute();
+        }
+        
+        $conn->commit();
+        echo json_encode(['success' => true]);
+        
+    } catch (Exception $e) {
+        $conn->rollback();
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+    exit;
+}
+
 $username = $_SESSION['username'];
 
 $stmt = $conn->prepare("SELECT ProfilePicture FROM admin WHERE Username = ?");
@@ -76,27 +123,59 @@ if (isset($quiz_id)) {
     $result_questions = null;
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $genre_id = $conn->real_escape_string($_POST['genre_id']);
-    $created_time = $conn->real_escape_string($_POST['created_time']);
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
+    $song_id = $_POST['song_id'];
+    $song_audio = null;
+    $song_image = null;
 
-    // Validate GenreID
-    $validate_genre_sql = "SELECT GenreID FROM genre WHERE GenreID = '$genre_id'";
-    $validate_result = $conn->query($validate_genre_sql);
-
-    if ($validate_result->num_rows === 0) {
-        die("Error: Invalid GenreID. The selected genre does not exist in the database.");
+    if (!empty($_FILES['song_audio']['tmp_name'])) {
+        $song_audio = file_get_contents($_FILES['song_audio']['tmp_name']);
+    }
+    if (!empty($_FILES['song_image']['tmp_name'])) {
+        $song_image = file_get_contents($_FILES['song_image']['tmp_name']);
     }
 
-    // Proceed with the update if GenreID is valid
-    $update_sql = "UPDATE quiz SET GenreID='$genre_id', CreatedTime='$created_time' WHERE QuizID='$quiz_id'";
-
-    if ($conn->query($update_sql) === TRUE) {
-        echo "Quiz updated successfully!<br>";
-        header("Location: admin_quiz_management.php?quiz_id=$quiz_id");
-        exit();
+    $stmt = $conn->prepare("UPDATE song SET SongAudio = COALESCE(?, SongAudio), SongImage = COALESCE(?, SongImage) WHERE SongID = ?");
+    $stmt->bind_param("bbs", $song_audio, $song_image, $song_id);
+    
+    if ($stmt->execute()) {
+        echo "Song updated successfully.";
     } else {
-        echo "Error updating quiz: " . $conn->error;
+        echo "Error updating song: " . $stmt->error;
+    }
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $questionID = $_POST['questionID'];
+        $options = [
+            $_POST['option1'],
+            $_POST['option2'],
+            $_POST['option3'],
+            $_POST['option4']
+        ];
+    
+        // Fetch existing options for the given question
+        $sql = "SELECT OptionID FROM `option` WHERE QuestionID = ? LIMIT 4";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $questionID);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        $optionIDs = [];
+        while ($row = $result->fetch_assoc()) {
+            $optionIDs[] = $row['OptionID'];
+        }
+    
+        // Update options if they exist
+        for ($i = 0; $i < count($options); $i++) {
+            if (isset($optionIDs[$i])) {
+                $updateSQL = "UPDATE `option` SET OptionName = ? WHERE OptionID = ?";
+                $updateStmt = $conn->prepare($updateSQL);
+                $updateStmt->bind_param("ss", $options[$i], $optionIDs[$i]);
+                $updateStmt->execute();
+            }
+        }
+        
+        echo "Options updated successfully!";
     }
 }
 ?>
@@ -453,33 +532,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
         <h2>Edit Question</h2>
-        <form id="addQuestionForm">
+        <form id="addQuestionForm" enctype="multipart/form-data">
             <label for="songUpload">Correct Song Upload (8 secs):</label>
             <input type="file" id="songUpload" name="songUpload" accept="audio/mp3">
             <br><br>
             <label for="songPhoto">Correct Song Photo (Photos related to Options only):</label>
             <input type="file" id="songPhoto" name="songPhoto" accept="image/*">
             <br><br>
-            <label>Options:</label>
-                <div class="option-container">
-            <div>
-                <input type="text" name="option1" placeholder="Enter option 1" required>
-                <span class="checkmark" data-value="option1"></span>
-            </div>
-            <div>
-                <input type="text" name="option2" placeholder="Enter option 2" required>
-                <span class="checkmark" data-value="option2"></span>
-            </div>
-            <div>
-                <input type="text" name="option3" placeholder="Enter option 3" required>
-                <span class="checkmark" data-value="option3"></span>
-            </div>
-            <div>
-                <input type="text" name="option4" placeholder="Enter option 4" required>
-                <span class="checkmark" data-value="option4"></span>
-            </div>
             <input type="hidden" id="correctOption" name="correctOption">
-        </div>
+            <label>Options:</label>
+            <div class="option-container">
+                <div>
+                    <input type="text" name="option1" placeholder="Enter option 1" required>
+                    <span class="checkmark" data-value="1"></span>
+                </div>
+                <div>
+                    <input type="text" name="option2" placeholder="Enter option 2" required>
+                    <span class="checkmark" data-value="2"></span>
+                </div>
+                <div>
+                    <input type="text" name="option3" placeholder="Enter option 3" required>
+                    <span class="checkmark" data-value="3"></span>
+                </div>
+                <div>
+                    <input type="text" name="option4" placeholder="Enter option 4" required>
+                    <span class="checkmark" data-value="4"></span>
+                </div>
+            </div>
             
             <!-- Replace the existing buttons section -->
             <button type="submit">Edit Question</button>
@@ -569,7 +648,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <?php endif; ?>
                         </td>
                         <td class="actions">
-                            <button type="button" onclick="openModal()" style="align-items:center;">Edit</button>
+                            <button type="button" onclick="editQuestion('<?php echo htmlspecialchars($question['QuestionID']); ?>')" style="align-items:center;">Edit</button>
                         </td>
                     </tr>
                 <?php endwhile; ?>
@@ -584,7 +663,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Buttons -->
     <div class="button-container">
-        <button type="button" onclick="openModal()">Add Question</button>
         <button type="button" class="cancel" onclick="window.location.href='admin_quiz_management.php';">Cancel</button>
         <button type="submit" class="confirm"><?php echo isset($quiz) ? 'Save Changes' : 'Add Song'; ?></button>
     </div>
@@ -655,153 +733,93 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         // Function to edit a question 
-        function editQuestion(link) {
-            const row = link.closest("tr");
-            row.setAttribute('data-editing', 'true'); // Mark the row being edited
-            const cells = row.getElementsByTagName("td");
+        // Replace the existing editQuestion function
+// Replace the existing editQuestion function
+function editQuestion(questionId) {
+    // Show the modal first
+    document.getElementById("quizModal").style.display = "block";
+    
+    // Add a hidden input for the question ID
+    let questionIdInput = document.createElement('input');
+    questionIdInput.type = 'hidden';
+    questionIdInput.name = 'question_id';
+    questionIdInput.value = questionId;
+    document.getElementById('addQuestionForm').appendChild(questionIdInput);
 
-            const questionId = cells[0].textContent.trim();
-            const optionsText = cells[1].textContent.split(", ").map(option => option.trim());
-            const correctAnswer = cells[2].textContent.trim();
-            const existingSongFileName = cells[3].querySelector("audio source") ? cells[3].querySelector("audio source").src : "";
-            const existingPhotoFileName = cells[4].querySelector("img") ? cells[4].querySelector("img").src : "";
-            openModal();
+    // Find the row containing this question by matching the first cell (QuestionID)
+    const questionRow = Array.from(document.querySelectorAll('tr')).find(row => {
+        const firstCell = row.querySelector('td:first-child');
+        return firstCell && firstCell.textContent.trim() === questionId;
+    });
 
-            // Populate option fields
-            const options = document.querySelectorAll('.option-container input[type="text"]');
-            options.forEach((option, index) => {
-                option.value = optionsText[index] || "";
-            });
+    if (questionRow) {
+        // Get all cells from the row
+        const cells = questionRow.getElementsByTagName("td");
         
-            // Select the correct answer
-            document.querySelectorAll('.checkmark').forEach(check => {
-                check.classList.remove('selected');
-                check.textContent = "";
-                if (check.previousElementSibling.value === correctAnswer) {
-                    check.classList.add('selected');
-                    check.textContent = "\u2714";
-                    document.getElementById('correctOption').value = check.getAttribute('data-value');
-                }
-            });
+        // Get the options and correct answer
+        const optionsText = cells[1].textContent.split(", ").map(option => option.trim());
+        const correctAnswer = cells[2].textContent.trim();
         
-            // Display existing file names
-            document.getElementById("songUpload").value = ""; // Clear file input
-            document.getElementById("songPhoto").value = ""; // Clear file input
+        // Clear any existing previews
+        const existingPreviews = document.querySelectorAll('.preview-element');
+        existingPreviews.forEach(preview => preview.remove());
         
-            const songFileLabel = document.getElementById("existingSongFile");
-            if (!songFileLabel) {
-                const newLabel = document.createElement("p");
-                newLabel.id = "existingSongFile";
-                newLabel.textContent = "Current MP3: " + existingSongFileName;
-                document.getElementById("songUpload").insertAdjacentElement("afterend", newLabel);
-            } else {
-                songFileLabel.textContent = "Current MP3: " + existingSongFileName;
-            }
-        
-            const photoFileLabel = document.getElementById("existingPhotoFile");
-            if (!photoFileLabel) {
-                const newLabel = document.createElement("p");
-                newLabel.id = "existingPhotoFile";
-                newLabel.textContent = "Current Photo: " + existingPhotoFileName;
-                document.getElementById("songPhoto").insertAdjacentElement("afterend", newLabel);
-            } else {
-                photoFileLabel.textContent = "Current Photo: " + existingPhotoFileName;
-            }
-        }
-
+        // Reset checkmarks
         document.querySelectorAll('.checkmark').forEach(check => {
-            check.addEventListener('click', function() {
-                document.querySelectorAll('.checkmark').forEach(c => {
-                    c.classList.remove('selected');
-                    c.textContent = ""; // Reset all
-                });
-                this.classList.add('selected');
-                this.textContent = "\u2714"; // Unicode for check mark
-                document.getElementById('correctOption').value = this.getAttribute('data-value');
-            });
+            check.classList.remove('selected');
+            check.textContent = "";
         });
 
-        document.getElementById("addQuestionForm").onsubmit = function(e) {
-            e.preventDefault();
-                
-            const tableBody = document.querySelector("table tbody");
-            const editingRow = document.querySelector('[data-editing="true"]');
-            const currentRowCount = tableBody.getElementsByTagName("tr").length;
-            const options = document.querySelectorAll('.option-container input[type="text"]');
-            const correctOption = document.getElementById("correctOption").value;
-            const songUpload = document.getElementById("songUpload").files[0];
-            const songPhoto = document.getElementById("songPhoto").files[0];
-                
-            // Only check row limit for new additions, not for edits
-            if (!editingRow && currentRowCount >= 5) {
-                alert("You can only add up to 5 quizzes.");
-                return;
-            }
-        
-            // Check if editing or adding new
-            if (!editingRow) {
-                // Validation for new entries
-                if (!songUpload) {
-                    alert("Please upload an MP3 file.");
-                    return;
-                }
-            
-                if (!songPhoto) {
-                    alert("Please upload a song photo.");
-                    return;
-                }
-            
-                // Audio duration check
-                const audio = new Audio(URL.createObjectURL(songUpload));
-                audio.onloadedmetadata = function() {
-                    if (audio.duration > 9) {
-                        alert("The uploaded MP3 must be 8 seconds or less.");
-                        return;
+        // Populate option fields and set correct answer
+        const optionInputs = document.querySelectorAll('.option-container input[type="text"]');
+        optionInputs.forEach((input, index) => {
+            if (optionsText[index]) {
+                input.value = optionsText[index];
+                // If this option matches the correct answer, select its checkmark
+                if (optionsText[index] === correctAnswer) {
+                    const checkmark = input.nextElementSibling;
+                    checkmark.classList.add('selected');
+                    checkmark.textContent = "✓";
+                    // Create hidden input for correct option if it doesn't exist
+                    let correctOptionInput = document.getElementById('correctOption');
+                    if (!correctOptionInput) {
+                        correctOptionInput = document.createElement('input');
+                        correctOptionInput.type = 'hidden';
+                        correctOptionInput.id = 'correctOption';
+                        correctOptionInput.name = 'correctOption';
+                        document.getElementById('addQuestionForm').appendChild(correctOptionInput);
                     }
-                    proceedWithSubmission();
-                };
-            } else {
-                // If editing, proceed directly
-                proceedWithSubmission();
-            }
-        
-            function proceedWithSubmission() {
-                if (!correctOption) {
-                    alert("Please select the correct answer.");
-                    return;
+                    correctOptionInput.value = index + 1; // Set the correct option value
                 }
-            
-                const optionTexts = [];
-                options.forEach(option => optionTexts.push(option.value));
-                
-                const correctAnswerText = document.querySelector('.checkmark.selected').previousElementSibling.value;
-                
-                if (editingRow) {
-                    // Update existing row
-                    editingRow.cells[1].textContent = optionTexts.join(", ");
-                    editingRow.cells[2].textContent = correctAnswerText;
-                    if (songUpload) editingRow.cells[3].textContent = songUpload.name;
-                    if (songPhoto) editingRow.cells[4].textContent = songPhoto.name;
-                    editingRow.removeAttribute('data-editing');
-                } else {
-                    // Create new row
-                    const newRow = document.createElement("tr");
-                    newRow.innerHTML = `
-                        <td>${currentRowCount + 1}</td>
-                        <td>${optionTexts.join(", ")}</td>
-                        <td>${correctAnswerText}</td>
-                        <td>${songUpload.name}</td>
-                        <td>${songPhoto.name}</td>
-                        <td class="actions">
-                            <a href="#" onclick="editQuestion(this)">Edit</a>
-                        </td>
-                    `;
-                    tableBody.appendChild(newRow);
-                }
-                
-                closeModal();
             }
-        };
+        });
+
+        // Show existing audio preview if available
+        const audioElement = cells[3].querySelector('audio source');
+        if (audioElement) {
+            const audioPreview = document.createElement('audio');
+            audioPreview.controls = true;
+            audioPreview.className = 'preview-element';
+            audioPreview.innerHTML = audioElement.outerHTML;
+            document.getElementById('songUpload').insertAdjacentElement('afterend', audioPreview);
+        }
+
+        // Show existing image preview if available
+        const imageElement = cells[4].querySelector('img');
+        if (imageElement) {
+            const imagePreview = document.createElement('img');
+            imagePreview.src = imageElement.src;
+            imagePreview.alt = 'Current Image';
+            imagePreview.style.maxWidth = '200px';
+            imagePreview.className = 'preview-element';
+            document.getElementById('songPhoto').insertAdjacentElement('afterend', imagePreview);
+        }
+    } else {
+        console.error('Question row not found');
+        alert('Error: Could not find the selected question');
+        closeModal();
+    }
+}
     </script>
 
 <?php 
