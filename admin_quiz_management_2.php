@@ -733,93 +733,114 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
         }
 
         // Function to edit a question 
-        // Replace the existing editQuestion function
-// Replace the existing editQuestion function
-function editQuestion(questionId) {
-    // Show the modal first
-    document.getElementById("quizModal").style.display = "block";
-    
-    // Add a hidden input for the question ID
-    let questionIdInput = document.createElement('input');
-    questionIdInput.type = 'hidden';
-    questionIdInput.name = 'question_id';
-    questionIdInput.value = questionId;
-    document.getElementById('addQuestionForm').appendChild(questionIdInput);
+        function editQuestion(questionId) {
+            // Show the modal first
+            document.getElementById("quizModal").style.display = "block";
 
-    // Find the row containing this question by matching the first cell (QuestionID)
-    const questionRow = Array.from(document.querySelectorAll('tr')).find(row => {
-        const firstCell = row.querySelector('td:first-child');
-        return firstCell && firstCell.textContent.trim() === questionId;
-    });
+            // Add a hidden input for the question ID
+            let questionIdInput = document.createElement('input');
+            questionIdInput.type = 'hidden';
+            questionIdInput.name = 'question_id';
+            questionIdInput.value = questionId;
+            document.getElementById('addQuestionForm').appendChild(questionIdInput);
+        
+            // Find the row containing this question by matching the first cell (QuestionID)
+            const questionRow = Array.from(document.querySelectorAll('tr')).find(row => {
+                const firstCell = row.querySelector('td:first-child');
+                return firstCell && firstCell.textContent.trim() === questionId;
+            });
+        
+            if (questionRow) {
+                // Get all cells from the row
+                const cells = questionRow.getElementsByTagName("td");
 
-    if (questionRow) {
-        // Get all cells from the row
-        const cells = questionRow.getElementsByTagName("td");
-        
-        // Get the options and correct answer
-        const optionsText = cells[1].textContent.split(", ").map(option => option.trim());
-        const correctAnswer = cells[2].textContent.trim();
-        
-        // Clear any existing previews
-        const existingPreviews = document.querySelectorAll('.preview-element');
-        existingPreviews.forEach(preview => preview.remove());
-        
-        // Reset checkmarks
-        document.querySelectorAll('.checkmark').forEach(check => {
-            check.classList.remove('selected');
-            check.textContent = "";
-        });
+                // Get the options and correct answer
+                const optionsText = cells[1].textContent.split(", ").map(option => option.trim());
+                const correctAnswer = cells[2].textContent.trim();
 
-        // Populate option fields and set correct answer
-        const optionInputs = document.querySelectorAll('.option-container input[type="text"]');
-        optionInputs.forEach((input, index) => {
-            if (optionsText[index]) {
-                input.value = optionsText[index];
-                // If this option matches the correct answer, select its checkmark
-                if (optionsText[index] === correctAnswer) {
-                    const checkmark = input.nextElementSibling;
-                    checkmark.classList.add('selected');
-                    checkmark.textContent = "✓";
-                    // Create hidden input for correct option if it doesn't exist
-                    let correctOptionInput = document.getElementById('correctOption');
-                    if (!correctOptionInput) {
-                        correctOptionInput = document.createElement('input');
-                        correctOptionInput.type = 'hidden';
-                        correctOptionInput.id = 'correctOption';
-                        correctOptionInput.name = 'correctOption';
-                        document.getElementById('addQuestionForm').appendChild(correctOptionInput);
+                // Clear any existing previews
+                const existingPreviews = document.querySelectorAll('.preview-element');
+                existingPreviews.forEach(preview => preview.remove());
+
+                // Reset checkmarks
+                document.querySelectorAll('.checkmark').forEach(check => {
+                    check.classList.remove('selected');
+                    check.textContent = "";
+                });
+            
+                // Populate option fields and set correct answer
+                const optionInputs = document.querySelectorAll('.option-container input[type="text"]');
+                optionInputs.forEach((input, index) => {
+                    if (optionsText[index]) {
+                        input.value = optionsText[index];
+                        // If this option matches the correct answer, select its checkmark
+                        if (optionsText[index] === correctAnswer) {
+                            const checkmark = input.nextElementSibling;
+                            checkmark.classList.add('selected');
+                            checkmark.textContent = "✓";
+                            // Create hidden input for correct option if it doesn't exist
+                            let correctOptionInput = document.getElementById('correctOption');
+                            if (!correctOptionInput) {
+                                correctOptionInput = document.createElement('input');
+                                correctOptionInput.type = 'hidden';
+                                correctOptionInput.id = 'correctOption';
+                                correctOptionInput.name = 'correctOption';
+                                document.getElementById('addQuestionForm').appendChild(correctOptionInput);
+                            }
+                            correctOptionInput.value = index + 1; // Set the correct option value
+                        }
                     }
-                    correctOptionInput.value = index + 1; // Set the correct option value
+                });
+            
+                // Show existing audio preview if available
+                const audioElement = cells[3].querySelector('audio source');
+                if (audioElement) {
+                    const audioPreview = document.createElement('audio');
+                    audioPreview.controls = true;
+                    audioPreview.className = 'preview-element';
+                    audioPreview.innerHTML = audioElement.outerHTML;
+                    document.getElementById('songUpload').insertAdjacentElement('afterend', audioPreview);
                 }
+            
+                // Show existing image preview if available
+                const imageElement = cells[4].querySelector('img');
+                if (imageElement) {
+                    const imagePreview = document.createElement('img');
+                    imagePreview.src = imageElement.src;
+                    imagePreview.alt = 'Current Image';
+                    imagePreview.style.maxWidth = '200px';
+                    imagePreview.className = 'preview-element';
+                    document.getElementById('songPhoto').insertAdjacentElement('afterend', imagePreview);
+                }
+            } else {
+                console.error('Question row not found');
+                alert('Error: Could not find the selected question');
+                closeModal();
             }
+        }
+
+            document.querySelectorAll('.checkmark').forEach(check => {
+            check.addEventListener('click', function() {
+                // Remove selection from all checkmarks
+                document.querySelectorAll('.checkmark').forEach(c => {
+                    c.classList.remove('selected');
+                    c.textContent = '';
+                });
+                
+                // Select clicked checkmark
+                this.classList.add('selected');
+                this.textContent = '✓';
+                
+                // Update hidden input with correct answer value
+                document.getElementById('correctOption').value = this.dataset.value;
+                
+                // Get the option text associated with this checkmark
+                const optionText = this.previousElementSibling.value;
+                
+                // Store the selected option text as the correct answer
+                document.getElementById('correctOption').setAttribute('data-text', optionText);
+            });
         });
-
-        // Show existing audio preview if available
-        const audioElement = cells[3].querySelector('audio source');
-        if (audioElement) {
-            const audioPreview = document.createElement('audio');
-            audioPreview.controls = true;
-            audioPreview.className = 'preview-element';
-            audioPreview.innerHTML = audioElement.outerHTML;
-            document.getElementById('songUpload').insertAdjacentElement('afterend', audioPreview);
-        }
-
-        // Show existing image preview if available
-        const imageElement = cells[4].querySelector('img');
-        if (imageElement) {
-            const imagePreview = document.createElement('img');
-            imagePreview.src = imageElement.src;
-            imagePreview.alt = 'Current Image';
-            imagePreview.style.maxWidth = '200px';
-            imagePreview.className = 'preview-element';
-            document.getElementById('songPhoto').insertAdjacentElement('afterend', imagePreview);
-        }
-    } else {
-        console.error('Question row not found');
-        alert('Error: Could not find the selected question');
-        closeModal();
-    }
-}
     </script>
 
 <?php 
