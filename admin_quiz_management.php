@@ -284,7 +284,7 @@ console.log("Button not found.");
             <td><?php echo htmlspecialchars($row['genre_id']); ?></td>
             <td><?php echo htmlspecialchars($row['created_time']); ?></td>
             <td class="actions">
-                <a id="edit-link" href="admin_quiz_management_2.php?quiz_id=<?php echo urlencode($row['quiz_id']); ?>">Details</a> |
+                <a id="edit-link" href="admin_quiz_management_2.php?quiz_id=<?php echo urlencode($row['quiz_id']); ?>">Edit</a> |
                 <a id="delete-link" href="admin_quiz_management.php?action=delete&id=<?php echo urlencode($row['quiz_id']); ?>" onclick="return confirm('Are you sure you want to delete this quiz?');">Delete</a>
             </td>
         </tr>
