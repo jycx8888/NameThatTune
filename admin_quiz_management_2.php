@@ -648,6 +648,30 @@ if (isset($quiz_id)) {
     </main>
     
     <script>
+
+        function validateAudioDuration(file) {
+            return new Promise((resolve, reject) => {
+                const audio = new Audio();
+                const objectUrl = URL.createObjectURL(file);
+                
+                audio.addEventListener('loadedmetadata', () => {
+                    URL.revokeObjectURL(objectUrl);
+                    if (audio.duration > 9) {
+                        reject('Audio file must not be longer than 9 seconds');
+                    } else {
+                        resolve();
+                    }
+                });
+            
+                audio.addEventListener('error', () => {
+                    URL.revokeObjectURL(objectUrl);
+                    reject('Error loading audio file');
+                });
+            
+                audio.src = objectUrl;
+            });
+        }
+
         function openModal() {
             document.getElementById("quizModal").style.display = "block";
 
@@ -758,7 +782,23 @@ if (isset($quiz_id)) {
                     closeModal();
                 }
             });
+
+            document.querySelector('input[name="songUpload"]').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (!file.type.includes('audio/mpeg')) {
+                    alert('Please upload an MP3 file');
+                    this.value = ''; // Clear the file input
+                    return;
+                }
+
+                validateAudioDuration(file).catch(error => {
+                    alert(error);
+                    this.value = ''; // Clear the file input
+                });
+            }
         });
+    });
 
         // Function to update quiz numbers after deleting a row
         function editQuestion(questionId) {
@@ -958,33 +998,48 @@ if (isset($quiz_id)) {
             });
         });
         
-        document.getElementById('addQuestionForm').addEventListener('submit', function(e) {
+        document.getElementById('addQuestionForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    if (!document.querySelector('.checkmark.selected')) {
-        alert('Please select a correct answer');
-        return;
-    }
+    try {
+        // Check if correct answer is selected
+        if (!document.querySelector('.checkmark.selected')) {
+            alert('Please select a correct answer');
+            return;
+        }
 
-    const formData = new FormData(this);
-    const questionId = document.getElementById('question_id').value;
+        // Validate audio file if one is selected
+        const audioFile = this.querySelector('input[name="songUpload"]').files[0];
+        if (audioFile) {
+            // Check file type
+            if (!audioFile.type.includes('audio/mpeg')) {
+                throw new Error('Please upload an MP3 file');
+            }
 
-    // Add all options to formData with their current values
-    const optionInputs = document.querySelectorAll('.option-container input[type="text"]');
-    optionInputs.forEach((input, index) => {
-        formData.append(`option${index + 1}`, input.value.trim());
-    });
+            // Check file duration
+            await validateAudioDuration(audioFile);
+        }
 
-    // Add the correct answer
-    formData.append('correctOption', document.getElementById('correctOption').value.trim());
-    formData.append('question_id', questionId);
+        const formData = new FormData(this);
+        const questionId = document.getElementById('question_id').value;
 
-    fetch('admin_quiz_management_2.php?action=updateQuestion', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
+        // Add all options to formData with their current values
+        const optionInputs = document.querySelectorAll('.option-container input[type="text"]');
+        optionInputs.forEach((input, index) => {
+            formData.append(`option${index + 1}`, input.value.trim());
+        });
+
+        // Add the correct answer
+        formData.append('correctOption', document.getElementById('correctOption').value.trim());
+        formData.append('question_id', questionId);
+
+        const response = await fetch('admin_quiz_management_2.php?action=updateQuestion', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        
         if (data.success) {
             // Update the table row immediately
             const questionRow = document.querySelector(`tr[data-question-id="${questionId}"]`);
@@ -1001,11 +1056,10 @@ if (isset($quiz_id)) {
         } else {
             throw new Error(data.error || 'Update failed');
         }
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error:', error);
-        alert('Error updating question: ' + error.message);
-    });
+        alert(error.message || 'Error updating question');
+    }
 });
     </script>
 
