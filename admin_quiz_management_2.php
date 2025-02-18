@@ -33,6 +33,13 @@ if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
             throw new Exception("Failed to update correct answer: " . $stmt->error);
         }
         
+        // Update SongName in song table based on the correct answer
+        $stmt = $conn->prepare("UPDATE song SET SongName = ? WHERE QuestionID = ?");
+        $stmt->bind_param("ss", $correctAnswer, $questionId);
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to update song name: " . $stmt->error);
+        }
+        
         // Fetch existing options for the question
         $stmt = $conn->prepare("SELECT OptionID FROM `option` WHERE QuestionID = ?");
         $stmt->bind_param("s", $questionId);
