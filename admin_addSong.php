@@ -59,7 +59,7 @@ $conn->close();
 </head>
 <body>
 <h1>Add a New Song</h1>
-    <form action="add_song.php" method="post" enctype="multipart/form-data">
+    <form action="admin_addSong.php" method="post" enctype="multipart/form-data">
         <label for="songName">Song Name:</label>
         <input type="text" id="songName" name="songName" required><br><br>
         <label for="audioFile">Upload Audio:</label>
