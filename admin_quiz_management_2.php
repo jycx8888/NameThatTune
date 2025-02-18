@@ -17,13 +17,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Genre mapping
-$genreMapping = [
-    'G001' => 'English',
-    'G002' => 'Japanese',
-    'G003' => 'Korean'
-];
-
 if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
     header('Content-Type: application/json');
     
@@ -40,23 +33,48 @@ if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
             throw new Exception("Failed to update correct answer: " . $stmt->error);
         }
         
-        // Fetch existing options for the question
-        $stmt = $conn->prepare("SELECT OptionID FROM `option` WHERE QuestionID = ?");
-        $stmt->bind_param("s", $questionId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $options = [];
-        while ($row = $result->fetch_assoc()) {
-            $options[] = $row['OptionID'];
-        }
-        
         // Update options
-        foreach ($options as $index => $optionID) {
-            $optionName = $_POST["option" . ($index + 1)];
+        for ($i = 1; $i <= 4; $i++) {
+            $optionName = $_POST["option$i"];
+            $optionID = 'O' . str_pad($i, 3, '0', STR_PAD_LEFT);
             $stmt = $conn->prepare("UPDATE `option` SET OptionName = ? WHERE QuestionID = ? AND OptionID = ?");
             $stmt->bind_param("sss", $optionName, $questionId, $optionID);
             if (!$stmt->execute()) {
-                throw new Exception("Failed to update option " . ($index + 1) . ": " . $stmt->error);
+                throw new Exception("Failed to update option $i: " . $stmt->error);
+            }
+        }
+        
+        // Handle song audio upload
+        if (isset($_FILES['songUpload']) && $_FILES['songUpload']['error'] === UPLOAD_ERR_OK) {
+            $songAudioPath = 'Question Songs/' . basename($_FILES['songUpload']['name']);
+            if (!file_exists('Question Songs/')) {
+                mkdir('Question Songs/', 0777, true);
+            }
+            if (move_uploaded_file($_FILES['songUpload']['tmp_name'], $songAudioPath)) {
+                $stmt = $conn->prepare("UPDATE song SET SongAudio = ? WHERE QuestionID = ?");
+                $stmt->bind_param("ss", $songAudioPath, $questionId);
+                if (!$stmt->execute()) {
+                    throw new Exception("Failed to update song audio in database");
+                }
+            } else {
+                throw new Exception("Failed to move uploaded audio file");
+            }
+        }
+        
+        // Handle song image upload
+        if (isset($_FILES['songPhoto']) && $_FILES['songPhoto']['error'] === UPLOAD_ERR_OK) {
+            $songImagePath = 'Question Images/' . basename($_FILES['songPhoto']['name']);
+            if (!file_exists('Question Images/')) {
+                mkdir('Question Images/', 0777, true);
+            }
+            if (move_uploaded_file($_FILES['songPhoto']['tmp_name'], $songImagePath)) {
+                $stmt = $conn->prepare("UPDATE song SET SongImage = ? WHERE QuestionID = ?");
+                $stmt->bind_param("ss", $songImagePath, $questionId);
+                if (!$stmt->execute()) {
+                    throw new Exception("Failed to update song image in database");
+                }
+            } else {
+                throw new Exception("Failed to move uploaded image file");
             }
         }
         
@@ -101,7 +119,7 @@ if ($result->num_rows === 0) {
     die("Error: quiz_id does not exist in the database.");
 }
 
-$stmt = $conn->prepare("SELECT QuizID, QuizName, GenreID, CreatedTime FROM quiz WHERE QuizID = ?");
+$stmt = $conn->prepare("SELECT QuizID, GenreID, CreatedTime FROM quiz WHERE QuizID = ?");
 $stmt->bind_param("s", $quiz_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -481,48 +499,76 @@ if (isset($quiz_id)) {
     <!-- Main Content Section -->
     <main>
             <h2 class="edit-quiz-header"><?php echo isset($quiz) ? 'Edit Quiz' : 'Add Song'; ?></h2>
-
-            <h3>Quiz ID: <?= isset($quiz['QuizID']) && !empty($quiz['QuizID']) ? htmlspecialchars($quiz['QuizID']) : 'No Quiz Found'; ?></h3>
-            <h3>Quiz Name: <?= isset($quiz['QuizName']) && !empty($quiz['QuizName']) ? htmlspecialchars($quiz['QuizName']) : 'No Quiz Name Found'; ?></h3>
-            <h3>Genre: <?= isset($quiz['GenreID']) && !empty($quiz['GenreID']) ? htmlspecialchars($genreMapping[$quiz['GenreID']]) : 'No Genre Found'; ?></h3>
-            <h3>Created Time: <?= isset($quiz['CreatedTime']) && !empty($quiz['CreatedTime']) ? htmlspecialchars($quiz['CreatedTime']) : 'No Created Time Found'; ?></h3>
         
             <!-- Modal -->
             <div id="quizModal" class="modal">
-                <div class="modal-content">
-                    <span class="close" onclick="closeModal()">&times;</span>
-                    <h2>Edit Question</h2>
-                    <form id="addQuestionForm" enctype="multipart/form-data">
-                        <input type="hidden" id="question_id" name="question_id">
-                        <input type="hidden" id="correctOption" name="correctOption">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Edit Question</h2>
+        <form id="addQuestionForm" enctype="multipart/form-data">
+            <input type="hidden" id="question_id" name="question_id">
+            <input type="hidden" id="correctOption" name="correctOption">
             
-                        <div class="form-group">
-                            <label>Options:</label>
-                            <div class="option-container">
-                                <div>
-                                    <input type="text" name="option1" required>
-                                    <span class="checkmark" data-value="1"></span>
-                                </div>
-                                <div>
-                                    <input type="text" name="option2" required>
-                                    <span class="checkmark" data-value="2"></span>
-                                </div>
-                                <div>
-                                    <input type="text" name="option3" required>
-                                    <span class="checkmark" data-value="3"></span>
-                                </div>
-                                <div>
-                                    <input type="text" name="option4" required>
-                                    <span class="checkmark" data-value="4"></span>
-                                </div>
-                            </div>
-                        </div>
-            
-                        <button type="submit" class="submit-button">Update Question</button>
-                    </form>
+            <div class="form-group">
+                <label>Song Audio:</label>
+                <input type="file" name="songUpload" accept="audio/*">
+                <div id="audioPreview"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Song Image:</label>
+                <input type="file" name="songPhoto" accept="image/*">
+                <div id="imagePreview"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Options:</label>
+                <div class="option-container">
+                    <div>
+                        <input type="text" name="option1" required>
+                        <span class="checkmark" data-value="1"></span>
+                    </div>
+                    <div>
+                        <input type="text" name="option2" required>
+                        <span class="checkmark" data-value="2"></span>
+                    </div>
+                    <div>
+                        <input type="text" name="option3" required>
+                        <span class="checkmark" data-value="3"></span>
+                    </div>
+                    <div>
+                        <input type="text" name="option4" required>
+                        <span class="checkmark" data-value="4"></span>
+                    </div>
                 </div>
             </div>
 
+            <button type="submit" class="submit-button">Update Question</button>
+        </form>
+    </div>
+</div>
+        
+             <!-- Display Quiz ID -->
+             <p>Quiz ID: <?= isset($quiz['QuizID']) && !empty($quiz['QuizID']) ? htmlspecialchars($quiz['QuizID']) : 'No Quiz Found'; ?></p>
+            
+            <?php if (isset($quiz)): ?>
+                <input type="hidden" name="quiz_id" value="<?php echo $quiz['QuizID']; ?>">
+            <?php endif; ?>
+        
+            <div class="form-group">
+                <label for="genre-id">Genre</label>
+                <select id="genre-id" name="genre_id">
+                    <option value="1" <?php if (isset($quiz) && $quiz['GenreID'] == 'G001') echo 'selected'; ?>>English</option>
+                    <option value="2" <?php if (isset($quiz) && $quiz['GenreID'] == 'G002') echo 'selected'; ?>>Japanese</option>
+                    <option value="3" <?php if (isset($quiz) && $quiz['GenreID'] == 'G003') echo 'selected'; ?>>Korean</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="created-time">Created Time</label>
+                <input type="datetime-local" id="created-time" name="created_time" 
+                    value="<?php echo isset($quiz) ? date('Y-m-d\TH:i:s', strtotime($quiz['CreatedTime'])) : ''; ?>">
+            </div>
         
             <?php if (isset($quiz)): ?>
                 <h3>Questions</h3>
@@ -663,9 +709,28 @@ if (isset($quiz_id)) {
         check.textContent = "";
     });
     
+    // Reset file inputs
+    document.querySelector('input[name="songUpload"]').value = '';
+    document.querySelector('input[name="songPhoto"]').value = '';
+    
+    // Clear preview areas
+    document.getElementById('audioPreview').innerHTML = '';
+    document.getElementById('imagePreview').innerHTML = '';
+    
     // Clear hidden inputs
     document.getElementById('correctOption').value = "";
     document.getElementById('question_id').value = "";
+    
+    // Remove existing file labels
+    const existingSongLabel = document.getElementById("existingSongFile");
+    if (existingSongLabel) {
+        existingSongLabel.remove();
+    }
+    
+    const existingPhotoLabel = document.getElementById("existingPhotoFile");
+    if (existingPhotoLabel) {
+        existingPhotoLabel.remove();
+    }
     
     // Hide the modal
     modal.style.display = "none";
@@ -713,48 +778,187 @@ if (isset($quiz_id)) {
         const options = optionsString ? optionsString.split(',').map(opt => opt.trim()) : [];
         const correctAnswer = cells[2].getAttribute('data-correct');
 
-        // Set options and mark correct answer
-        options.forEach((option, index) => {
-            const input = document.querySelector(`input[name="option${index + 1}"]`);
-            if (input) {
-                // Set initial value
-                input.value = option;
-                
-                const checkmark = input.parentElement.querySelector('.checkmark');
-                if (checkmark) {
-                    // Reset checkmark first
-                    checkmark.classList.remove('selected');
-                    checkmark.textContent = '';
-                    
-                    // If this is the correct answer, mark it
-                    if (option === correctAnswer) {
-                        checkmark.classList.add('selected');
-                        checkmark.textContent = '✓';
-                        document.getElementById('correctOption').value = option;
-                    }
-        
-                    // Add click event listener for checkmark
-                    checkmark.onclick = function() {
-                        // Remove selection from all checkmarks
-                        document.querySelectorAll('.checkmark').forEach(c => {
-                            c.classList.remove('selected');
-                            c.textContent = '';
-                        });
-        
-                        // Select this checkmark
-                        this.classList.add('selected');
-                        this.textContent = '✓';
-        
-                        // Update the correct answer value
-                        document.getElementById('correctOption').value = input.value;
-                    };
-                }
-            }
-        });
+        // Get current audio and image elements
+        const audioElement = cells[3].querySelector('audio');
+        const imageElement = cells[4].querySelector('img');
+
+        // Show current audio preview
+        const audioPreview = document.getElementById('audioPreview');
+    if (audioElement) {
+        const audioSource = audioElement.querySelector('source');
+        if (audioSource) {
+            const audioPath = audioSource.getAttribute('src');
+            audioPreview.innerHTML = `
+                <div class="preview-container">
+                    <p>Current Audio: ${audioPath}</p>
+                    <audio controls>
+                        <source src="${audioPath}" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            `;
+            // Ensure the new audio element is loaded and ready to play
+            const newAudio = audioPreview.querySelector('audio');
+            newAudio.load();
+        } else {
+            audioPreview.innerHTML = '<p>No current audio</p>';
+        }
+    } else {
+        audioPreview.innerHTML = '<p>No current audio</p>';
+    }
+
+        // Show current image preview
+        const imagePreview = document.getElementById('imagePreview');
+        if (imageElement) {
+            const imagePath = imageElement.getAttribute('src');
+            imagePreview.innerHTML = `
+                <div class="preview-container">
+                    <p>Current Image: ${imagePath}</p>
+                    <img src="${imagePath}" alt="Current Image" style="max-width: 200px;">
+                </div>
+            `;
+        } else {
+            imagePreview.innerHTML = '<p>No current image</p>';
         }
 
+                // Set options and mark correct answer
+                options.forEach((option, index) => {
+    const input = document.querySelector(`input[name="option${index + 1}"]`);
+    if (input) {
+        // Set initial value
+        input.value = option;
         
-    document.getElementById('addQuestionForm').addEventListener('submit', function(e) {
+        const checkmark = input.parentElement.querySelector('.checkmark');
+        if (checkmark) {
+            // Reset checkmark first
+            checkmark.classList.remove('selected');
+            checkmark.textContent = '';
+            
+            // If this is the correct answer, mark it
+            if (option === correctAnswer) {
+                checkmark.classList.add('selected');
+                checkmark.textContent = '✓';
+                document.getElementById('correctOption').value = option;
+            }
+
+            // Add input event listener to update correct answer if this option is selected
+            input.addEventListener('input', function() {
+                if (checkmark.classList.contains('selected')) {
+                    document.getElementById('correctOption').value = this.value;
+                }
+            });
+
+            // Add click event listener for checkmark
+            checkmark.onclick = function() {
+                // Remove selection from all checkmarks
+                document.querySelectorAll('.checkmark').forEach(c => {
+                    c.classList.remove('selected');
+                    c.textContent = '';
+                });
+
+                // Select this checkmark
+                this.classList.add('selected');
+                this.textContent = '✓';
+
+                // Update the correct answer value
+                document.getElementById('correctOption').value = input.value;
+            };
+        }
+    }
+});
+
+    // Add input event listeners to option inputs
+    options.forEach((option, index) => {
+        const input = document.querySelector(`input[name="option${index + 1}"]`);
+        if (input) {
+            input.value = option;
+            const checkmark = input.parentElement.querySelector('.checkmark');
+            if (checkmark) {
+                // Reset the checkmark first
+                checkmark.classList.remove('selected');
+                checkmark.textContent = '';
+                
+                // If this option is the correct answer, mark it
+                if (option === correctAnswer) {
+                    checkmark.classList.add('selected');
+                    checkmark.textContent = '✓';
+                    document.getElementById('correctOption').value = option;
+                }
+
+                // Add click event listener for the checkmark
+                checkmark.onclick = function() {
+                    // Remove selection from all checkmarks
+                    document.querySelectorAll('.checkmark').forEach(c => {
+                        c.classList.remove('selected');
+                        c.textContent = '';
+                    });
+
+                    // Select this checkmark
+                    this.classList.add('selected');
+                    this.textContent = '✓';
+
+                    // Update the correct answer value
+                    document.getElementById('correctOption').value = input.value;
+                };
+            }
+        }
+    });
+
+    // Show current audio/image previews
+    const audioCell = cells[3];
+    const imageCell = cells[4];
+
+            // Display current audio
+            const currentAudio = audioCell.querySelector('audio');
+            if (currentAudio) {
+                const audioSource = currentAudio.querySelector('source');
+                if (audioSource) {
+                    const audioPath = audioSource.getAttribute('src');
+                    const audioPreview = document.getElementById('audioPreview');
+                    audioPreview.innerHTML = `
+                        <div class="preview-container">
+                            <p>Current Audio:</p>
+                            <audio controls>
+                                <source src="${audioPath}" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
+                    `;
+                }
+            }
+        
+            if (currentImage) {
+                const imagePreview = document.getElementById('imagePreview');
+                imagePreview.innerHTML = `
+                    <div class="preview-container">
+                        <p>Current Image:</p>
+                        <img src="fetch_media.php?type=image&id=${questionId}" 
+                             alt="Current Image" style="max-width: 200px;">
+                    </div>
+                `;
+                }
+            }
+
+            document.querySelectorAll('.checkmark').forEach(check => {
+            check.addEventListener('click', function() {
+                // Remove selection from all checkmarks
+                document.querySelectorAll('.checkmark').forEach(c => {
+                    c.classList.remove('selected');
+                    c.textContent = '';
+                });
+
+                // Select clicked checkmark
+                this.classList.add('selected');
+                this.textContent = '✓';
+
+                // Get the associated input's value
+                const optionInput = this.parentElement.querySelector('input[type="text"]');
+                // Update hidden input with the actual option text
+                document.getElementById('correctOption').value = optionInput.value;
+            });
+        });
+        
+        document.getElementById('addQuestionForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
     if (!document.querySelector('.checkmark.selected')) {
