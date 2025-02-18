@@ -322,19 +322,11 @@ if ($result->num_rows > 0) {
 
 
 
-    // Add 5 questions to question table
-    // Create new QuestionID
-    // Link questions to quiz ID
-    // Set song name as correct answer
 
-    // Add 20 options to option table
-    // Create new OptionID
-    // Seperate options by commas
-    // Link options to question ID
 
-    // Update song table to include question ID
-    // Get question ID from question table
-    // Link question ID to song ID
+
+
+
 
     function addQuiz() {
         if (!validateQuizForm()) {
@@ -347,13 +339,19 @@ if ($result->num_rows > 0) {
         // Get created time
         // Set quiz name
 
+        quizName = document.getElementById('quizName').value;
+        genreID = document.getElementById('options').value;
         
         <?php
+            // Add quiz to quiz table
+            $stmt = $conn->prepare("INSERT INTO quiz (QuizID, GenreID, CreatedTime, QuizName) VALUES (?, ?, NOW(), ?)");
+            $stmt->bind_param("sss", $newQuizID, $genreID, $quizName);
+
             // Create new QuizID
             $sql = "SELECT QuizID FROM quiz ORDER BY QuizID DESC LIMIT 1";
             $result = mysqli_query($conn, $sql);
             $lastQuizID = mysqli_fetch_assoc($result)['QuizID'];
-            $newQuizNo = (int)substr($lastQuizID, 1) + 1;
+            $newQuizNo = ((int)substr($lastQuizID, 1)) + 1;
 
             if ($newQuizNo < 10) {
                 $newQuizID = 'Q00' . $newQuizNo;
@@ -361,17 +359,96 @@ if ($result->num_rows > 0) {
                 $newQuizID = 'Q0' . $newQuizNo;
             } else if ($newQuizNo < 1000) {
                 $newQuizID = 'Q' . $newQuizNo;
-            }            
-
-            $stmt = $conn->prepare("INSERT INTO quiz (QuizID, GenreID, CreatedTime, QuizName) VALUES (?, ?, NOW(), ?)");
-            $stmt->bind_param("sss", $newQuizID, $genreID, $quizName);
-            
+            }     
 
             $quizName = $_POST['quizName'];
             $genreID = $_POST['options'];
             $stmt->execute();
-
         ?>
+
+
+        // Create new QuestionID
+        // Set song name as correct answer
+            
+        // Add 5 questions to question table
+            
+        table = document.getElementById('questions-table');
+        rows = table.getElementsByTagName('tr');
+        songNameList = [];
+        optionsList = [];
+        questionList = [];
+
+        // Get each question from the table
+        for (let i = 1; i < rows.length; i++) {
+            row = rows[i];
+
+            questionList.push(row);
+
+        }
+            
+        // Loop through each question
+        for (question in questionList) {
+            songId = question.cells[1].textContent;
+            songName = question.cells[2].textContent;
+            options = question.cells[3].textContent.split(', ');
+            correctAnswer = songName;
+
+            // Add question to question table
+            <?php
+            $stmt = $conn->prepare("INSERT INTO question (QuestionID, CorrectRate, QuizID, CorrectAnswer, TotalAttempts) VALUES (?, 0, ?, ?, 0)");
+            $stmt->bind_param("sss", $newQuestionID, $newQuizID, $correctAnswer);
+
+            // Create new QuestionID
+            $sql = "SELECT QuestionID FROM question ORDER BY QuestionID DESC LIMIT 1";
+            $result = mysqli_query($conn, $sql);
+            $lastQuestionID = mysqli_fetch_assoc($result)['QuestionID'];
+            $newQuestionNo = ((int)substr($lastQuestionID, 1)) + 1;
+
+            if ($newQuestionNo < 10) {
+                $newQuestionID = 'T00' . $newQuestionNo;
+            } else if ($newQuestionNo < 100) {
+                $newQuestionID = 'T0' . $newQuestionNo;
+            } else if ($newQuestionNo < 1000) {
+                $newQuestionID = 'T' . $newQuestionNo;
+            }
+
+            $stmt->execute();
+            ?>
+
+
+            // Add options to option table
+            for (option in options) {
+                <?php
+                $stmt = $conn->prepare("INSERT INTO option (OptionID, OptionName, QuestionID) VALUES (?, ?, ?)");
+                $stmt->bind_param("sss", $newOptionID, $option, $newQuestionID);
+
+                // Create new OptionID
+                $sql = "SELECT OptionID FROM option ORDER BY OptionID DESC LIMIT 1";
+                $result = mysqli_query($conn, $sql);
+                $lastOptionID = mysqli_fetch_assoc($result)['OptionID'];
+                $newOptionNo = (int)substr($lastOptionID, 1) + 1;
+
+                if ($newOptionNo < 10) {
+                    $newOptionID = 'O00' . $newOptionNo;
+                } else if ($newOptionNo < 100) {
+                    $newOptionID = 'O0' . $newOptionNo;
+                } else if ($newOptionNo < 1000) {
+                    $newOptionID = 'O' . $newOptionNo;
+                }
+                ?>
+            }
+
+            
+            // Update song table to include question ID
+            <?php
+                $stmt = $conn->prepare("UPDATE song SET QuestionID = ? WHERE SongID = ?");
+                $stmt->bind_param("ss", $newQuestionID, $songID);
+                $stmt->execute();
+            ?>
+        
+        }
+
+
     }
 </script>
 </html>
