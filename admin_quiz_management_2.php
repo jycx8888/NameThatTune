@@ -45,9 +45,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
         
         // Handle song audio upload
         if (!empty($_FILES['songUpload']['tmp_name'])) {
-            $songAudio = file_get_contents($_FILES['songUpload']['tmp_name']);
+            $songAudioPath = 'Question Songs/' . basename($_FILES['songUpload']['name']);
+            move_uploaded_file($_FILES['songUpload']['tmp_name'], $songAudioPath);
             $stmt = $conn->prepare("UPDATE song SET SongAudio = ? WHERE QuestionID = ?");
-            $stmt->bind_param("bs", $songAudio, $questionId);
+            $stmt->bind_param("ss", $songAudioPath, $questionId);
             if (!$stmt->execute()) {
                 throw new Exception("Failed to update song audio: " . $stmt->error);
             }
@@ -55,9 +56,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
         
         // Handle song image upload
         if (!empty($_FILES['songPhoto']['tmp_name'])) {
-            $songImage = file_get_contents($_FILES['songPhoto']['tmp_name']);
+            $songImagePath = 'Question Images/' . basename($_FILES['songPhoto']['name']);
+            move_uploaded_file($_FILES['songPhoto']['tmp_name'], $songImagePath);
             $stmt = $conn->prepare("UPDATE song SET SongImage = ? WHERE QuestionID = ?");
-            $stmt->bind_param("bs", $songImage, $questionId);
+            $stmt->bind_param("ss", $songImagePath, $questionId);
             if (!$stmt->execute()) {
                 throw new Exception("Failed to update song image: " . $stmt->error);
             }
@@ -605,8 +607,7 @@ if (isset($quiz_id)) {
                     <td>
                         <?php if (!empty($song['SongAudio'])): ?>
                             <audio controls>
-                                <source src="fetch_media.php?type=audio&id=<?php echo urlencode($question['QuestionID']); ?>" type="audio/mpeg">
-                                Your browser does not support the audio element.
+                                <source src="<?php echo htmlspecialchars($song['SongAudio']); ?>" type="audio/mpeg">
                             </audio>
                         <?php else: ?>
                             No audio available
@@ -614,8 +615,7 @@ if (isset($quiz_id)) {
                     </td>
                     <td>
                         <?php if (!empty($song['SongImage'])): ?>
-                            <img src="fetch_media.php?type=image&id=<?php echo urlencode($question['QuestionID']); ?>" 
-                                 alt="Song Image" style="max-width: 100px;">
+                                <img src="<?php echo htmlspecialchars($song['SongImage']); ?>" alt="Song Image" style="max-width: 100px;">
                         <?php else: ?>
                             No image available
                         <?php endif; ?>

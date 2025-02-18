@@ -96,9 +96,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $correctAnswer = $question['correctAnswer'];
         $options = $question['options'];
         $songName = $question['correctAnswer'];
-        $songAudio = base64_encode(file_get_contents($_FILES['songUpload']['tmp_name']));
-        $songImage = base64_encode(file_get_contents($_FILES['songPhoto']['tmp_name']));
 
+        // Save song audio file
+        if ($_FILES['songUpload']['error'] == UPLOAD_ERR_OK) {
+            $songAudioPath = 'Question Songs/' . basename($_FILES['songUpload']['name']);
+            if (!file_exists('Question Songs/')) {
+                mkdir('Question Songs/', 0777, true);
+            }
+            move_uploaded_file($_FILES['songUpload']['tmp_name'], $songAudioPath);
+        } else {
+            $songAudioPath = $question['songFileName'];
+        }
+
+        // Save song image file
+        if ($_FILES['songPhoto']['error'] == UPLOAD_ERR_OK) {
+            $songImagePath = 'Question Images/' . basename($_FILES['songPhoto']['name']);
+            if (!file_exists('Question Images/')) {
+                mkdir('Question Images/', 0777, true);
+            }
+            move_uploaded_file($_FILES['songPhoto']['tmp_name'], $songImagePath);
+        } else {
+            $songImagePath = $question['photoFileName'];
+        }
 
         // Insert into question table
         $stmt = $conn->prepare("INSERT INTO question (QuestionID, QuizID, CorrectRate, CorrectAnswer, TotalAttempts) VALUES (?, ?, 0, ?, 0)");
@@ -109,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $newSongID++;
         $songID = 'S' . str_pad($newSongID, 3, '0', STR_PAD_LEFT);
         $stmt = $conn->prepare("INSERT INTO song (SongID, QuestionID, SongName, SongAudio, SongImage) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssss", $songID, $questionID, $songName, $songAudio, $songImage);
+        $stmt->bind_param("sssss", $songID, $questionID, $songName, $songAudioPath, $songImagePath);
         $stmt->execute();
 
         // Insert into option table
@@ -629,16 +648,31 @@ $conn->close();
                 alert('Please fill in all required fields.');
                 return;
             }
+
+            if (!genreID) {
+                alert('Please select a quiz category.');
+                return;
+            }
+            
             // Validation checks
             if (!quizName) {
                 alert('Please enter a quiz name.');
                 return;
             }
+            
+            rows.forEach(row => {
+                const options = row.cells[1].textContent.split(', ');
+                const correctAnswer = row.cells[2].textContent;
+                const songFileName = row.cells[3].textContent;
+                const photoFileName = row.cells[4].textContent;
         
-            if (!genreID) {
-                alert('Please select a quiz category.');
-                return;
-            }
+                questions.push({
+                    options: options,
+                    correctAnswer: correctAnswer,
+                    songFileName: songFileName,
+                    photoFileName: photoFileName
+                });
+            });
         
             // Check for exactly 5 rows
             if (questions.length < 5) {
@@ -651,36 +685,29 @@ $conn->close();
                 return;
             }
         
-            rows.forEach(row => {
-                const options = row.cells[1].textContent.split(', ');
-                const correctAnswer = row.cells[2].textContent;
+            const formData = new FormData();
+            formData.append('quizName', quizName);
+            formData.append('genreID', genreID);
+            formData.append('questions', JSON.stringify(questions));
+
+            // Append the files to the formData
+            const songUpload = document.getElementById('songUpload').files[0];
+            const songPhoto = document.getElementById('songPhoto').files[0];
+            if (songUpload) {
+                formData.append('songUpload', songUpload);
+            }
+            if (songPhoto) {
+                formData.append('songPhoto', songPhoto);
+            }
         
-                const songFileInput = document.getElementById('songUpload').files[0];
-                const photoFileInput = document.getElementById('songPhoto').files[0];
-        
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const songAudio = event.target.result.split(',')[1]; // Get base64 string
-        
-                    const photoReader = new FileReader();
-                    photoReader.onload = function(event) {
-                        const songImage = event.target.result.split(',')[1]; // Get base64 string
-                        const formData = new FormData();
-                        formData.append('quizName', quizName);
-                        formData.append('genreID', genreID);
-                        formData.append('questions', JSON.stringify(questions));
-                    
-                        fetch('admin_addQuiz.php', {
-                            method: 'POST',
-                            body: formData
-                        }).then(response => {
-                            if (response.ok) {
-                                window.location.href = 'admin_quiz_management.php';
-                            } else {
-                                alert('Failed to upload quiz.');
-                            }
-                        });
-                    }
+            fetch('admin_addQuiz.php', {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    window.location.href = 'admin_quiz_management.php';
+                } else {
+                    alert('Failed to upload quiz.');
                 }
             });
         }

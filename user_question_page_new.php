@@ -62,10 +62,10 @@ while ($row = $questionsResult->fetch_assoc()) {
     $song = $songResult->fetch_assoc();
     $songStmt->close();
 
-    // Convert BLOB data to base64
+    // Use file paths for audio and image
     if ($song) {
-        $song['SongImage'] = 'data:image/jpeg;base64,' . base64_encode($song['SongImage']);
-        $song['SongAudio'] = 'data:audio/mpeg;base64,' . base64_encode($song['SongAudio']);
+        $song['SongImage'] = $song['SongImage']; // File path to image
+        $song['SongAudio'] = $song['SongAudio']; // File path to audio
     }
 
     // Fetch options for each question
