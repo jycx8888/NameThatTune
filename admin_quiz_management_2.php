@@ -677,173 +677,231 @@ if (isset($quiz_id)) {
         
         // Add this function to your <script> section
         function closeModal() {
-            document.getElementById("quizModal").style.display = "none";
-            document.getElementById("addQuestionForm").reset();
-            
-            // Reset all checkmarks
-            document.querySelectorAll('.checkmark').forEach(check => {
-                check.classList.remove('selected');
-                check.textContent = "";
+    // Get the modal
+    const modal = document.getElementById("quizModal");
+    
+    // Get the current question row
+    const questionId = document.getElementById('question_id').value;
+    const questionRow = document.querySelector(`tr[data-question-id="${questionId}"]`);
+    
+    if (questionRow) {
+        // Restore original values from data attributes
+        const cells = questionRow.getElementsByTagName('td');
+        const originalOptions = cells[1].getAttribute('data-options');
+        const originalCorrect = cells[2].getAttribute('data-correct');
+        
+        // Reset the table display to original values
+        cells[1].textContent = originalOptions;
+        cells[2].textContent = originalCorrect;
+    }
+    
+    // Reset the form
+    document.getElementById("addQuestionForm").reset();
+    
+    // Clear all input values
+    document.querySelectorAll('.option-container input[type="text"]').forEach(input => {
+        input.value = '';
+    });
+    
+    // Reset all checkmarks
+    document.querySelectorAll('.checkmark').forEach(check => {
+        check.classList.remove('selected');
+        check.textContent = "";
+    });
+    
+    // Reset file inputs
+    document.querySelector('input[name="songUpload"]').value = '';
+    document.querySelector('input[name="songPhoto"]').value = '';
+    
+    // Clear preview areas
+    document.getElementById('audioPreview').innerHTML = '';
+    document.getElementById('imagePreview').innerHTML = '';
+    
+    // Clear hidden inputs
+    document.getElementById('correctOption').value = "";
+    document.getElementById('question_id').value = "";
+    
+    // Remove existing file labels
+    const existingSongLabel = document.getElementById("existingSongFile");
+    if (existingSongLabel) {
+        existingSongLabel.remove();
+    }
+    
+    const existingPhotoLabel = document.getElementById("existingPhotoFile");
+    if (existingPhotoLabel) {
+        existingPhotoLabel.remove();
+    }
+    
+    // Hide the modal
+    modal.style.display = "none";
+}
+
+        // Add event listeners for modal closing
+        document.addEventListener('DOMContentLoaded', function() {
+            // Close modal when clicking the X button
+            document.querySelector('.close').addEventListener('click', function(e) {
+                e.preventDefault();
+                closeModal();
             });
-            
-            // Reset correct answer input field
-            document.getElementById('correctOption').value = "";
-            
-            // Remove existing file labels
-            const existingSongLabel = document.getElementById("existingSongFile");
-            if (existingSongLabel) {
-                existingSongLabel.remove();
-            }
-            
-            const existingPhotoLabel = document.getElementById("existingPhotoFile");
-            if (existingPhotoLabel) {
-                existingPhotoLabel.remove();
-            }
-        }
+        
+            // Close modal when clicking outside
+            window.addEventListener('click', function(e) {
+                const modal = document.getElementById("quizModal");
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        
+            // Close modal when pressing ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+        });
 
         // Function to update quiz numbers after deleting a row
         function editQuestion(questionId) {
-    const modal = document.getElementById("quizModal");
-    modal.style.display = "block";
+        const modal = document.getElementById("quizModal");
+        modal.style.display = "block";
 
-    // Find the question row
-    const questionRow = document.querySelector(`tr[data-question-id="${questionId}"]`);
-    if (!questionRow) return;
+        // Find the question row
+        const questionRow = document.querySelector(`tr[data-question-id="${questionId}"]`);
+        if (!questionRow) return;
 
-    // Set question ID
-    document.getElementById('question_id').value = questionId;
+        // Set question ID
+        document.getElementById('question_id').value = questionId;
 
-    // Get data from the row
-    const cells = questionRow.getElementsByTagName('td');
-    const optionsString = cells[1].getAttribute('data-options');
-    const options = optionsString ? optionsString.split(',').map(opt => opt.trim()) : [];
-    const correctAnswer = cells[2].getAttribute('data-correct');
+        // Get data from the row
+        const cells = questionRow.getElementsByTagName('td');
+        const optionsString = cells[1].getAttribute('data-options');
+        const options = optionsString ? optionsString.split(',').map(opt => opt.trim()) : [];
+        const correctAnswer = cells[2].getAttribute('data-correct');
 
-    // Get current audio and image elements
-    const audioElement = cells[3].querySelector('audio');
-    const imageElement = cells[4].querySelector('img');
+        // Get current audio and image elements
+        const audioElement = cells[3].querySelector('audio');
+        const imageElement = cells[4].querySelector('img');
 
-    // Show current audio preview
-    const audioPreview = document.getElementById('audioPreview');
-if (audioElement) {
-    const audioSource = audioElement.querySelector('source');
-    if (audioSource) {
-        const audioPath = audioSource.getAttribute('src');
-        audioPreview.innerHTML = `
-            <div class="preview-container">
-                <p>Current Audio: ${audioPath}</p>
-                <audio controls>
-                    <source src="${audioPath}" type="audio/mpeg">
-                    Your browser does not support the audio element.
-                </audio>
-            </div>
-        `;
-        // Ensure the new audio element is loaded and ready to play
-        const newAudio = audioPreview.querySelector('audio');
-        newAudio.load();
+        // Show current audio preview
+        const audioPreview = document.getElementById('audioPreview');
+    if (audioElement) {
+        const audioSource = audioElement.querySelector('source');
+        if (audioSource) {
+            const audioPath = audioSource.getAttribute('src');
+            audioPreview.innerHTML = `
+                <div class="preview-container">
+                    <p>Current Audio: ${audioPath}</p>
+                    <audio controls>
+                        <source src="${audioPath}" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            `;
+            // Ensure the new audio element is loaded and ready to play
+            const newAudio = audioPreview.querySelector('audio');
+            newAudio.load();
+        } else {
+            audioPreview.innerHTML = '<p>No current audio</p>';
+        }
     } else {
         audioPreview.innerHTML = '<p>No current audio</p>';
     }
-} else {
-    audioPreview.innerHTML = '<p>No current audio</p>';
-}
 
-    // Show current image preview
-    const imagePreview = document.getElementById('imagePreview');
-    if (imageElement) {
-        const imagePath = imageElement.getAttribute('src');
-        imagePreview.innerHTML = `
-            <div class="preview-container">
-                <p>Current Image: ${imagePath}</p>
-                <img src="${imagePath}" alt="Current Image" style="max-width: 200px;">
-            </div>
-        `;
-    } else {
-        imagePreview.innerHTML = '<p>No current image</p>';
-    }
+        // Show current image preview
+        const imagePreview = document.getElementById('imagePreview');
+        if (imageElement) {
+            const imagePath = imageElement.getAttribute('src');
+            imagePreview.innerHTML = `
+                <div class="preview-container">
+                    <p>Current Image: ${imagePath}</p>
+                    <img src="${imagePath}" alt="Current Image" style="max-width: 200px;">
+                </div>
+            `;
+        } else {
+            imagePreview.innerHTML = '<p>No current image</p>';
+        }
+
+                // Set options and mark correct answer
+                options.forEach((option, index) => {
+    const input = document.querySelector(`input[name="option${index + 1}"]`);
+    if (input) {
+        // Set initial value
+        input.value = option;
         
-            // Set options and mark correct answer
-            options.forEach((option, index) => {
-                const input = document.querySelector(`input[name="option${index + 1}"]`);
-                if (input) {
-                    input.value = option;
+        const checkmark = input.parentElement.querySelector('.checkmark');
+        if (checkmark) {
+            // Reset checkmark first
+            checkmark.classList.remove('selected');
+            checkmark.textContent = '';
+            
+            // If this is the correct answer, mark it
+            if (option === correctAnswer) {
+                checkmark.classList.add('selected');
+                checkmark.textContent = '✓';
+                document.getElementById('correctOption').value = option;
+            }
 
-                    // Add input event listener
-                    input.addEventListener('input', function() {
-                        const optionCell = cells[1];
-                        const currentOptions = Array.from(document.querySelectorAll('.option-container input[type="text"]'))
-                            .map(input => input.value);
+            // Add input event listener to update correct answer if this option is selected
+            input.addEventListener('input', function() {
+                if (checkmark.classList.contains('selected')) {
+                    document.getElementById('correctOption').value = this.value;
+                }
+            });
 
-                        // Update options in the table
-                        optionCell.setAttribute('data-options', currentOptions.join(', '));
-                        optionCell.textContent = currentOptions.join(', ');
-                    
-                        // Update correct answer if this option is selected
-                        const checkmark = this.parentElement.querySelector('.checkmark');
-                        if (checkmark && checkmark.classList.contains('selected')) {
-                            document.getElementById('correctOption').value = this.value;
-                            cells[2].setAttribute('data-correct', this.value);
-                            cells[2].textContent = this.value;
-                        }
-                    });
+            // Add click event listener for checkmark
+            checkmark.onclick = function() {
+                // Remove selection from all checkmarks
+                document.querySelectorAll('.checkmark').forEach(c => {
+                    c.classList.remove('selected');
+                    c.textContent = '';
+                });
 
+                // Select this checkmark
+                this.classList.add('selected');
+                this.textContent = '✓';
+
+                // Update the correct answer value
+                document.getElementById('correctOption').value = input.value;
+            };
+        }
+    }
+});
+
+    // Add input event listeners to option inputs
+    options.forEach((option, index) => {
+        const input = document.querySelector(`input[name="option${index + 1}"]`);
+        if (input) {
+            input.value = option;
             const checkmark = input.parentElement.querySelector('.checkmark');
             if (checkmark) {
-                checkmark.replaceWith(checkmark.cloneNode(true));
-                const newCheckmark = input.parentElement.querySelector('.checkmark');
+                // Reset the checkmark first
+                checkmark.classList.remove('selected');
+                checkmark.textContent = '';
                 
+                // If this option is the correct answer, mark it
                 if (option === correctAnswer) {
-                    newCheckmark.classList.add('selected');
-                    newCheckmark.textContent = '✓';
+                    checkmark.classList.add('selected');
+                    checkmark.textContent = '✓';
                     document.getElementById('correctOption').value = option;
                 }
 
-                // Add click event listener to checkmark
-                newCheckmark.addEventListener('click', function() {
+                // Add click event listener for the checkmark
+                checkmark.onclick = function() {
+                    // Remove selection from all checkmarks
                     document.querySelectorAll('.checkmark').forEach(c => {
                         c.classList.remove('selected');
                         c.textContent = '';
                     });
+
+                    // Select this checkmark
                     this.classList.add('selected');
                     this.textContent = '✓';
+
+                    // Update the correct answer value
                     document.getElementById('correctOption').value = input.value;
-                    cells[2].setAttribute('data-correct', input.value);
-                    cells[2].textContent = input.value;
-                });
+                };
             }
         }
-    });
-
-    // Add input event listeners to option inputs
-    document.querySelectorAll('.option-container input[type="text"]').forEach(input => {
-        input.addEventListener('input', function() {
-            // If this option is selected as correct, update the hidden correct option value
-            const checkmark = this.parentElement.querySelector('.checkmark');
-            if (checkmark && checkmark.classList.contains('selected')) {
-                document.getElementById('correctOption').value = this.value;
-            }
-        });
-    });
-
-    // Add click listeners to checkmarks
-    document.querySelectorAll('.checkmark').forEach(check => {
-        check.onclick = function() {
-            // Remove selection from all checkmarks
-            document.querySelectorAll('.checkmark').forEach(c => {
-                c.classList.remove('selected');
-                c.textContent = '';
-            });
-
-            // Select clicked checkmark
-            this.classList.add('selected');
-            this.textContent = '✓';
-
-            // Get the associated input's value
-            const optionInput = this.parentElement.querySelector('input[type="text"]');
-            if (optionInput) {
-                document.getElementById('correctOption').value = optionInput.value;
-            }
-        };
     });
 
     // Show current audio/image previews
