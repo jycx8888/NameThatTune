@@ -33,14 +33,23 @@ if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
             throw new Exception("Failed to update correct answer: " . $stmt->error);
         }
         
+        // Fetch existing options for the question
+        $stmt = $conn->prepare("SELECT OptionID FROM `option` WHERE QuestionID = ?");
+        $stmt->bind_param("s", $questionId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $options = [];
+        while ($row = $result->fetch_assoc()) {
+            $options[] = $row['OptionID'];
+        }
+        
         // Update options
-        for ($i = 1; $i <= 4; $i++) {
-            $optionName = $_POST["option$i"];
-            $optionID = 'O' . str_pad($i, 3, '0', STR_PAD_LEFT);
-            $stmt = $conn->prepare("UPDATE `option` SET OptionName = ? WHERE QuestionID = ? AND OptionID = ?");
-            $stmt->bind_param("sss", $optionName, $questionId, $optionID);
+        foreach ($options as $index => $optionID) {
+            $optionName = $_POST["option" . ($index + 1)];
+            $stmt = $conn->prepare("UPDATE `option` SET OptionName = ? WHERE OptionID = ?");
+            $stmt->bind_param("ss", $optionName, $optionID);
             if (!$stmt->execute()) {
-                throw new Exception("Failed to update option $i: " . $stmt->error);
+                throw new Exception("Failed to update option " . ($index + 1) . ": " . $stmt->error);
             }
         }
         
