@@ -703,26 +703,64 @@ if (isset($quiz_id)) {
 
         // Function to update quiz numbers after deleting a row
         function editQuestion(questionId) {
-            const modal = document.getElementById("quizModal");
-            modal.style.display = "block";
+    const modal = document.getElementById("quizModal");
+    modal.style.display = "block";
 
-            // Find the question row
-            const questionRow = document.querySelector(`tr[data-question-id="${questionId}"]`);
-            if (!questionRow) return;
+    // Find the question row
+    const questionRow = document.querySelector(`tr[data-question-id="${questionId}"]`);
+    if (!questionRow) return;
 
-            // Set question ID
-            document.getElementById('question_id').value = questionId;
+    // Set question ID
+    document.getElementById('question_id').value = questionId;
 
-            // Get data from the row
-            const cells = questionRow.getElementsByTagName('td');
-            const optionsString = cells[1].getAttribute('data-options');
-            const options = optionsString ? optionsString.split(',').map(opt => opt.trim()) : [];
-            const correctAnswer = cells[2].getAttribute('data-correct');
+    // Get data from the row
+    const cells = questionRow.getElementsByTagName('td');
+    const optionsString = cells[1].getAttribute('data-options');
+    const options = optionsString ? optionsString.split(',').map(opt => opt.trim()) : [];
+    const correctAnswer = cells[2].getAttribute('data-correct');
 
-            // Clear previous event listeners
-            document.querySelectorAll('.option-container input[type="text"]').forEach(input => {
-                input.replaceWith(input.cloneNode(true));
-            });
+    // Get current audio and image elements
+    const audioElement = cells[3].querySelector('audio');
+    const imageElement = cells[4].querySelector('img');
+
+    // Show current audio preview
+    const audioPreview = document.getElementById('audioPreview');
+if (audioElement) {
+    const audioSource = audioElement.querySelector('source');
+    if (audioSource) {
+        const audioPath = audioSource.getAttribute('src');
+        audioPreview.innerHTML = `
+            <div class="preview-container">
+                <p>Current Audio: ${audioPath}</p>
+                <audio controls>
+                    <source src="${audioPath}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        `;
+        // Ensure the new audio element is loaded and ready to play
+        const newAudio = audioPreview.querySelector('audio');
+        newAudio.load();
+    } else {
+        audioPreview.innerHTML = '<p>No current audio</p>';
+    }
+} else {
+    audioPreview.innerHTML = '<p>No current audio</p>';
+}
+
+    // Show current image preview
+    const imagePreview = document.getElementById('imagePreview');
+    if (imageElement) {
+        const imagePath = imageElement.getAttribute('src');
+        imagePreview.innerHTML = `
+            <div class="preview-container">
+                <p>Current Image: ${imagePath}</p>
+                <img src="${imagePath}" alt="Current Image" style="max-width: 200px;">
+            </div>
+        `;
+    } else {
+        imagePreview.innerHTML = '<p>No current image</p>';
+    }
         
             // Set options and mark correct answer
             options.forEach((option, index) => {
@@ -820,9 +858,9 @@ if (isset($quiz_id)) {
                     <div class="preview-container">
                         <p>Current Audio:</p>
                         <audio controls>
-                            <source src="fetch_media.php?type=audio&id=${questionId}" type="audio/mpeg">
-                            Your browser does not support the audio element.
-                        </audio>
+                        <source src="<?php echo htmlspecialchars($song['SongAudio']); ?>" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
                     </div>
                 `;
             }
