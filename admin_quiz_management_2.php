@@ -36,32 +36,45 @@ if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
         // Update options
         for ($i = 1; $i <= 4; $i++) {
             $optionName = $_POST["option$i"];
-            $stmt = $conn->prepare("UPDATE `option` SET OptionName = ? WHERE QuestionID = ? AND OptionOrder = ?");
-            $stmt->bind_param("ssi", $optionName, $questionId, $i);
+            $optionID = 'O' . str_pad($i, 3, '0', STR_PAD_LEFT);
+            $stmt = $conn->prepare("UPDATE `option` SET OptionName = ? WHERE QuestionID = ? AND OptionID = ?");
+            $stmt->bind_param("sss", $optionName, $questionId, $optionID);
             if (!$stmt->execute()) {
                 throw new Exception("Failed to update option $i: " . $stmt->error);
             }
         }
         
         // Handle song audio upload
-        if (!empty($_FILES['songUpload']['tmp_name'])) {
+        if (isset($_FILES['songUpload']) && $_FILES['songUpload']['error'] === UPLOAD_ERR_OK) {
             $songAudioPath = 'Question Songs/' . basename($_FILES['songUpload']['name']);
-            move_uploaded_file($_FILES['songUpload']['tmp_name'], $songAudioPath);
-            $stmt = $conn->prepare("UPDATE song SET SongAudio = ? WHERE QuestionID = ?");
-            $stmt->bind_param("ss", $songAudioPath, $questionId);
-            if (!$stmt->execute()) {
-                throw new Exception("Failed to update song audio: " . $stmt->error);
+            if (!file_exists('Question Songs/')) {
+                mkdir('Question Songs/', 0777, true);
+            }
+            if (move_uploaded_file($_FILES['songUpload']['tmp_name'], $songAudioPath)) {
+                $stmt = $conn->prepare("UPDATE song SET SongAudio = ? WHERE QuestionID = ?");
+                $stmt->bind_param("ss", $songAudioPath, $questionId);
+                if (!$stmt->execute()) {
+                    throw new Exception("Failed to update song audio in database");
+                }
+            } else {
+                throw new Exception("Failed to move uploaded audio file");
             }
         }
         
         // Handle song image upload
-        if (!empty($_FILES['songPhoto']['tmp_name'])) {
+        if (isset($_FILES['songPhoto']) && $_FILES['songPhoto']['error'] === UPLOAD_ERR_OK) {
             $songImagePath = 'Question Images/' . basename($_FILES['songPhoto']['name']);
-            move_uploaded_file($_FILES['songPhoto']['tmp_name'], $songImagePath);
-            $stmt = $conn->prepare("UPDATE song SET SongImage = ? WHERE QuestionID = ?");
-            $stmt->bind_param("ss", $songImagePath, $questionId);
-            if (!$stmt->execute()) {
-                throw new Exception("Failed to update song image: " . $stmt->error);
+            if (!file_exists('Question Images/')) {
+                mkdir('Question Images/', 0777, true);
+            }
+            if (move_uploaded_file($_FILES['songPhoto']['tmp_name'], $songImagePath)) {
+                $stmt = $conn->prepare("UPDATE song SET SongImage = ? WHERE QuestionID = ?");
+                $stmt->bind_param("ss", $songImagePath, $questionId);
+                if (!$stmt->execute()) {
+                    throw new Exception("Failed to update song image in database");
+                }
+            } else {
+                throw new Exception("Failed to move uploaded image file");
             }
         }
         
@@ -487,7 +500,53 @@ if (isset($quiz_id)) {
     <main>
             <h2 class="edit-quiz-header"><?php echo isset($quiz) ? 'Edit Quiz' : 'Add Song'; ?></h2>
         
+            <!-- Modal -->
+            <div id="quizModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Edit Question</h2>
+        <form id="addQuestionForm" enctype="multipart/form-data">
+            <input type="hidden" id="question_id" name="question_id">
+            <input type="hidden" id="correctOption" name="correctOption">
             
+            <div class="form-group">
+                <label>Song Audio:</label>
+                <input type="file" name="songUpload" accept="audio/*">
+                <div id="audioPreview"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Song Image:</label>
+                <input type="file" name="songPhoto" accept="image/*">
+                <div id="imagePreview"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Options:</label>
+                <div class="option-container">
+                    <div>
+                        <input type="text" name="option1" required>
+                        <span class="checkmark" data-value="1"></span>
+                    </div>
+                    <div>
+                        <input type="text" name="option2" required>
+                        <span class="checkmark" data-value="2"></span>
+                    </div>
+                    <div>
+                        <input type="text" name="option3" required>
+                        <span class="checkmark" data-value="3"></span>
+                    </div>
+                    <div>
+                        <input type="text" name="option4" required>
+                        <span class="checkmark" data-value="4"></span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-button">Update Question</button>
+        </form>
+    </div>
+</div>
         
              <!-- Display Quiz ID -->
              <p>Quiz ID: <?= isset($quiz['QuizID']) && !empty($quiz['QuizID']) ? htmlspecialchars($quiz['QuizID']) : 'No Quiz Found'; ?></p>
@@ -646,113 +705,173 @@ if (isset($quiz_id)) {
         function editQuestion(questionId) {
     const modal = document.getElementById("quizModal");
     modal.style.display = "block";
-    
+
     // Find the question row
     const questionRow = document.querySelector(`tr[data-question-id="${questionId}"]`);
     if (!questionRow) return;
-    
+
     // Set question ID
     document.getElementById('question_id').value = questionId;
-    
+
     // Get data from the row
     const cells = questionRow.getElementsByTagName('td');
-    const options = cells[1].getAttribute('data-options').split(',').map(opt => opt.trim());
+    const optionsString = cells[1].getAttribute('data-options');
+    const options = optionsString ? optionsString.split(',').map(opt => opt.trim()) : [];
     const correctAnswer = cells[2].getAttribute('data-correct');
-    
+
     // Set options and mark correct answer
     options.forEach((option, index) => {
         const input = document.querySelector(`input[name="option${index + 1}"]`);
-        const checkmark = document.querySelector(`span[data-value="${index + 1}"]`);
-        
-        if (input && checkmark) {
+        if (input) {
             input.value = option;
-            if (option === correctAnswer) {
-                checkmark.classList.add('selected');
-                checkmark.textContent = '✓';
-                document.getElementById('correctOption').value = option;
-            } else {
-                checkmark.classList.remove('selected');
-                checkmark.textContent = '';
+            input.setAttribute('data-original', option); // Store original value
+            
+            // Add input event listener for each option
+            input.addEventListener('input', function() {
+                const optionCell = cells[1];
+                const currentOptions = optionCell.getAttribute('data-options').split(',').map(opt => opt.trim());
+                currentOptions[index] = this.value;
+                optionCell.setAttribute('data-options', currentOptions.join(', '));
+                optionCell.textContent = currentOptions.join(', ');
+
+                // Update correct answer if this was the selected option
+                const checkmark = this.parentElement.querySelector('.checkmark');
+                if (checkmark && checkmark.classList.contains('selected')) {
+                    document.getElementById('correctOption').value = this.value;
+                    cells[2].setAttribute('data-correct', this.value);
+                    cells[2].textContent = this.value;
+                }
+            });
+
+            const checkmark = input.parentElement.querySelector('.checkmark');
+            if (checkmark) {
+                if (option === correctAnswer) {
+                    checkmark.classList.add('selected');
+                    checkmark.textContent = '✓';
+                    document.getElementById('correctOption').value = option;
+                } else {
+                    checkmark.classList.remove('selected');
+                    checkmark.textContent = '';
+                }
             }
         }
     });
 
-    // Show current audio/image with preview
+    // Add input event listeners to option inputs
+    document.querySelectorAll('.option-container input[type="text"]').forEach(input => {
+        input.addEventListener('input', function() {
+            // If this option is selected as correct, update the hidden correct option value
+            const checkmark = this.parentElement.querySelector('.checkmark');
+            if (checkmark && checkmark.classList.contains('selected')) {
+                document.getElementById('correctOption').value = this.value;
+            }
+        });
+    });
+
+    // Add click listeners to checkmarks
+    document.querySelectorAll('.checkmark').forEach(check => {
+        check.onclick = function() {
+            // Remove selection from all checkmarks
+            document.querySelectorAll('.checkmark').forEach(c => {
+                c.classList.remove('selected');
+                c.textContent = '';
+            });
+
+            // Select clicked checkmark
+            this.classList.add('selected');
+            this.textContent = '✓';
+
+            // Get the associated input's value
+            const optionInput = this.parentElement.querySelector('input[type="text"]');
+            if (optionInput) {
+                document.getElementById('correctOption').value = optionInput.value;
+            }
+        };
+    });
+
+    // Show current audio/image previews
     const audioCell = cells[3];
     const imageCell = cells[4];
-    
-    // Display current audio
-    const currentAudio = audioCell.querySelector('audio');
-        if (currentAudio) {
-        const audioPreview = document.getElementById('audioPreview');
-        audioPreview.innerHTML = `
-            <div class="preview-container">
-                <p>Current Audio:</p>
-                <audio controls>
-                    <source src="fetch_media.php?type=audio&id=${questionId}" type="audio/mpeg">
-                    Your browser does not support the audio element.
-                </audio>
-            </div>
-        `;
-    }
 
-    if (currentImage) {
-        const imagePreview = document.getElementById('imagePreview');
-        imagePreview.innerHTML = `
-            <div class="preview-container">
-                <p>Current Image:</p>
-                <img src="fetch_media.php?type=image&id=${questionId}" 
-                     alt="Current Image" style="max-width: 200px;">
-            </div>
-        `;
-        }
-    }
+            // Display current audio
+            const currentAudio = audioCell.querySelector('audio');
+                if (currentAudio) {
+                const audioPreview = document.getElementById('audioPreview');
+                audioPreview.innerHTML = `
+                    <div class="preview-container">
+                        <p>Current Audio:</p>
+                        <audio controls>
+                            <source src="fetch_media.php?type=audio&id=${questionId}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                `;
+            }
         
-                document.querySelectorAll('.checkmark').forEach(check => {
-                check.addEventListener('click', function() {
-                    // Remove selection from all checkmarks
-                    document.querySelectorAll('.checkmark').forEach(c => {
-                        c.classList.remove('selected');
-                        c.textContent = '';
-                    });
-                    
-                    // Select clicked checkmark
-                    this.classList.add('selected');
-                    this.textContent = '✓';
-                    
-                    // Update hidden input
-                    document.getElementById('correctOption').value = this.dataset.value;
-                });
-            });
-        
-            document.getElementById('addQuestionForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                if (!document.querySelector('.checkmark.selected')) {
-                    alert('Please select a correct answer');
-                    return;
+            if (currentImage) {
+                const imagePreview = document.getElementById('imagePreview');
+                imagePreview.innerHTML = `
+                    <div class="preview-container">
+                        <p>Current Image:</p>
+                        <img src="fetch_media.php?type=image&id=${questionId}" 
+                             alt="Current Image" style="max-width: 200px;">
+                    </div>
+                `;
                 }
-            
-                const formData = new FormData(this);
+            }
 
-                fetch('admin_quiz_management_2.php?action=updateQuestion', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Question updated successfully!');
-                        location.reload();
-                    } else {
-                        throw new Error(data.error || 'Update failed');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error updating question: ' + error.message);
+            document.querySelectorAll('.checkmark').forEach(check => {
+            check.addEventListener('click', function() {
+                // Remove selection from all checkmarks
+                document.querySelectorAll('.checkmark').forEach(c => {
+                    c.classList.remove('selected');
+                    c.textContent = '';
                 });
+
+                // Select clicked checkmark
+                this.classList.add('selected');
+                this.textContent = '✓';
+
+                // Get the associated input's value
+                const optionInput = this.parentElement.querySelector('input[type="text"]');
+                // Update hidden input with the actual option text
+                document.getElementById('correctOption').value = optionInput.value;
             });
+        });
+        
+        document.getElementById('addQuestionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+                
+            if (!document.querySelector('.checkmark.selected')) {
+                alert('Please select a correct answer');
+                return;
+            }
+        
+            const formData = new FormData(this);
+            
+            // Add all options to formData
+            document.querySelectorAll('.option-container input[type="text"]').forEach((input, index) => {
+                formData.set(`option${index + 1}`, input.value);
+            });
+        
+            fetch('admin_quiz_management_2.php?action=updateQuestion', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Question updated successfully!');
+                    location.reload();
+                } else {
+                    throw new Error(data.error || 'Update failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating question: ' + error.message);
+            });
+        });
     </script>
 
 <?php 
