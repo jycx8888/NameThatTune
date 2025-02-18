@@ -32,9 +32,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
         $questionId = $_POST['question_id'];
         $correctAnswer = $_POST['correctOption'];
         
-        // Debug log
-        error_log("Updating question ID: $questionId with correct answer: $correctAnswer");
-        
         // Update correct answer in question table
         $stmt = $conn->prepare("UPDATE question SET CorrectAnswer = ? WHERE QuestionID = ?");
         $stmt->bind_param("ss", $correctAnswer, $questionId);
@@ -54,9 +51,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
         
         // Handle song audio upload
         if (!empty($_FILES['songUpload']['tmp_name'])) {
-            $songAudio = file_get_contents($_FILES['songUpload']['tmp_name']);
+            $songAudioPath = 'Question Songs/' . basename($_FILES['songUpload']['name']);
+            move_uploaded_file($_FILES['songUpload']['tmp_name'], $songAudioPath);
             $stmt = $conn->prepare("UPDATE song SET SongAudio = ? WHERE QuestionID = ?");
-            $stmt->bind_param("bs", $songAudio, $questionId);
+            $stmt->bind_param("ss", $songAudioPath, $questionId);
             if (!$stmt->execute()) {
                 throw new Exception("Failed to update song audio: " . $stmt->error);
             }
@@ -64,9 +62,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
         
         // Handle song image upload
         if (!empty($_FILES['songPhoto']['tmp_name'])) {
-            $songImage = file_get_contents($_FILES['songPhoto']['tmp_name']);
+            $songImagePath = 'Question Images/' . basename($_FILES['songPhoto']['name']);
+            move_uploaded_file($_FILES['songPhoto']['tmp_name'], $songImagePath);
             $stmt = $conn->prepare("UPDATE song SET SongImage = ? WHERE QuestionID = ?");
-            $stmt->bind_param("bs", $songImage, $questionId);
+            $stmt->bind_param("ss", $songImagePath, $questionId);
             if (!$stmt->execute()) {
                 throw new Exception("Failed to update song image: " . $stmt->error);
             }
@@ -678,7 +677,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
                     <td>
                         <?php if (!empty($song['SongAudio'])): ?>
                             <audio controls>
-                                <source src="data:audio/mpeg;base64,<?php echo base64_encode($song['SongAudio']); ?>" type="audio/mpeg">
+                                <source src="<?php echo htmlspecialchars($song['SongAudio']); ?>" type="audio/mpeg">
                             </audio>
                         <?php else: ?>
                             No audio available
@@ -686,7 +685,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
                     </td>
                     <td>
                         <?php if (!empty($song['SongImage'])): ?>
-                            <img src="data:image/jpeg;base64,<?php echo base64_encode($song['SongImage']); ?>" alt="Song Image" style="max-width: 100px;">
+                                <img src="<?php echo htmlspecialchars($song['SongImage']); ?>" alt="Song Image" style="max-width: 100px;">
                         <?php else: ?>
                             No image available
                         <?php endif; ?>
