@@ -852,17 +852,21 @@ if (audioElement) {
 
             // Display current audio
             const currentAudio = audioCell.querySelector('audio');
-                if (currentAudio) {
-                const audioPreview = document.getElementById('audioPreview');
-                audioPreview.innerHTML = `
-                    <div class="preview-container">
-                        <p>Current Audio:</p>
-                        <audio controls>
-                        <source src="<?php echo htmlspecialchars($song['SongAudio']); ?>" type="audio/mpeg">
-                        Your browser does not support the audio element.
-                    </audio>
-                    </div>
-                `;
+            if (currentAudio) {
+                const audioSource = currentAudio.querySelector('source');
+                if (audioSource) {
+                    const audioPath = audioSource.getAttribute('src');
+                    const audioPreview = document.getElementById('audioPreview');
+                    audioPreview.innerHTML = `
+                        <div class="preview-container">
+                            <p>Current Audio:</p>
+                            <audio controls>
+                                <source src="${audioPath}" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
+                    `;
+                }
             }
         
             if (currentImage) {
