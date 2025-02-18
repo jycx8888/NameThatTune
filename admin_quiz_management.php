@@ -95,7 +95,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
         #content {
             display: flex;
             justify-content: center;
-            height: calc(100vh - 72px);
+            height: fit-content;
+            margin: 48px 0;
         }
 
         #edit-quiz-container {
@@ -162,7 +163,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
         }
 
         table {
-
             width: 100%;
             border-collapse: collapse;
             margin-top: 1rem;
