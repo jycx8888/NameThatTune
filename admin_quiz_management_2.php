@@ -17,6 +17,13 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Genre mapping
+$genreMapping = [
+    'G001' => 'English',
+    'G002' => 'Japanese',
+    'G003' => 'Korean'
+];
+
 if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
     header('Content-Type: application/json');
     
@@ -119,7 +126,7 @@ if ($result->num_rows === 0) {
     die("Error: quiz_id does not exist in the database.");
 }
 
-$stmt = $conn->prepare("SELECT QuizID, GenreID, CreatedTime FROM quiz WHERE QuizID = ?");
+$stmt = $conn->prepare("SELECT QuizID, QuizName, GenreID, CreatedTime FROM quiz WHERE QuizID = ?");
 $stmt->bind_param("s", $quiz_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -548,27 +555,11 @@ if (isset($quiz_id)) {
     </div>
 </div>
         
-             <!-- Display Quiz ID -->
-             <p>Quiz ID: <?= isset($quiz['QuizID']) && !empty($quiz['QuizID']) ? htmlspecialchars($quiz['QuizID']) : 'No Quiz Found'; ?></p>
-            
-            <?php if (isset($quiz)): ?>
-                <input type="hidden" name="quiz_id" value="<?php echo $quiz['QuizID']; ?>">
-            <?php endif; ?>
-        
-            <div class="form-group">
-                <label for="genre-id">Genre</label>
-                <select id="genre-id" name="genre_id">
-                    <option value="1" <?php if (isset($quiz) && $quiz['GenreID'] == 'G001') echo 'selected'; ?>>English</option>
-                    <option value="2" <?php if (isset($quiz) && $quiz['GenreID'] == 'G002') echo 'selected'; ?>>Japanese</option>
-                    <option value="3" <?php if (isset($quiz) && $quiz['GenreID'] == 'G003') echo 'selected'; ?>>Korean</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="created-time">Created Time</label>
-                <input type="datetime-local" id="created-time" name="created_time" 
-                    value="<?php echo isset($quiz) ? date('Y-m-d\TH:i:s', strtotime($quiz['CreatedTime'])) : ''; ?>">
-            </div>
+            <!-- Display Quiz ID -->
+            <h3>Quiz ID: <?= isset($quiz['QuizID']) && !empty($quiz['QuizID']) ? htmlspecialchars($quiz['QuizID']) : 'No Quiz Found'; ?></h3>
+            <h3>Quiz Name: <?= isset($quiz['QuizName']) && !empty($quiz['QuizName']) ? htmlspecialchars($quiz['QuizName']) : 'No Quiz Name Found'; ?></h3>
+            <h3>Genre: <?= isset($quiz['GenreID']) && !empty($quiz['GenreID']) ? htmlspecialchars($genreMapping[$quiz['GenreID']]) : 'No Genre Found'; ?></h3>
+            <h3>Created Time: <?= isset($quiz['CreatedTime']) && !empty($quiz['CreatedTime']) ? htmlspecialchars($quiz['CreatedTime']) : 'No Created Time Found'; ?></h3>
         
             <?php if (isset($quiz)): ?>
                 <h3>Questions</h3>
