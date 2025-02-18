@@ -1,6 +1,24 @@
 <?php
 session_start();
 
+
+
+if (!isset($_SESSION['username'])) {
+    header("Location: admin_login.php");
+    exit();
+}
+
+$server = "localhost";
+$user = "root";
+$password = "";
+$database = "namethattune";
+
+$conn = new mysqli($server, $user, $password, $database);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
 if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
     header('Content-Type: application/json');
     
@@ -55,91 +73,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
         }
         
         $conn->commit();
-        echo json_encode(['success' => true, 'message' => 'Update successful']);
-        
-    } catch (Exception $e) {
-        $conn->rollback();
-        error_log("Error in update: " . $e->getMessage());
-        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
-    }
-    exit;
-}
-
-if (!isset($_SESSION['username'])) {
-    header("Location: admin_login.php");
-    exit();
-}
-
-$server = "localhost";
-$user = "root";
-$password = "";
-$database = "namethattune";
-
-$conn = new mysqli($server, $user, $password, $database);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
-    header('Content-Type: application/json');
-    
-    try {
-        // Start transaction
-        $conn->begin_transaction();
-        
-        // Validate required fields
-        if (!isset($_POST['question_id']) || !isset($_POST['correctOption'])) {
-            throw new Exception('Missing required fields');
-        }
-        
-        $questionId = $_POST['question_id'];
-        $correctAnswer = $_POST['correctOption'];
-        
-        // Log incoming data
-        error_log("Updating question: " . print_r($_POST, true));
-        
-        // Update correct answer
-        $stmt = $conn->prepare("UPDATE question SET CorrectAnswer = ? WHERE QuestionID = ?");
-        $stmt->bind_param("ss", $correctAnswer, $questionId);
-        if (!$stmt->execute()) {
-            throw new Exception("Failed to update correct answer: " . $stmt->error);
-        }
-        
-        // Update options
-        for ($i = 1; $i <= 4; $i++) {
-            if (!isset($_POST["option$i"])) continue;
-            
-            $optionName = $_POST["option$i"];
-            $stmt = $conn->prepare("UPDATE `option` SET OptionName = ? WHERE QuestionID = ? AND OptionOrder = ?");
-            $stmt->bind_param("ssi", $optionName, $questionId, $i);
-            if (!$stmt->execute()) {
-                throw new Exception("Failed to update option $i: " . $stmt->error);
-            }
-        }
-        
-        // Handle file uploads
-        if (!empty($_FILES['songUpload']['tmp_name'])) {
-            $songAudio = file_get_contents($_FILES['songUpload']['tmp_name']);
-            $stmt = $conn->prepare("UPDATE song SET SongAudio = ? WHERE QuestionID = ?");
-            $stmt->bind_param("bs", $songAudio, $questionId);
-            if (!$stmt->execute()) {
-                throw new Exception("Failed to update song audio: " . $stmt->error);
-            }
-        }
-        
-        if (!empty($_FILES['songPhoto']['tmp_name'])) {
-            $songImage = file_get_contents($_FILES['songPhoto']['tmp_name']);
-            $stmt = $conn->prepare("UPDATE song SET SongImage = ? WHERE QuestionID = ?");
-            $stmt->bind_param("bs", $songImage, $questionId);
-            if (!$stmt->execute()) {
-                throw new Exception("Failed to update song image: " . $stmt->error);
-            }
-        }
-        
-        // Commit transaction
-        $conn->commit();
-        
         echo json_encode(['success' => true, 'message' => 'Update successful']);
         
     } catch (Exception $e) {

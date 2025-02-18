@@ -96,8 +96,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $correctAnswer = $question['correctAnswer'];
         $options = $question['options'];
         $songName = $question['correctAnswer'];
-        $songAudio = base64_decode($question['songAudio']);
-        $songImage = base64_decode($question['songImage']);
+        $songAudio = base64_encode(file_get_contents($_FILES['songUpload']['tmp_name']));
+        $songImage = base64_encode(file_get_contents($_FILES['songPhoto']['tmp_name']));
 
 
         // Insert into question table
@@ -659,6 +659,28 @@ $conn->close();
 
             if (!quizName || !genreID || questions.length === 0) {
                 alert('Please fill in all required fields.');
+                return;
+            }
+
+            // Validation checks
+            if (!quizName) {
+                alert('Please enter a quiz name.');
+                return;
+            }
+        
+            if (!genreID) {
+                alert('Please select a quiz category.');
+                return;
+            }
+        
+            // Check for exactly 5 rows
+            if (questions.length < 5) {
+                alert('You need exactly 5 questions. Please add ' + (5 - questions.length) + ' more question(s).');
+                return;
+            }
+        
+            if (questions.length > 5) {
+                alert('You can only have 5 questions. Please remove ' + (questions.length - 5) + ' question(s).');
                 return;
             }
 
