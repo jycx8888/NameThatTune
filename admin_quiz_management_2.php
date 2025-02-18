@@ -608,9 +608,9 @@ if (isset($quiz_id)) {
                                     $song = $result_song->fetch_assoc();
                                 ?>
                                 <tr data-question-id="<?php echo htmlspecialchars($question['QuestionID']); ?>">
-                                <td><?php echo htmlspecialchars($question['QuestionID']); ?></td>
-                                <td data-options="<?php echo htmlspecialchars($options_text); ?>"><?php echo $options_text; ?></td>
-                                <td data-correct="<?php echo htmlspecialchars($question['CorrectAnswer']); ?>"><?php echo htmlspecialchars($question['CorrectAnswer']); ?></td>
+                                    <td><?php echo htmlspecialchars($question['QuestionID']); ?></td>
+                                    <td data-options="<?php echo htmlspecialchars($options_text); ?>"><?php echo $options_text; ?></td>
+                                    <td data-correct="<?php echo htmlspecialchars($question['CorrectAnswer']); ?>"><?php echo htmlspecialchars($question['CorrectAnswer']); ?></td>
                                 <td>
                                     <?php if (!empty($song['SongAudio'])): ?>
                                         <audio controls>
@@ -703,56 +703,75 @@ if (isset($quiz_id)) {
 
         // Function to update quiz numbers after deleting a row
         function editQuestion(questionId) {
-    const modal = document.getElementById("quizModal");
-    modal.style.display = "block";
+            const modal = document.getElementById("quizModal");
+            modal.style.display = "block";
 
-    // Find the question row
-    const questionRow = document.querySelector(`tr[data-question-id="${questionId}"]`);
-    if (!questionRow) return;
+            // Find the question row
+            const questionRow = document.querySelector(`tr[data-question-id="${questionId}"]`);
+            if (!questionRow) return;
 
-    // Set question ID
-    document.getElementById('question_id').value = questionId;
+            // Set question ID
+            document.getElementById('question_id').value = questionId;
 
-    // Get data from the row
-    const cells = questionRow.getElementsByTagName('td');
-    const optionsString = cells[1].getAttribute('data-options');
-    const options = optionsString ? optionsString.split(',').map(opt => opt.trim()) : [];
-    const correctAnswer = cells[2].getAttribute('data-correct');
+            // Get data from the row
+            const cells = questionRow.getElementsByTagName('td');
+            const optionsString = cells[1].getAttribute('data-options');
+            const options = optionsString ? optionsString.split(',').map(opt => opt.trim()) : [];
+            const correctAnswer = cells[2].getAttribute('data-correct');
 
-    // Set options and mark correct answer
-    options.forEach((option, index) => {
-        const input = document.querySelector(`input[name="option${index + 1}"]`);
-        if (input) {
-            input.value = option;
-            input.setAttribute('data-original', option); // Store original value
-            
-            // Add input event listener for each option
-            input.addEventListener('input', function() {
-                const optionCell = cells[1];
-                const currentOptions = optionCell.getAttribute('data-options').split(',').map(opt => opt.trim());
-                currentOptions[index] = this.value;
-                optionCell.setAttribute('data-options', currentOptions.join(', '));
-                optionCell.textContent = currentOptions.join(', ');
-
-                // Update correct answer if this was the selected option
-                const checkmark = this.parentElement.querySelector('.checkmark');
-                if (checkmark && checkmark.classList.contains('selected')) {
-                    document.getElementById('correctOption').value = this.value;
-                    cells[2].setAttribute('data-correct', this.value);
-                    cells[2].textContent = this.value;
-                }
+            // Clear previous event listeners
+            document.querySelectorAll('.option-container input[type="text"]').forEach(input => {
+                input.replaceWith(input.cloneNode(true));
             });
+        
+            // Set options and mark correct answer
+            options.forEach((option, index) => {
+                const input = document.querySelector(`input[name="option${index + 1}"]`);
+                if (input) {
+                    input.value = option;
+
+                    // Add input event listener
+                    input.addEventListener('input', function() {
+                        const optionCell = cells[1];
+                        const currentOptions = Array.from(document.querySelectorAll('.option-container input[type="text"]'))
+                            .map(input => input.value);
+
+                        // Update options in the table
+                        optionCell.setAttribute('data-options', currentOptions.join(', '));
+                        optionCell.textContent = currentOptions.join(', ');
+                    
+                        // Update correct answer if this option is selected
+                        const checkmark = this.parentElement.querySelector('.checkmark');
+                        if (checkmark && checkmark.classList.contains('selected')) {
+                            document.getElementById('correctOption').value = this.value;
+                            cells[2].setAttribute('data-correct', this.value);
+                            cells[2].textContent = this.value;
+                        }
+                    });
 
             const checkmark = input.parentElement.querySelector('.checkmark');
             if (checkmark) {
+                checkmark.replaceWith(checkmark.cloneNode(true));
+                const newCheckmark = input.parentElement.querySelector('.checkmark');
+                
                 if (option === correctAnswer) {
-                    checkmark.classList.add('selected');
-                    checkmark.textContent = '✓';
+                    newCheckmark.classList.add('selected');
+                    newCheckmark.textContent = '✓';
                     document.getElementById('correctOption').value = option;
-                } else {
-                    checkmark.classList.remove('selected');
-                    checkmark.textContent = '';
                 }
+
+                // Add click event listener to checkmark
+                newCheckmark.addEventListener('click', function() {
+                    document.querySelectorAll('.checkmark').forEach(c => {
+                        c.classList.remove('selected');
+                        c.textContent = '';
+                    });
+                    this.classList.add('selected');
+                    this.textContent = '✓';
+                    document.getElementById('correctOption').value = input.value;
+                    cells[2].setAttribute('data-correct', input.value);
+                    cells[2].textContent = input.value;
+                });
             }
         }
     });
@@ -840,38 +859,54 @@ if (isset($quiz_id)) {
         });
         
         document.getElementById('addQuestionForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-                
-            if (!document.querySelector('.checkmark.selected')) {
-                alert('Please select a correct answer');
-                return;
+    e.preventDefault();
+
+    if (!document.querySelector('.checkmark.selected')) {
+        alert('Please select a correct answer');
+        return;
+    }
+
+    const formData = new FormData(this);
+    const questionId = document.getElementById('question_id').value;
+
+    // Add all options to formData with their current values
+    const optionInputs = document.querySelectorAll('.option-container input[type="text"]');
+    optionInputs.forEach((input, index) => {
+        formData.append(`option${index + 1}`, input.value.trim());
+    });
+
+    // Add the correct answer
+    formData.append('correctOption', document.getElementById('correctOption').value.trim());
+    formData.append('question_id', questionId);
+
+    fetch('admin_quiz_management_2.php?action=updateQuestion', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update the table row immediately
+            const questionRow = document.querySelector(`tr[data-question-id="${questionId}"]`);
+            if (questionRow) {
+                const cells = questionRow.getElementsByTagName('td');
+                const optionsText = Array.from(optionInputs).map(input => input.value.trim()).join(', ');
+                cells[1].textContent = optionsText;
+                cells[1].setAttribute('data-options', optionsText);
+                cells[2].textContent = document.getElementById('correctOption').value;
+                cells[2].setAttribute('data-correct', document.getElementById('correctOption').value);
             }
-        
-            const formData = new FormData(this);
-            
-            // Add all options to formData
-            document.querySelectorAll('.option-container input[type="text"]').forEach((input, index) => {
-                formData.set(`option${index + 1}`, input.value);
-            });
-        
-            fetch('admin_quiz_management_2.php?action=updateQuestion', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Question updated successfully!');
-                    location.reload();
-                } else {
-                    throw new Error(data.error || 'Update failed');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error updating question: ' + error.message);
-            });
-        });
+            closeModal();
+            alert('Question updated successfully!');
+        } else {
+            throw new Error(data.error || 'Update failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating question: ' + error.message);
+    });
+});
     </script>
 
 <?php 
