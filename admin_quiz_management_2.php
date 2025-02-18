@@ -485,163 +485,109 @@ if (isset($quiz_id)) {
 
     <!-- Main Content Section -->
     <main>
-    <form method="POST" action="admin_quiz_management_2.php?quiz_id=<?php echo $quiz['QuizID']; ?>">
-    <h2 class="edit-quiz-header"><?php echo isset($quiz) ? 'Edit Quiz' : 'Add Song'; ?></h2>
-
-    <!-- Modal -->
-    <div id="quizModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h2>Edit Question</h2>
-        <form id="addQuestionForm" enctype="multipart/form-data">
-            <input type="hidden" name="question_id" id="question_id">
-            <input type="hidden" id="correctOption" name="correctOption">
+            <h2 class="edit-quiz-header"><?php echo isset($quiz) ? 'Edit Quiz' : 'Add Song'; ?></h2>
+        
             
-            <!-- Audio Section -->
-            <div class="form-group">
-                <label for="songUpload">Song Audio (8 secs):</label>
-                <input type="file" id="songUpload" name="songUpload" accept="audio/mp3">
-                <div id="audioPreview"></div>
-            </div>
+        
+             <!-- Display Quiz ID -->
+             <p>Quiz ID: <?= isset($quiz['QuizID']) && !empty($quiz['QuizID']) ? htmlspecialchars($quiz['QuizID']) : 'No Quiz Found'; ?></p>
             
-            <!-- Image Section -->
-            <div class="form-group">
-                <label for="songPhoto">Song Photo:</label>
-                <input type="file" id="songPhoto" name="songPhoto" accept="image/*">
-                <div id="imagePreview"></div>
-            </div>
-            
-            <!-- Options Section -->
-            <div class="option-container">
-                <label>Options:</label>
-                <div>
-                    <input type="text" name="option1" placeholder="Option 1" required>
-                    <span class="checkmark" data-value="1"></span>
-                </div>
-                <div>
-                    <input type="text" name="option2" placeholder="Option 2" required>
-                    <span class="checkmark" data-value="2"></span>
-                </div>
-                <div>
-                    <input type="text" name="option3" placeholder="Option 3" required>
-                    <span class="checkmark" data-value="3"></span>
-                </div>
-                <div>
-                    <input type="text" name="option4" placeholder="Option 4" required>
-                    <span class="checkmark" data-value="4"></span>
-                </div>
-            </div>
-            
-            <div class="button-group">
-                <button type="submit">Save Changes</button>
-                <button type="button" onclick="closeModal()">Cancel</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-     <!-- Display Quiz ID -->
-     <p>Quiz ID: <?= isset($quiz['QuizID']) && !empty($quiz['QuizID']) ? htmlspecialchars($quiz['QuizID']) : 'No Quiz Found'; ?></p>
-    
-    <?php if (isset($quiz)): ?>
-        <input type="hidden" name="quiz_id" value="<?php echo $quiz['QuizID']; ?>">
-    <?php endif; ?>
-
-    <div class="form-group">
-        <label for="genre-id">Genre</label>
-        <select id="genre-id" name="genre_id">
-            <option value="1" <?php if (isset($quiz) && $quiz['GenreID'] == 'G001') echo 'selected'; ?>>English</option>
-            <option value="2" <?php if (isset($quiz) && $quiz['GenreID'] == 'G002') echo 'selected'; ?>>Japanese</option>
-            <option value="3" <?php if (isset($quiz) && $quiz['GenreID'] == 'G003') echo 'selected'; ?>>Korean</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label for="created-time">Created Time</label>
-        <input type="datetime-local" id="created-time" name="created_time" 
-            value="<?php echo isset($quiz) ? date('Y-m-d\TH:i:s', strtotime($quiz['CreatedTime'])) : ''; ?>">
-    </div>
-
-    <!-- Table Section for Questions (only in edit mode) -->
-<?php if (isset($quiz)): ?>
-    <h3>Questions</h3>
-    <table class="question-table">
-        <thead>
-            <tr>
-                <th>Question ID</th>
-                <th>Options</th>
-                <th>Correct Answer</th>
-                <th>Song Audio</th>
-                <th>Song Image</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if ($result_questions->num_rows > 0): ?>
-                <?php while ($question = $result_questions->fetch_assoc()): ?>
-                    <?php
-                        // Fetch options for the current question
-                        $stmt_options = $conn->prepare("SELECT OptionName FROM option WHERE QuestionID = ?");
-                        $stmt_options->bind_param("s", $question['QuestionID']);
-                        $stmt_options->execute();
-                        $result_options = $stmt_options->get_result();
-                        $options = [];
-                        while ($option = $result_options->fetch_assoc()) {
-                            // Add html_entity_decode here
-                            $options[] = html_entity_decode(htmlspecialchars($option['OptionName']), ENT_QUOTES);
-                        }
-                        $options_text = implode(", ", $options);
-                    ?>
-                    <?php
-                        // Fetch song for the current question
-                        $stmt_song = $conn->prepare("SELECT SongAudio, SongImage FROM song WHERE QuestionID = ?");
-                        $stmt_song->bind_param("s", $question['QuestionID']);
-                        $stmt_song->execute();
-                        $result_song = $stmt_song->get_result();
-                        $song = $result_song->fetch_assoc();
-                    ?>
-                    <tr data-question-id="<?php echo htmlspecialchars($question['QuestionID']); ?>">
-                    <td><?php echo htmlspecialchars($question['QuestionID']); ?></td>
-                    <td data-options="<?php echo htmlspecialchars($options_text); ?>"><?php echo $options_text; ?></td>
-                    <td data-correct="<?php echo htmlspecialchars($question['CorrectAnswer']); ?>"><?php echo htmlspecialchars($question['CorrectAnswer']); ?></td>
-                    <td>
-                        <?php if (!empty($song['SongAudio'])): ?>
-                            <audio controls>
-                                <source src="<?php echo htmlspecialchars($song['SongAudio']); ?>" type="audio/mpeg">
-                            </audio>
-                        <?php else: ?>
-                            No audio available
-                        <?php endif; ?>
-                    </td>
-                    <td>
-                        <?php if (!empty($song['SongImage'])): ?>
-                                <img src="<?php echo htmlspecialchars($song['SongImage']); ?>" alt="Song Image" style="max-width: 100px;">
-                        <?php else: ?>
-                            No image available
-                        <?php endif; ?>
-                    </td>
-                    <td class="actions">
-                        <button type="button" onclick="editQuestion('<?php echo htmlspecialchars($question['QuestionID']); ?>')" style="align-items:center;">Edit</button>
-                    </td>
-                </tr>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="3">No questions found for this quiz.</td>
-                </tr>
+            <?php if (isset($quiz)): ?>
+                <input type="hidden" name="quiz_id" value="<?php echo $quiz['QuizID']; ?>">
             <?php endif; ?>
-        </tbody>
-    </table>
-<?php endif; ?>
+        
+            <div class="form-group">
+                <label for="genre-id">Genre</label>
+                <select id="genre-id" name="genre_id">
+                    <option value="1" <?php if (isset($quiz) && $quiz['GenreID'] == 'G001') echo 'selected'; ?>>English</option>
+                    <option value="2" <?php if (isset($quiz) && $quiz['GenreID'] == 'G002') echo 'selected'; ?>>Japanese</option>
+                    <option value="3" <?php if (isset($quiz) && $quiz['GenreID'] == 'G003') echo 'selected'; ?>>Korean</option>
+                </select>
+            </div>
 
-    <!-- Buttons -->
-    <div class="button-container">
-        <button type="button" class="cancel" onclick="window.location.href='admin_quiz_management.php';">Cancel</button>
-    </div>
-</form>
+            <div class="form-group">
+                <label for="created-time">Created Time</label>
+                <input type="datetime-local" id="created-time" name="created_time" 
+                    value="<?php echo isset($quiz) ? date('Y-m-d\TH:i:s', strtotime($quiz['CreatedTime'])) : ''; ?>">
+            </div>
+        
+            <?php if (isset($quiz)): ?>
+                <h3>Questions</h3>
+                <table class="question-table">
+                    <thead>
+                        <tr>
+                            <th>Question ID</th>
+                            <th>Options</th>
+                            <th>Correct Answer</th>
+                            <th>Song Audio</th>
+                            <th>Song Image</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if ($result_questions->num_rows > 0): ?>
+                            <?php while ($question = $result_questions->fetch_assoc()): ?>
+                                <?php
+                                    // Fetch options for the current question
+                                    $stmt_options = $conn->prepare("SELECT OptionName FROM option WHERE QuestionID = ?");
+                                    $stmt_options->bind_param("s", $question['QuestionID']);
+                                    $stmt_options->execute();
+                                    $result_options = $stmt_options->get_result();
+                                    $options = [];
+                                    while ($option = $result_options->fetch_assoc()) {
+                                        // Add html_entity_decode here
+                                        $options[] = html_entity_decode(htmlspecialchars($option['OptionName']), ENT_QUOTES);
+                                    }
+                                    $options_text = implode(", ", $options);
+                                ?>
+                                <?php
+                                    // Fetch song for the current question
+                                    $stmt_song = $conn->prepare("SELECT SongAudio, SongImage FROM song WHERE QuestionID = ?");
+                                    $stmt_song->bind_param("s", $question['QuestionID']);
+                                    $stmt_song->execute();
+                                    $result_song = $stmt_song->get_result();
+                                    $song = $result_song->fetch_assoc();
+                                ?>
+                                <tr data-question-id="<?php echo htmlspecialchars($question['QuestionID']); ?>">
+                                <td><?php echo htmlspecialchars($question['QuestionID']); ?></td>
+                                <td data-options="<?php echo htmlspecialchars($options_text); ?>"><?php echo $options_text; ?></td>
+                                <td data-correct="<?php echo htmlspecialchars($question['CorrectAnswer']); ?>"><?php echo htmlspecialchars($question['CorrectAnswer']); ?></td>
+                                <td>
+                                    <?php if (!empty($song['SongAudio'])): ?>
+                                        <audio controls>
+                                            <source src="<?php echo htmlspecialchars($song['SongAudio']); ?>" type="audio/mpeg">
+                                        </audio>
+                                    <?php else: ?>
+                                        No audio available
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if (!empty($song['SongImage'])): ?>
+                                            <img src="<?php echo htmlspecialchars($song['SongImage']); ?>" alt="Song Image" style="max-width: 100px;">
+                                    <?php else: ?>
+                                        No image available
+                                    <?php endif; ?>
+                                </td>
+                                <td class="actions">
+                                    <button type="button" onclick="editQuestion('<?php echo htmlspecialchars($question['QuestionID']); ?>')" style="align-items:center;">Edit</button>
+                                </td>
+                            </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="3">No questions found for this quiz.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+
+            <!-- Buttons -->
+            <div class="button-container">
+                <button type="button" class="cancel" onclick="window.location.href='admin_quiz_management.php';">Cancel</button>
+            </div>
     </main>
-
-
+    
     <script>
         function openModal() {
             document.getElementById("quizModal").style.display = "block";
