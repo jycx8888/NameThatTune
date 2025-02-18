@@ -358,7 +358,7 @@ $conn->close();
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
         <h2>Add New Quiz</h2>
-        <form id="addQuestionForm" enctype="multipart/form-data">
+        <form id="addQuestionForm">
             <label for="songUpload">Correct Song Upload (8 secs):</label>
             <input type="file" id="songUpload" name="songUpload" accept="audio/mp3">
             <br><br>
@@ -477,34 +477,15 @@ $conn->close();
                     return;
                 }
             
-                // Create a Promise to handle audio duration check
-                const checkAudioDuration = () => {
-                    return new Promise((resolve, reject) => {
-                        const audio = new Audio(URL.createObjectURL(songUpload));
-
-                        audio.addEventListener('loadedmetadata', () => {
-                            if (audio.duration > 9) {
-                                reject("The uploaded MP3 must be 8 seconds or less.");
-                            } else {
-                                resolve();
-                            }
-                        });
-                    
-                        audio.addEventListener('error', () => {
-                            reject("Error loading audio file.");
-                        });
-                    });
-                };
-            
-                // Use async/await to handle the audio check
-                checkAudioDuration()
-                    .then(() => {
-                        proceedWithSubmission();
-                    })
-                    .catch((error) => {
-                        alert(error);
+                // Audio duration check
+                const audio = new Audio(URL.createObjectURL(songUpload));
+                audio.onloadedmetadata = function() {
+                    if (audio.duration > 9) {
+                        alert("The uploaded MP3 must be 8 seconds or less.");
                         return;
-                    });
+                    }
+                    proceedWithSubmission();
+                };
             } else {
                 // If editing, proceed directly
                 proceedWithSubmission();
@@ -641,27 +622,13 @@ $conn->close();
             const genreID = document.getElementById('options').value;
             const questions = [];
 
-            document.querySelectorAll('table tbody tr').forEach(row => {
-                const options = row.cells[1].textContent.split(', ');
-                const correctAnswer = row.cells[2].textContent;
-                const songName = row.cells[3].textContent;
-                const songAudio = row.cells[4].textContent;
-                const songImage = row.cells[5].textContent;
-
-                questions.push({
-                    options,
-                    correctAnswer,
-                    songName,
-                    songAudio,
-                    songImage
-                });
-            });
-
-            if (!quizName || !genreID || questions.length === 0) {
+            const rows = document.querySelectorAll('table tbody tr');
+            let processedRows = 0;
+        
+            if (!quizName || !genreID || rows.length === 0) {
                 alert('Please fill in all required fields.');
                 return;
             }
-
             // Validation checks
             if (!quizName) {
                 alert('Please enter a quiz name.');
@@ -683,20 +650,37 @@ $conn->close();
                 alert('You can only have 5 questions. Please remove ' + (questions.length - 5) + ' question(s).');
                 return;
             }
-
-            const formData = new FormData();
-            formData.append('quizName', quizName);
-            formData.append('genreID', genreID);
-            formData.append('questions', JSON.stringify(questions));
-
-            fetch('admin_addQuiz.php', {
-                method: 'POST',
-                body: formData
-            }).then(response => {
-                if (response.ok) {
-                    window.location.href = 'admin_quiz_management.php';
-                } else {
-                    alert('Failed to upload quiz.');
+        
+            rows.forEach(row => {
+                const options = row.cells[1].textContent.split(', ');
+                const correctAnswer = row.cells[2].textContent;
+        
+                const songFileInput = document.getElementById('songUpload').files[0];
+                const photoFileInput = document.getElementById('songPhoto').files[0];
+        
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const songAudio = event.target.result.split(',')[1]; // Get base64 string
+        
+                    const photoReader = new FileReader();
+                    photoReader.onload = function(event) {
+                        const songImage = event.target.result.split(',')[1]; // Get base64 string
+                        const formData = new FormData();
+                        formData.append('quizName', quizName);
+                        formData.append('genreID', genreID);
+                        formData.append('questions', JSON.stringify(questions));
+                    
+                        fetch('admin_addQuiz.php', {
+                            method: 'POST',
+                            body: formData
+                        }).then(response => {
+                            if (response.ok) {
+                                window.location.href = 'admin_quiz_management.php';
+                            } else {
+                                alert('Failed to upload quiz.');
+                            }
+                        });
+                    }
                 }
             });
         }
