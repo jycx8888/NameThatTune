@@ -1,5 +1,4 @@
 <?php
-// Database connection
 session_start();
 
 if (!isset($_SESSION['username'])) {
@@ -7,15 +6,17 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-$server = 'localhost';
-$user = 'root';
-$password = '';
-$database = 'namethattune';
+$servername = "localhost";
+$dbusername = "root"; // Database username
+$dbpassword = ""; // Database password
+$dbname = "namethattune";
 
-$connection = mysqli_connect($server, $user, $password, $database);
+// Create connection
+$connection = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
-if (!$connection) {
-    die("Connection failed: " . mysqli_connect_error());
+// Check connection
+if ($connection->connect_error) {
+    die("Connection failed: " . $connection->connect_error);
 }
 
 $username = $_SESSION['username'];
@@ -32,6 +33,17 @@ if ($result->num_rows > 0) {
 } else {
     // Handle case where user data is not found
     $profile_picture_path = 'Icon/account.png'; // Default profile picture
+}
+
+// Function to check available songs
+function checkAvailableSongs($connection) {
+    $query = "SELECT COUNT(*) AS available_songs FROM song WHERE QuestionID IS NULL";
+    $result = mysqli_query($connection, $query);
+    if ($result) {
+        $row = mysqli_fetch_assoc($result);
+        return $row['available_songs'] >= 5;
+    }
+    return false;
 }
 
 // Query to fetch quiz data
@@ -358,12 +370,17 @@ console.log("Button not found.");
         }
 
         function moveToAddSong() {
-            window.location.href = 'admin_addQuiz.php';
+            if (!<?php echo json_encode(checkAvailableSongs($connection)); ?>) {
+                alert('There must be at least 5 songs not linked to any question to add a new quiz.');
+                return;
+            }
+            window.location.href = 'admin_addQuizNew.php';
         }
 
         function back(){
             window.location.href = 'admin_adminDashboard.php';
         }
+        
     </script>
     
      <?php 

@@ -155,7 +155,6 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NameThatTune - Add New Quiz</title>
     <link rel="stylesheet" href="user_header.css">
-    <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
         body {
             background-color: #d1a3ff;
