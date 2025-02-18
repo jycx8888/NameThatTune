@@ -96,8 +96,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $correctAnswer = $question['correctAnswer'];
         $options = $question['options'];
         $songName = $question['correctAnswer'];
-        $songAudio = base64_decode($question['songAudio']);
-        $songImage = base64_decode($question['songImage']);
+        $songAudio = base64_encode(file_get_contents($_FILES['songUpload']['tmp_name']));
+        $songImage = base64_encode(file_get_contents($_FILES['songPhoto']['tmp_name']));
 
 
         // Insert into question table
@@ -629,6 +629,27 @@ $conn->close();
                 alert('Please fill in all required fields.');
                 return;
             }
+            // Validation checks
+            if (!quizName) {
+                alert('Please enter a quiz name.');
+                return;
+            }
+        
+            if (!genreID) {
+                alert('Please select a quiz category.');
+                return;
+            }
+        
+            // Check for exactly 5 rows
+            if (questions.length < 5) {
+                alert('You need exactly 5 questions. Please add ' + (5 - questions.length) + ' more question(s).');
+                return;
+            }
+        
+            if (questions.length > 5) {
+                alert('You can only have 5 questions. Please remove ' + (questions.length - 5) + ' question(s).');
+                return;
+            }
         
             rows.forEach(row => {
                 const options = row.cells[1].textContent.split(', ');
@@ -644,39 +665,22 @@ $conn->close();
                     const photoReader = new FileReader();
                     photoReader.onload = function(event) {
                         const songImage = event.target.result.split(',')[1]; // Get base64 string
-
-                        questions.push({
-                            options,
-                            correctAnswer,
-                            songAudio,
-                            songImage
+                        const formData = new FormData();
+                        formData.append('quizName', quizName);
+                        formData.append('genreID', genreID);
+                        formData.append('questions', JSON.stringify(questions));
+                    
+                        fetch('admin_addQuiz.php', {
+                            method: 'POST',
+                            body: formData
+                        }).then(response => {
+                            if (response.ok) {
+                                window.location.href = 'admin_quiz_management.php';
+                            } else {
+                                alert('Failed to upload quiz.');
+                            }
                         });
-                        
-                        processedRows++;
-                        if (processedRows === rows.length) {
-                            sendQuizData(quizName, genreID, questions);
-                        }
-                    };
-                    photoReader.readAsDataURL(photoFileInput);
-                };
-                reader.readAsDataURL(songFileInput);
-            });
-        }
-
-        function sendQuizData(quizName, genreID, questions) {
-            const formData = new FormData();
-            formData.append('quizName', quizName);
-            formData.append('genreID', genreID);
-            formData.append('questions', JSON.stringify(questions));
-        
-            fetch('admin_addQuiz.php', {
-                method: 'POST',
-                body: formData
-            }).then(response => {
-                if (response.ok) {
-                    window.location.href = 'admin_quiz_management.php';
-                } else {
-                    alert('Failed to upload quiz.');
+                    }
                 }
             });
         }
