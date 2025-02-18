@@ -320,12 +320,58 @@ if ($result->num_rows > 0) {
         return true; // Allow form submission
     }
 
+
+
+    // Add 5 questions to question table
+    // Create new QuestionID
+    // Link questions to quiz ID
+    // Set song name as correct answer
+
+    // Add 20 options to option table
+    // Create new OptionID
+    // Seperate options by commas
+    // Link options to question ID
+
+    // Update song table to include question ID
+    // Get question ID from question table
+    // Link question ID to song ID
+
     function addQuiz() {
         if (!validateQuizForm()) {
             return;
         }
 
+        // Add 1 quiz to quiz table
+        // Create new QuizID
+        // Link quiz to genre ID
+        // Get created time
+        // Set quiz name
+
         
+        <?php
+            // Create new QuizID
+            $sql = "SELECT QuizID FROM quiz ORDER BY QuizID DESC LIMIT 1";
+            $result = mysqli_query($conn, $sql);
+            $lastQuizID = mysqli_fetch_assoc($result)['QuizID'];
+            $newQuizNo = (int)substr($lastQuizID, 1) + 1;
+
+            if ($newQuizNo < 10) {
+                $newQuizID = 'Q00' . $newQuizNo;
+            } else if ($newQuizNo < 100) {
+                $newQuizID = 'Q0' . $newQuizNo;
+            } else if ($newQuizNo < 1000) {
+                $newQuizID = 'Q' . $newQuizNo;
+            }            
+
+            $stmt = $conn->prepare("INSERT INTO quiz (QuizID, GenreID, CreatedTime, QuizName) VALUES (?, ?, NOW(), ?)");
+            $stmt->bind_param("sss", $newQuizID, $genreID, $quizName);
+            
+
+            $quizName = $_POST['quizName'];
+            $genreID = $_POST['options'];
+            $stmt->execute();
+
+        ?>
     }
 </script>
 </html>

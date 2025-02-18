@@ -228,11 +228,12 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     </style>
     <script>
         function addSong() {
-    console.log("Add Song button clicked!"); // Debugging
-    window.location.href = 'admin_quiz_management_2.php';
-}
+            console.log("Add Song button clicked!"); // Debugging
+            window.location.href = 'admin_quiz_management_2.php';
+        }
     </script>
 </head>
+
 <body>
     <div id="header">
         <h1><a href="admin_adminDashboard.php">NameThatTune</a></h1>
@@ -247,75 +248,74 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     <!-- Content -->
     <div id="content">
         <div id="edit-quiz-container">
-        <div class="section-title">Quiz Management</div>
+            <div class="section-title">Quiz Management</div>
 
-<!-- Search Filter Section -->
-<div class="search-bar">
-<label for="filter">Search by:</label>
-<select id="filter">
-    <option value="id">Quiz ID</option>
-    <option value="genre">Genre ID</option>
-    <option value="time">Created Time</option>
-</select>
-<input type="text" id="search" placeholder="Search....">
-<button onclick="performSearch()">Search</button>
-<button id="addSongBtn" onclick="moveToAddSong()">Add New Quiz</button>
+            <!-- Search Filter Section -->
+            <div class="search-bar">
+                <label for="filter">Search by:</label>
+                <select id="filter">
+                    <option value="id">Quiz ID</option>
+                    <option value="genre">Genre ID</option>
+                    <option value="time">Created Time</option>
+                </select>
+                <input type="text" id="search" placeholder="Search....">
+                <button onclick="performSearch()">Search</button>
+                <button id="add-quiz-button" onclick="moveToAddQuiz()">Add Quiz</button>
+                <button id="add-song-button" onclick="moveToAddSong()">Add Song</button>
 
-</div>
-<!-- Table Section -->
- 
-<table>
-<thead>
-<tr>
-    <th>Quiz ID</th>
-    <th>Genre ID</th>
-    <th>Created Time</th>
-    <th>Action</th>
-</tr>
+            </div>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-var button = document.getElementById("addSong");
-if (button) {
-button.addEventListener("click", function() {
-    console.log("Redirecting to admin_quiz_management_2.php");
-    window.location.href = 'admin_quiz_management_2.php';
-});
-} else {
-console.log("Button not found.");
-}
-});
-</script>
+            <!-- Table Section -->
+            <table>
+            <thead>
+            <tr>
+                <th>Quiz ID</th>
+                <th>Genre ID</th>
+                <th>Created Time</th>
+                <th>Action</th>
+            </tr>
 
-</thead>
-<tbody id="quizTable">
-<?php if (mysqli_num_rows($results) > 0): ?>
-    <?php while ($row = mysqli_fetch_assoc($results)): ?>
-        <tr>
-            <td><?php echo htmlspecialchars($row['quiz_id']); ?></td>
-            <td><?php echo htmlspecialchars($row['genre_id']); ?></td>
-            <td><?php echo htmlspecialchars($row['created_time']); ?></td>
-            <td class="actions">
-                <a id="edit-link" href="admin_quiz_management_2.php?quiz_id=<?php echo urlencode($row['quiz_id']); ?>">Edit</a> |
-                <a id="delete-link" href="admin_quiz_management.php?action=delete&id=<?php echo urlencode($row['quiz_id']); ?>" onclick="return confirm('Are you sure you want to delete this quiz?');">Delete</a>
-            </td>
-        </tr>
-    <?php endwhile; ?>
-<?php else: ?>
-    <tr>
-        <td colspan="4">No quizzes found.</td>
-    </tr>
-<?php endif; ?>
-</tbody>
-</table>
-
-<!-- Back Button -->
-<!-- Back Button -->
-<button onclick="back()" class="back-button">Back to Dashboard</button>
-
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                var button = document.getElementById("addSong");
+                if (button) {
+                button.addEventListener("click", function() {
+                    console.log("Redirecting to admin_quiz_management_2.php");
+                    window.location.href = 'admin_quiz_management_2.php';
+                });
+                } else {
+                console.log("Button not found.");
+                }
+                });
+            </script>
+    
+            </thead>
+            <tbody id="quizTable">
+            <?php if (mysqli_num_rows($results) > 0): ?>
+            <?php while ($row = mysqli_fetch_assoc($results)): ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($row['quiz_id']); ?></td>
+                    <td><?php echo htmlspecialchars($row['genre_id']); ?></td>
+                    <td><?php echo htmlspecialchars($row['created_time']); ?></td>
+                    <td class="actions">
+                        <a id="edit-link" href="admin_quiz_management_2.php?quiz_id=<?php echo urlencode($row['quiz_id']); ?>">Edit</a> |
+                        <a id="delete-link" href="admin_quiz_management.php?action=delete&id=<?php echo urlencode($row['quiz_id']); ?>"     onclick="return confirm('Are you sure you want to delete this quiz?');">Delete</a>
+                    </td>
+                    </tr>
+                    <?php endwhile; ?>
+                    <?php else: ?>
+                    <tr>
+                        <td colspan="4">No quizzes found.</td>
+                    </tr>
+                    <?php endif; ?>
+                    </tbody>
+                    </table>
+                    
+                    <!-- Back Button -->
+                    <!-- Back Button -->
+                    <button onclick="back()" class="back-button">Back to Dashboard</button>
+                    
         </div>
-
-
     </div>
 
     <!-- Script for Search Functionality -->
@@ -369,12 +369,16 @@ console.log("Button not found.");
             }
         }
 
-        function moveToAddSong() {
+        function moveToAddQuiz() {
             if (!<?php echo json_encode(checkAvailableSongs($connection)); ?>) {
                 alert('There must be at least 5 songs not linked to any question to add a new quiz.');
                 return;
             }
             window.location.href = 'admin_addQuizNew.php';
+        }
+
+        function moveToAddSong() {
+            window.location.href = 'admin_addSong.php';
         }
 
         function back(){
