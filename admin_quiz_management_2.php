@@ -1,8 +1,6 @@
 <?php
 session_start();
 
-
-
 if (!isset($_SESSION['username'])) {
     header("Location: admin_login.php");
     exit();
@@ -22,18 +20,11 @@ if ($conn->connect_error) {
 if (isset($_GET['action']) && $_GET['action'] === 'updateQuestion') {
     header('Content-Type: application/json');
     
-    // Debug log
-    error_log("Received update request: " . print_r($_POST, true));
-    error_log("Files: " . print_r($_FILES, true));
-    
     try {
         $conn->begin_transaction();
         
         $questionId = $_POST['question_id'];
         $correctAnswer = $_POST['correctOption'];
-        
-        // Debug log
-        error_log("Updating question ID: $questionId with correct answer: $correctAnswer");
         
         // Update correct answer in question table
         $stmt = $conn->prepare("UPDATE question SET CorrectAnswer = ? WHERE QuestionID = ?");
@@ -98,16 +89,14 @@ if ($result->num_rows > 0) {
 }
 
 if (isset($_GET['quiz_id'])) {
-    //echo "Debug: Raw quiz_id = " . $_GET['quiz_id'] . "<br>";
-    $quiz_id = $_GET['quiz_id']; // Keep it as a string
-    //echo "Debug: Processed quiz_id = " . $quiz_id . "<br>";
+    $quiz_id = $_GET['quiz_id'];
 } else {
     die("Error: quiz_id not provided in the URL.");
 }
 
 // Validate if quiz_id exists in the database
 $query = $conn->prepare("SELECT QuizID FROM quiz WHERE QuizID = ?");
-$query->bind_param("s", $quiz_id); // Use "s" for string
+$query->bind_param("s", $quiz_id);
 $query->execute();
 $result = $query->get_result();
 
@@ -116,7 +105,7 @@ if ($result->num_rows === 0) {
 }
 
 $stmt = $conn->prepare("SELECT QuizID, GenreID, CreatedTime FROM quiz WHERE QuizID = ?");
-$stmt->bind_param("s", $quiz_id); // Use "s" for string
+$stmt->bind_param("s", $quiz_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -128,74 +117,12 @@ if ($result->num_rows > 0) {
 
 if (isset($quiz_id)) {
     $stmt_questions = $conn->prepare("SELECT QuestionID, CorrectAnswer FROM question WHERE QuizID = ?");
-    $stmt_questions->bind_param("s", $quiz_id); // Use "s" for string
+    $stmt_questions->bind_param("s", $quiz_id);
     $stmt_questions->execute();
     $result_questions = $stmt_questions->get_result();
-
-    //if ($result_questions->num_rows > 0) {
-        //echo "Debug: Questions Found = " . $result_questions->num_rows . "<br>";
-    //} else {
-        //echo "Debug: No Questions Found for Quiz ID = " . $quiz_id . "<br>";
-   // }
 } else {
     $quiz = null;
     $result_questions = null;
-}
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
-    $song_id = $_POST['song_id'];
-    $song_audio = null;
-    $song_image = null;
-
-    if (!empty($_FILES['song_audio']['tmp_name'])) {
-        $song_audio = file_get_contents($_FILES['song_audio']['tmp_name']);
-    }
-    if (!empty($_FILES['song_image']['tmp_name'])) {
-        $song_image = file_get_contents($_FILES['song_image']['tmp_name']);
-    }
-
-    $stmt = $conn->prepare("UPDATE song SET SongAudio = COALESCE(?, SongAudio), SongImage = COALESCE(?, SongImage) WHERE SongID = ?");
-    $stmt->bind_param("bbs", $song_audio, $song_image, $song_id);
-    
-    if ($stmt->execute()) {
-        echo "Song updated successfully.";
-    } else {
-        echo "Error updating song: " . $stmt->error;
-    }
-
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $questionID = $_POST['questionID'];
-        $options = [
-            $_POST['option1'],
-            $_POST['option2'],
-            $_POST['option3'],
-            $_POST['option4']
-        ];
-    
-        // Fetch existing options for the given question
-        $sql = "SELECT OptionID FROM `option` WHERE QuestionID = ? LIMIT 4";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $questionID);
-        $stmt->execute();
-        $result = $stmt->get_result();
-    
-        $optionIDs = [];
-        while ($row = $result->fetch_assoc()) {
-            $optionIDs[] = $row['OptionID'];
-        }
-    
-        // Update options if they exist
-        for ($i = 0; $i < count($options); $i++) {
-            if (isset($optionIDs[$i])) {
-                $updateSQL = "UPDATE `option` SET OptionName = ? WHERE OptionID = ?";
-                $updateStmt = $conn->prepare($updateSQL);
-                $updateStmt->bind_param("ss", $options[$i], $optionIDs[$i]);
-                $updateStmt->execute();
-            }
-        }
-        
-        echo "Options updated successfully!";
-    }
 }
 ?>
 
@@ -678,7 +605,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
                     <td>
                         <?php if (!empty($song['SongAudio'])): ?>
                             <audio controls>
-                                <source src="data:audio/mpeg;base64,<?php echo base64_encode($song['SongAudio']); ?>" type="audio/mpeg">
+                                <source src="fetch_media.php?type=audio&id=<?php echo urlencode($question['QuestionID']); ?>" type="audio/mpeg">
+                                Your browser does not support the audio element.
                             </audio>
                         <?php else: ?>
                             No audio available
@@ -686,7 +614,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
                     </td>
                     <td>
                         <?php if (!empty($song['SongImage'])): ?>
-                            <img src="data:image/jpeg;base64,<?php echo base64_encode($song['SongImage']); ?>" alt="Song Image" style="max-width: 100px;">
+                            <img src="fetch_media.php?type=image&id=<?php echo urlencode($question['QuestionID']); ?>" 
+                                 alt="Song Image" style="max-width: 100px;">
                         <?php else: ?>
                             No image available
                         <?php endif; ?>
@@ -808,28 +737,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_song'])) {
     
     // Display current audio
     const currentAudio = audioCell.querySelector('audio');
-    if (currentAudio) {
+        if (currentAudio) {
         const audioPreview = document.getElementById('audioPreview');
         audioPreview.innerHTML = `
             <div class="preview-container">
                 <p>Current Audio:</p>
-                ${currentAudio.outerHTML}
+                <audio controls>
+                    <source src="fetch_media.php?type=audio&id=${questionId}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
             </div>
         `;
     }
-    
-    // Display current image
-    const currentImage = imageCell.querySelector('img');
+
     if (currentImage) {
         const imagePreview = document.getElementById('imagePreview');
         imagePreview.innerHTML = `
             <div class="preview-container">
                 <p>Current Image:</p>
-                <img src="${currentImage.src}" alt="Current Image" style="max-width: 200px;">
+                <img src="fetch_media.php?type=image&id=${questionId}" 
+                     alt="Current Image" style="max-width: 200px;">
             </div>
         `;
+        }
     }
-}
         
                 document.querySelectorAll('.checkmark').forEach(check => {
                 check.addEventListener('click', function() {
