@@ -23,7 +23,8 @@ include 'user_fetch_profile.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>NameThatTune</title>
+    <link rel="icon" href="icon/logo.jpg" type="image/png">
     <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_footer.css">
     <style>
