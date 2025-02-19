@@ -1,12 +1,11 @@
 <?php
 session_start();
 
-// Enable error logging and save to a file instead of displaying it
 ini_set('log_errors', 1);
-ini_set('error_log', 'php_errors.log'); // Error log file
+ini_set('error_log', 'php_errors.log');
 error_reporting(E_ALL);
 
-header('Content-Type: application/json'); // Ensure JSON response
+header('Content-Type: application/json');
 
 if (!isset($_SESSION['username'])) {
     echo json_encode(['success' => false, 'message' => 'User not logged in']);
@@ -14,8 +13,8 @@ if (!isset($_SESSION['username'])) {
 }
 
 $servername = "localhost";
-$dbusername = "root"; // Database username
-$dbpassword = ""; // Database password
+$dbusername = "root";
+$dbpassword = "";
 $dbname = "namethattune";
 
 // Create connection
@@ -27,7 +26,6 @@ if ($conn->connect_error) {
     die(json_encode(['success' => false, 'message' => 'Connection failed: ' . $conn->connect_error]));
 }
 
-// Get the data from the request
 $data = json_decode(file_get_contents('php://input'), true);
 
 if (json_last_error() !== JSON_ERROR_NONE) {
@@ -35,7 +33,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     die(json_encode(['success' => false, 'message' => 'JSON decode error: ' . json_last_error_msg()]));
 }
 
-error_log("Received data: " . print_r($data, true)); // Log the received data
+error_log("Received data: " . print_r($data, true));
 
 $userId = $data['userId'];
 $quizId = $data['quizId'];
@@ -46,13 +44,12 @@ $timeTaken = $data['timeTaken'];
 $startTime = $data['startTime'];
 $userAnswers = $data['userAnswers'];
 
-// Verify that the user exists
 $stmt = $conn->prepare("SELECT UserID FROM user WHERE UserID = ?");
 if (!$stmt) {
     error_log("Prepare failed: " . $conn->error);
     die(json_encode(['success' => false, 'message' => 'Prepare failed: ' . $conn->error]));
 }
-$stmt->bind_param("s", $userId); // Bind as string
+$stmt->bind_param("s", $userId);
 $stmt->execute();
 $result = $stmt->get_result();
 if ($result->num_rows === 0) {
@@ -61,9 +58,6 @@ if ($result->num_rows === 0) {
 }
 $stmt->close();
 
-
-
-// Insert the record into the record table
 $stmt = $conn->prepare("INSERT INTO record (RecordID, Result, Time, UserID, QuizID, TimeUsed) VALUES (?, ?, ?, ?, ?, ?)");
 if (!$stmt) {
     error_log("Prepare failed: " . $conn->error);
@@ -76,7 +70,6 @@ if (!$stmt->execute()) {
 }
 $stmt->close();
 
-// Insert the record_question data
 foreach ($userAnswers as $answer) {
     $questionId = $answer['questionId'];
     $userAnswer = $answer['userAnswer'];
@@ -94,11 +87,9 @@ foreach ($userAnswers as $answer) {
     $stmt->close();
 }
 
-// Update the correct rate and total attempts for each question
 foreach ($userAnswers as $answer) {
     $questionId = $answer['questionId'];
 
-    // Get the total attempts and correct attempts for the question
     $stmt = $conn->prepare("SELECT COUNT(*) AS totalAttempts, SUM(CASE WHEN UserAnswer = (SELECT CorrectAnswer FROM question WHERE QuestionID = ?) THEN 1 ELSE 0 END) AS correctAttempts FROM record_question WHERE QuestionID = ?");
     if (!$stmt) {
         error_log("Prepare failed: " . $conn->error);
@@ -112,10 +103,8 @@ foreach ($userAnswers as $answer) {
     $correctAttempts = $row['correctAttempts'];
     $stmt->close();
 
-    // Calculate the new correct rate
     $newCorrectRate = $correctAttempts / $totalAttempts;
 
-    // Update the question table with the new correct rate and total attempts
     $stmt = $conn->prepare("UPDATE question SET CorrectRate = ?, TotalAttempts = ? WHERE QuestionID = ?");
     if (!$stmt) {
         error_log("Prepare failed: " . $conn->error);
