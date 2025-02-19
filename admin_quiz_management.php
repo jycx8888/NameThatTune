@@ -73,6 +73,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     $stmt->execute();
     $stmt->close();
 
+    $stmt = $connection->prepare("DELETE FROM admin_quiz WHERE QuizID = ?");
+    $stmt->bind_param("s", $quiz_id);
+    $stmt->execute();
+    $stmt->close();
+
     $stmt = $connection->prepare("DELETE FROM quiz WHERE QuizID = ?");
     $stmt->bind_param("s", $quiz_id);
 
