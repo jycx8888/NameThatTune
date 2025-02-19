@@ -204,7 +204,7 @@ $conn->close();
             </div>
             <div id="buttons">
                 <input type="submit" value="Add Song">
-                <input type="button" value="Cancel" onclick="window.location.href='admin_quiz_management.php'">
+                <input type="button" value="Back" onclick="window.location.href='admin_quiz_management.php'">
             </div>
             
         </form>
