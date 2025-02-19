@@ -131,7 +131,6 @@ $conn->close();
         .quiz-box {
             font-family: "Lalezar", system-ui;
             font-weight: 1000;
-            
             display: flex;
             justify-content: center;
             align-items: center;

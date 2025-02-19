@@ -59,6 +59,9 @@ if ($conn->query($sql) == TRUE) {
     echo "<script>alert('Error: " . $sql . "<br>" . $conn->error . "');</script>";
 }
 
+$adminID = $_SESSION['adminID'];
+$sql = "INSERT INTO admin_quiz (AdminID, QuizID) VALUES ('$adminID', '$newQuizID')";
+
 // Generate new QuestionID
 $result = $conn->query("SELECT QuestionID FROM question ORDER BY QuestionID DESC LIMIT 1");
 $lastQuestionID = $result->fetch_assoc()['QuestionID'];
@@ -436,7 +439,6 @@ for ($question = 1; $question <= 5; $question++) {
         document.getElementById('option3').value = options[2] || '';
         document.getElementById('option4').value = options[3] || '';
 
-        // Store the row index in a hidden input field
         document.getElementById('edit-question-container').dataset.rowIndex = row.rowIndex;
     }
 
@@ -479,10 +481,10 @@ for ($question = 1; $question <= 5; $question++) {
 
         if (songID === '' || option1 === '' || option2 === '' || option3 === '' || option4 === '') {
             alert('Please fill out all fields in the edit question form.');
-            return false; // Prevent saving the question
+            return false;
         }
 
-        return true; // Allow saving the question
+        return true;
     }
 
     function checkAnswer() {
@@ -494,16 +496,16 @@ for ($question = 1; $question <= 5; $question++) {
 
         if (songName !== option1 && songName !== option2 && songName !== option3 && songName !== option4) {
             alert('The song name must match one of the options.');
-            return false; // Prevent form submission
+            return false;
         }
 
-        return true; // Allow form submission
+        return true;
     }
 
 
     function saveQuestion() {
         if (!validateEditQuestionForm() || !checkAnswer()) {
-            return; // Prevent saving if validation fails
+            return;
         }
 
         const songID = document.getElementById('select-song').value;
@@ -571,23 +573,6 @@ for ($question = 1; $question <= 5; $question++) {
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
         let expires = "expires=" + date.toUTCString();
         document.cookie = `${name}=${value}; ${expires}; path=/`;
-    }
-
-    function deleteCookie(name) {
-        setCookie(name, null, null);
-    }
-
-    function getCookie(name) {
-        const cDecoded = decodeURIComponent(document.cookie);
-        const cArray = cDecoded.split('; ');
-        let result = null;
-        
-        cArray.forEach(element => {
-            if(element.indexOf(name) === 0) {
-                result = element.substring(name.length + 1)
-            }
-        })
-        return result;
     }
     
 </script>
