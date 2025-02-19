@@ -61,6 +61,7 @@ if ($conn->query($sql) == TRUE) {
 
 $adminID = $_SESSION['adminID'];
 $sql = "INSERT INTO admin_quiz (AdminID, QuizID) VALUES ('$adminID', '$newQuizID')";
+$conn->query($sql);
 
 // Generate new QuestionID
 $result = $conn->query("SELECT QuestionID FROM question ORDER BY QuestionID DESC LIMIT 1");
