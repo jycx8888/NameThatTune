@@ -54,7 +54,8 @@ $conn->close();
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Guess Song Quiz Analytics</title>
+    <title>NameThatTune</title>
+    <link rel="icon" href="icon/logo.jpg" type="image/png">
     <link rel="stylesheet" href="user_header.css">
     <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>

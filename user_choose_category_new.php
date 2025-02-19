@@ -7,14 +7,12 @@ if (!isset($_SESSION['username'])) {
 }
 
 $servername = "localhost";
-$dbusername = "root"; // Database username
-$dbpassword = ""; // Database password
+$dbusername = "root"; 
+$dbpassword = "";
 $dbname = "namethattune";
 
-// Create connection
 $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
-// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -118,16 +116,15 @@ $conn->close();
         #quiz-gallery {
             display: flex;
             flex-wrap: wrap;
-            /* padding: 24px; */
             justify-content: space-evenly;
         }
 
         @keyframes scroll-left {
             from {
-                transform: translateX(0); /* Start from the original position */
+                transform: translateX(0);
             }
             to {
-                transform: translateX(-50%); /* Move to the end of the first loop */
+                transform: translateX(-50%);
             }
         }
 
@@ -145,16 +142,16 @@ $conn->close();
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
             cursor: pointer;
             overflow: hidden;
-            transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+            transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease;
         }
 
         .quiz-box div {
             display: block;
-            padding: 8px 5px; /* Reduce padding */
-            font-size: 1.1rem; /* Adjust font size */
+            padding: 8px 5px;
+            font-size: 1.1rem;
             background-color: rgba(0, 0, 0, 0.6);
             position: relative;
-            top: 5px; /* Maintain slight downward position */
+            top: 5px;
         }
 
         @media (max-width: 1024px) {
@@ -164,17 +161,17 @@ $conn->close();
             }
 
             .quiz-box div {
-                font-size: 0.8rem; /* Smaller text for mobile */
-                padding: 5px; /* Adjust padding */
+                font-size: 0.8rem;
+                padding: 5px;
             }
         }
 
         .quiz-box:hover {
-            transform: scale(1.1); /* Slightly enlarge the box */
+            transform: scale(1.1);
         }
 
         .quiz-box.selected {
-            transform: scale(1.1); /* Slightly enlarge the box */
+            transform: scale(1.1);
         }
 
         #start-button {
@@ -187,15 +184,15 @@ $conn->close();
             color: white;
             cursor: pointer;
             font-family: "Lalezar", system-ui;
-            font-weight: 1000; /* Change the font family */
+            font-weight: 1000;
             align-self: center;
-            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; 
         }
 
         #start-button:hover {
             background-color: #1a0573;
-            transform: scale(1.1); /* Slightly enlarge the button */
-            box-shadow: 0 8px 15px rgba(26, 5, 115, 0.5); /* Add a shadow effect */
+            transform: scale(1.1); 
+            box-shadow: 0 8px 15px rgba(26, 5, 115, 0.5);
         }
 
         @media (max-width: 1024px) {
@@ -205,7 +202,6 @@ $conn->close();
             }
         }
 
-        /* Volume and Fullscreen Controls */
         #controls {
             width: 100%;
             display: flex;
@@ -213,7 +209,7 @@ $conn->close();
             align-self: end;
             align-content: center;
             margin-bottom: 48px;
-            background-color: transparent; /* Optional: Makes the background transparent */
+            background-color: transparent; 
         }
 
         #volume-control {
@@ -239,7 +235,7 @@ $conn->close();
         #fullscreen-control {
             display: flex;
             align-items: center;
-            position: sticky; /* Ensures it stays in place */
+            position: sticky; 
             margin-right: 24px;
         }
 
@@ -258,7 +254,7 @@ $conn->close();
     <div id="header">
         <h1><a href="user_mainPage.php">NameThatTune</a></h1>
         <div id="login">
-        <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
+        <img src="<?php echo htmlspecialchars($profile_picture_path); ?>">
         <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>
@@ -317,8 +313,8 @@ $conn->close();
         function adjustVolume(value) {
             const audioElement = document.getElementById('background-audio');
             if (audioElement) {
-                audioElement.volume = value / 100; // Adjust the audio volume
-                audioElement.muted = value == 0; // Mute if volume is 0
+                audioElement.volume = value / 100;
+                audioElement.muted = value == 0;
                 console.log("Volume set to:", audioElement.volume, "Muted:", audioElement.muted);
             } else {
                 console.log("Error: Audio element not found.");
@@ -355,11 +351,11 @@ $conn->close();
             const selectedCategory = this.value;
             if (selectedCategory === 'Category List') {
                 const gallery = document.getElementById('quiz-gallery');
-                gallery.innerHTML = ''; // Clear gallery content
+                gallery.innerHTML = ''; 
                 const audioElement = document.getElementById('background-audio');
-                audioElement.pause(); // Stop any playing audio
-                audioElement.src = ''; // Clear audio source
-                return; // Exit early since no category is selected
+                audioElement.pause(); 
+                audioElement.src = ''; 
+                return;
             }
         
             fetchQuizzes(selectedCategory);
@@ -373,7 +369,7 @@ $conn->close();
                 if (xhr.status === 200) {
                     const quizzes = JSON.parse(xhr.responseText);
                     const gallery = document.getElementById('quiz-gallery');
-                    gallery.innerHTML = ''; // Clear existing content
+                    gallery.innerHTML = ''; 
         
                     quizzes.forEach(quiz => {
                         const box = document.createElement('div');
@@ -405,7 +401,6 @@ $conn->close();
             const gallery = document.getElementById('quiz-gallery');
             const boxes = Array.from(gallery.children);
         
-            // Clone boxes until the gallery width exceeds the container width
             const galleryContainer = document.getElementById('quiz-gallery-container');
             let totalWidth = 0;
         
@@ -417,13 +412,11 @@ $conn->close();
                 });
             }
         
-            // Set the gallery width dynamically
             gallery.style.width = `${totalWidth}px`;
         
-            // Reset and reapply animation
-            gallery.style.animation = 'none'; // Stop animation temporarily
-            gallery.offsetHeight; // Trigger reflow
-            gallery.style.animation = `scroll-left ${totalWidth / 100}s linear infinite`; // Set duration based on total width
+            gallery.style.animation = 'none'; 
+            gallery.offsetHeight; 
+            gallery.style.animation = `scroll-left ${totalWidth / 100}s linear infinite`; 
         }
 
         document.addEventListener("DOMContentLoaded", function () {
@@ -431,22 +424,18 @@ $conn->close();
             const hoverSound = new Audio("Sound Effect/hover_sound_effect.mp3"); 
             const clickSound = new Audio("Sound Effect/click_sound_effect.wav");
 
-            // Ensure audio loads properly
             hoverSound.preload = "auto";
             clickSound.preload = "auto";
 
-            // Hover sound effect
             startButton.addEventListener("mouseover", () => {
-                hoverSound.currentTime = 0; // Reset time so it plays every time
+                hoverSound.currentTime = 0; 
                 hoverSound.play().catch(error => console.error("Hover sound error:", error));
             });
 
-            // Click sound effect with autoplay fix
             startButton.addEventListener("click", () => {
-                clickSound.currentTime = 0; // Reset time so it plays every time
+                clickSound.currentTime = 0; 
                 clickSound.play().catch(error => console.error("Click sound error:", error));
 
-                // Redirect based on selected quiz
                 const selectedBox = document.querySelector('.quiz-box.selected');
                 if (selectedBox) {
                     const quizId = selectedBox.dataset.quizId;
@@ -463,19 +452,17 @@ $conn->close();
         document.addEventListener("DOMContentLoaded", function () {
             const dropdown = document.getElementById("category-dropdown");
 
-            // Always reset the dropdown when the page loads
             dropdown.value = "Category List";
-            sessionStorage.removeItem("selectedCategory"); // Ensure the selection is cleared
+            sessionStorage.removeItem("selectedCategory"); 
 
             dropdown.addEventListener("change", function () {
                 sessionStorage.setItem("selectedCategory", this.value);
             });
 
-            // Ensure dropdown resets when back button is used
             window.addEventListener("pageshow", function (event) {
                 if (event.persisted || performance.navigation.type === 2) {
                     dropdown.value = "Category List"; 
-                    sessionStorage.removeItem("selectedCategory"); // Ensure reset
+                    sessionStorage.removeItem("selectedCategory"); 
                 }
             });
         });
@@ -525,10 +512,10 @@ $conn->close();
             const icon = document.getElementById(iconElement);
             if (passwordField.type === 'password') {
                 passwordField.type = 'text';
-                iconElement.src = 'Icon/show.png'; // Change to the open eye icon
+                iconElement.src = 'Icon/show.png'; 
             } else {
                 passwordField.type = 'password';
-                iconElement.src = 'Icon/hide.png'; // Change to the closed eye icon
+                iconElement.src = 'Icon/hide.png';
             }
         }
 
@@ -555,12 +542,12 @@ $conn->close();
         }
 
         function logout() {
-            window.location.href = 'user_login.php'; // Redirect to login page
+            window.location.href = 'user_login.php'; 
         }
 
         document.getElementById('volumeSlider').addEventListener('input', function() {
             const volume = this.value;
-            console.log('Volume:', volume); // Replace with actual volume control logic
+            console.log('Volume:', volume);
         });
 
         function showWarning(message) {

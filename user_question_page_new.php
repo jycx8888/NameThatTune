@@ -7,21 +7,18 @@ if (!isset($_SESSION['username'])) {
 }
 
 $servername = "localhost";
-$dbusername = "root"; // Database username
-$dbpassword = ""; // Database password
+$dbusername = "root"; 
+$dbpassword = ""; 
 $dbname = "namethattune";
 
-// Create connection
 $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
-// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
 $username = $_SESSION['username'];
 
-// Fetch user data from the database
 $stmt = $conn->prepare("SELECT ProfilePicture FROM user WHERE Username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
@@ -31,13 +28,11 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $profile_picture_path = $row['ProfilePicture'];
 } else {
-    // Handle case where user data is not found
-    $profile_picture_path = 'Icon/account.png'; // Default profile picture
+    $profile_picture_path = 'Icon/account.png'; 
 }
 
 $stmt->close();
 
-// Set the character set to UTF-8
 $conn->set_charset("utf8");
 
 if (!isset($_GET['quizId'])) {
@@ -46,7 +41,6 @@ if (!isset($_GET['quizId'])) {
 
 $quizId = $_GET['quizId'];
 
-// Fetch questions for the selected quiz
 $stmt = $conn->prepare("SELECT * FROM question WHERE QuizID = ?");
 $stmt->bind_param("s", $quizId);
 $stmt->execute();
@@ -54,7 +48,6 @@ $questionsResult = $stmt->get_result();
 
 $questions = [];
 while ($row = $questionsResult->fetch_assoc()) {
-    // Fetch song details for each question
     $songStmt = $conn->prepare("SELECT * FROM song WHERE QuestionID = ?");
     $songStmt->bind_param("s", $row['QuestionID']);
     $songStmt->execute();
@@ -62,13 +55,11 @@ while ($row = $questionsResult->fetch_assoc()) {
     $song = $songResult->fetch_assoc();
     $songStmt->close();
 
-    // Use file paths for audio and image
     if ($song) {
-        $song['SongImage'] = $song['SongImage']; // File path to image
-        $song['SongAudio'] = $song['SongAudio']; // File path to audio
+        $song['SongImage'] = $song['SongImage'];
+        $song['SongAudio'] = $song['SongAudio'];
     }
 
-    // Fetch options for each question
     $optionStmt = $conn->prepare("SELECT * FROM option WHERE QuestionID = ?");
     $optionStmt->bind_param("s", $row['QuestionID']);
     $optionStmt->execute();
@@ -84,7 +75,6 @@ while ($row = $questionsResult->fetch_assoc()) {
     $questions[] = $row;
 }
 
-// Generate a new RecordID
 $result = $conn->query("SELECT COUNT(*) AS count FROM record");
 $row = $result->fetch_assoc();
 $recordCount = $row['count'] + 1;
@@ -93,12 +83,10 @@ $recordId = 'R' . str_pad($recordCount, 3, '0', STR_PAD_LEFT);
 $stmt->close();
 $conn->close();
 
-// Debugging: Check if $questions is populated
 if (empty($questions)) {
     die("No questions found for the provided Quiz ID.");
 }
 
-// Convert data to UTF-8 using mb_convert_encoding
 function convertToUtf8($data) {
     if (is_array($data)) {
         foreach ($data as $key => $value) {
@@ -112,7 +100,6 @@ function convertToUtf8($data) {
 
 $questions = convertToUtf8($questions);
 
-// Check for JSON encoding errors
 $jsonQuestions = json_encode($questions,JSON_UNESCAPED_UNICODE);
 if (json_last_error() !== JSON_ERROR_NONE) {
     die("JSON encoding error: " . json_last_error_msg());
@@ -149,11 +136,11 @@ if (json_last_error() !== JSON_ERROR_NONE) {
         }
 
         .question-image {
-            max-width: 100%; /* Ensure the image doesn't overflow its container */
-            height: auto; /* Maintain aspect ratio */
-            border-radius: 20px; /* Adjust the radius as desired */
-            margin-bottom: 20px; /* Add spacing between the image and the question text */
-            display: block; /* Center the image horizontally */
+            max-width: 100%; 
+            height: auto; 
+            border-radius: 20px;
+            margin-bottom: 20px; 
+            display: block; 
             margin-left: auto;
             margin-right: auto;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
@@ -189,7 +176,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
         }
 
         .option-button:disabled {
-            background-color: gray; /* Clear visual feedback for disabled state */
+            background-color: gray; 
             color: white;
             cursor: not-allowed;
         }
@@ -218,13 +205,12 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             transform: scale(1.05);
         }
 
-        /* Volume and Fullscreen Controls */
         #controls {
-            width: 100%; /* Full width of the screen */
-            display: flex; /* Align buttons */
-            justify-content: space-between; /* Align one button to the left and the other to the right */
+            width: 100%; 
+            display: flex; 
+            justify-content: space-between; 
             align-items: center;
-            background-color: transparent; /* Optional: Makes the background transparent */
+            background-color: transparent; 
         }
 
         #volume-control {
@@ -250,7 +236,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
         #fullscreen-control {
             display: flex;
             align-items: center;
-            position: sticky; /* Ensures it stays in place */
+            position: sticky; 
             margin-right: 24px;
         }
 
@@ -261,9 +247,9 @@ if (json_last_error() !== JSON_ERROR_NONE) {
         }
 
         audio {
-            width: 100%; /* Makes the audio bar take the full width of the container */
-            margin: 10px 0; /* Adds some space above and below the audio bar */
-            outline: none; /* Removes the default outline */
+            width: 100%; 
+            margin: 10px 0; 
+            outline: none; 
         }
 
         .question-header {
@@ -280,34 +266,34 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             font-family: "Lalezar", system-ui;
             font-weight: 1000;
             font-size: 1.2rem;
-            margin-left: 10px; /* Adjust spacing as needed */
+            margin-left: 10px; 
         }
 
         #current-question {
             font-family: "Lalezar", system-ui;
             font-weight: 1000;
             font-size: 1.2rem;
-            margin-right: 10px; /* Adjust spacing as needed */
+            margin-right: 10px; 
         }
 
         .next-button-container {
             display: flex;
-            justify-content: center; /* Center horizontally */
-            align-items: center; /* Center vertically */
-            margin-top: -100px; /* Add spacing if needed */
-            height: 100px; /* Adjust height as needed */
+            justify-content: center; 
+            align-items: center;
+            margin-top: -100px; 
+            height: 100px; 
         }
 
         #next-button {
             background-color: gray;
             color: white;
-            padding: 15px 30px; /* Increase padding for a larger button */
-            font-size: 18px; /* Increase font size */
+            padding: 15px 30px; 
+            font-size: 18px; 
             border: none;
-            border-radius: 10px; /* Slightly round edges */
+            border-radius: 10px; 
             cursor: not-allowed;
             transition: background-color 0.3s;
-            display: block; /* Ensure button stays inline */
+            display: block;
             width: fit-content;
             justify-self: center;
         }
@@ -332,7 +318,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     <div id="header">
         <h1><a href="user_mainPage.php">NameThatTune</a></h1>
         <div id="login">
-        <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
+        <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> 
         <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>
@@ -349,7 +335,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             <img id="question-image" style='height: 200px; width:200px;' alt="Question Image" class="question-image blurred">
             <div><h2 id="question">What song is this?</h2></div>
 
-            <!-- Add the audio bar -->
             <audio id="question-audio" autoplay>
                 <source id="audio-source" src="" type="audio/mpeg">
                 Your browser does not support the audio element.
@@ -380,7 +365,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     <script>
         function goBack() {
             if (window.history.length > 1) {
-                window.location.href = 'user_choose_category_new.php'; // Replace with your fallback URL
+                window.location.href = 'user_choose_category_new.php'; 
             }
         }
 
@@ -398,17 +383,15 @@ if (json_last_error() !== JSON_ERROR_NONE) {
         const userId = <?php echo json_encode($_SESSION['user_id']); ?>;
         const recordId = <?php echo json_encode($recordId); ?>;
 
-        console.log("User ID:", userId); // Log the user ID to the console
-        console.log("Quiz ID:", quizId); // Log the quiz ID to the console
+        console.log("User ID:", userId); 
+        console.log("Quiz ID:", quizId); 
 
         function loadNextQuestion() {
             if (currentQuestionIndex >= questions.length) {
-                // Calculate the total time taken
                 let endTime = new Date();
                 let realEndTime = new Date(endTime.toLocaleString('en-US', { timeZone: 'UTC' }));
-                let timeTaken = ((realEndTime - realStartTime) / 1000).toFixed(1); // Time in seconds
+                let timeTaken = ((realEndTime - realStartTime) / 1000).toFixed(1); 
 
-                // Save the record and record_question data to the database
                 fetch('save_record.php', {
                     method: 'POST',
                     headers: {
@@ -427,11 +410,10 @@ if (json_last_error() !== JSON_ERROR_NONE) {
                 })
                 .then(response => response.text())
                 .then(data => {
-                    console.log(data); // Log the raw response
+                    console.log(data); 
                     try {
-                        const jsonData = JSON.parse(data); // Parse the JSON response
+                        const jsonData = JSON.parse(data); 
                         if (jsonData.success) {
-                            // Redirect to the leaderboard page with the result and quiz ID
                             window.location.href = `user_leaderboard.php?result=${correctAnswersCount}&quizId=${quizId}&recordId=${recordId}`;
                         } else {
                             alert('Failed to save the record. Please try again.');
@@ -460,7 +442,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             document.getElementById("audio-source").src = currentQuestion.song.SongAudio;
             document.getElementById("question-audio").load();
 
-            // Shuffle the options
             shuffleArray(currentQuestion.options);
 
             const optionButtons = document.querySelectorAll(".option-button");
@@ -477,20 +458,17 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             currentQuestionIndex++;
         }
 
-        // Preload sound effects
         const clickSound = new Audio('Sound Effect/click_sound_effect.wav'); 
         const correctSound = new Audio('Sound Effect/Correct_Answer.mp3'); 
         const incorrectSound = new Audio('Sound Effect/Incorrect_Answer.mp3'); 
 
-        // Ensure sounds are loaded properly before playing
         clickSound.load();
         correctSound.load();
         incorrectSound.load();
 
-        // Add click sound to option buttons
         document.querySelectorAll('.option-button').forEach(button => {
             button.addEventListener('click', () => {
-                clickSound.currentTime = 0; // Reset so it plays every time
+                clickSound.currentTime = 0; 
                 clickSound.play().catch(error => console.log("Audio playback error:", error));
             });
         });
@@ -505,25 +483,21 @@ if (json_last_error() !== JSON_ERROR_NONE) {
         let userAnswers = [];
         let correctAnswersCount = 0;
         
-        // Function to handle selecting an option
         function selectOption(button) {
             const currentQuestion = questions[currentQuestionIndex - 1];
             const selectedOption = button.textContent.trim();
             const isCorrect = selectedOption === currentQuestion.CorrectAnswer;
 
-            // Track user's answer
             userAnswers.push({
                 questionId: currentQuestion.QuestionID,
                 userAnswer: selectedOption,
                 isCorrect: isCorrect
             });
         
-            // Increment correct answers count if the answer is correct
             if (isCorrect) {
                 correctAnswersCount++;
             }
 
-            // Play correct or incorrect sound
             if (isCorrect) {
                 correctSound.currentTime = 0;
                 correctSound.play().catch(error => console.log("Audio playback error:", error));
@@ -535,7 +509,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             document.getElementById("question-image").classList.remove("blurred");
             
 
-            // Disable all buttons after selection
             document.querySelectorAll('.option-button').forEach(button => {
                 button.disabled = true;
                 if (button.textContent.trim() === currentQuestion.CorrectAnswer) {
@@ -546,7 +519,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
                 }
             });
 
-            // Enable next button
             document.getElementById("next-button").disabled = false;
             document.getElementById("next-button").style.backgroundColor = "rgb(77, 72, 144)";
         }
@@ -566,7 +538,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             let audioElement = document.getElementById("question-audio");
             if (audioElement) {
                 audioElement.volume = value / 100;
-                audioElement.muted = value == 0; // Mute if volume is 0
+                audioElement.muted = value == 0;
                 console.log("Volume set to:", audioElement.volume, "Muted:", audioElement.muted);
             } else {
                 console.log("Error: Audio element not found.");
@@ -582,7 +554,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             }
         }       
 
-        // Fullscreen Toggle
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen();
@@ -593,10 +564,8 @@ if (json_last_error() !== JSON_ERROR_NONE) {
             }
         }
 
-        // Add the sound effect for hovering over the buttons
-        const hoverSound = new Audio('Sound Effect/hover_sound_effect.mp3');  // Replace with the actual path to your sound file
+        const hoverSound = new Audio('Sound Effect/hover_sound_effect.mp3'); 
 
-        // Add event listener to play sound on hover
         document.querySelectorAll('.option-button').forEach(button => {
             button.addEventListener('mouseover', () => {
                 hoverSound.play();
