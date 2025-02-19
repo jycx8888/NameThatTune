@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($row['Password'] === $password) {
             // Login successful
             $_SESSION['username'] = $username;
-            $_SESSION['AdminID'] = $row['AdminID'];
+            $_SESSION['adminID'] = $row['AdminID'];
             $login_success = true;
             header("Location: admin_adminDashboard.php");
             exit();
