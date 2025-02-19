@@ -64,14 +64,15 @@ $conn->close();
         }
         h1 {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 12px;
+            font-size: clamp(24px, 3vw, 32px);
         }
         .container {
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 50px;
-            margin: 20px auto;
+            padding: 24px;
+            margin: 24px auto;
             width: 90%;
             max-width: 800px;
         }
@@ -83,13 +84,15 @@ $conn->close();
         }
         th, td {
             font-family: 'Lalezar', system-ui;
-            font-weight: 500;
+            font-weight: 700;
+            font-size: clamp(14px, 2vw, 16px);
             border: 1px solid #ddd;
             padding: 8px;
             text-align: center;
         }
         th {
-            background-color: #f4f4f4;
+            background-color: #584cba;
+            color: white;
         }
         canvas {
             display: block;
@@ -102,16 +105,19 @@ $conn->close();
             height: 500px; /* Set a fixed height */
         }
         .back-button {
+            font-family: 'Lalezar', system-ui;
+            font-size: clamp(16px, 2vw, 18px);
+            font-weight: 700;
             display: block;
-            width: 200px;
+            width: 35%;
+            min-width: 200px;
             margin: 20px auto;
-            padding: 10px;
+            padding: 12px;
             background-color: #4CAF50;
             color: white;
             text-align: center;
             text-decoration: none;
             border-radius: 4px;
-            font-size: 16px;
         }
         .back-button:hover {
             background-color: #45a049;
@@ -125,16 +131,20 @@ $conn->close();
         }
         
         .search-bar input[type="text"] {
+            font-family: 'Lalezar', system-ui;
+            font-weight: 500;
             width: 60%; /* Adjust width to fit the buttons */
             padding: 10px;
-            font-size: 16px;
+            font-size: clamp(14px, 2vw, 16px);
             border: 1px solid #ccc;
             border-radius: 4px;
         }
         
         .search-bar button {
+            font-family: 'Lalezar', system-ui;
+            font-weight: 700;
+            font-size: clamp(14px, 2vw, 16px);
             padding: 10px 20px;
-            font-size: 16px;
             background-color: #4CAF50;
             color: white;
             border: none;

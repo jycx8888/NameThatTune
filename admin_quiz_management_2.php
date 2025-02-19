@@ -174,12 +174,14 @@ if (isset($quiz_id)) {
     <link rel="stylesheet" href="user_hamburger_menu.css">
     <style>
         main {
+            font-family: 'Lalezar', system-ui;
             flex: 1;
             margin: 40px;
             padding: 20px;
-            width: 1200px;
+            width: 90%;
+            max-width: 1200px;
             align-self: center;
-            background-color: #f0f0f0; /* Grey background for the form */
+            background-color: white;
             border-radius: 10px;
         }
 
@@ -210,8 +212,10 @@ if (isset($quiz_id)) {
         }
 
         .question-table th, td {
-            padding: 10px;
-            text-align: left;
+            font-family: 'Lalezar', system-ui;
+            font-size: clamp(14px, 1.5vw, 16px);
+            padding: 4px;
+            text-align: center;
             border: solid black;
             color: black;
         }
@@ -219,6 +223,14 @@ if (isset($quiz_id)) {
         .question-table th {
             background-color: rgb(104, 99, 174);
             color: white;
+        }
+
+        .question-table td {
+            font-weight: 500;
+        }
+
+        .question-table td audio {
+            width: 220px
         }
 
         .actions a {
@@ -232,6 +244,8 @@ if (isset($quiz_id)) {
             text-decoration: underline;
             color: blue;
         }
+
+
 
         .button-container {
             margin-top: 20px;
@@ -476,15 +490,24 @@ if (isset($quiz_id)) {
             cursor: pointer;
         }
 
-        button {
-            background-color: #007bff;
-            color: white;
+        .actions button {
+            width: 10px;
             border: none;
-            padding: 12px 24px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
-            min-width: 120px;
+        }
+
+        button {
+            background-color: #6763a9;
+            font-family: 'Lalezar', system-ui;
+            font-size: clamp(14px, 1.5vw, 16px);
+            font-weight: 500;
+            color: white;
+            border: none;
+            padding: 10px clamp(12px, 2vw, 36px);
+            border-radius: 5px;
+            cursor: pointer;
+            min-width: fit-content;
             margin: 10px;
             transition: all 0.3s ease;
         }
@@ -523,9 +546,9 @@ if (isset($quiz_id)) {
     <main>
             <h2 class="edit-quiz-header"><?php echo isset($quiz) ? 'Edit Quiz' : 'Add Song'; ?></h2>
         
-            <!-- Modal -->
-            <div id="quizModal" class="modal">
-    <div class="modal-content">
+        <!-- Modal -->
+        <div id="quizModal" class="modal">
+        <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
         <h2>Edit Question</h2>
         <form id="addQuestionForm" enctype="multipart/form-data">
@@ -568,8 +591,8 @@ if (isset($quiz_id)) {
 
             <button type="submit" class="submit-button">Update Question</button>
         </form>
+        </div>
     </div>
-</div>
         
             <!-- Display Quiz ID -->
             <h3>Quiz ID: <?= isset($quiz['QuizID']) && !empty($quiz['QuizID']) ? htmlspecialchars($quiz['QuizID']) : 'No Quiz Found'; ?></h3>

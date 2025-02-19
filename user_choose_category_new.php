@@ -138,7 +138,7 @@ $conn->close();
             width: 200px;
             height: 200px;
             margin: 12px;
-            background-color: rgb(72, 87, 227);
+            background-color: #584cba;
             color: white;
             text-align: center;
             border-radius: 10px;

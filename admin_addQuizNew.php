@@ -259,12 +259,6 @@ for ($question = 1; $question <= 5; $question++) {
             box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.5);
         }
 
-        /* #edit-question-container form {
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-        } */
-
         #edit-question-container h2 {
             font-size: clamp(20px, 2vw, 28px);
             margin: 12px 0;
@@ -294,7 +288,7 @@ for ($question = 1; $question <= 5; $question++) {
 
         #edit-question-container input[type='text'] {
             font-family: 'Lalezar', system-ui;
-            font-size: clamp(14px, 2vw, 16px);
+            font-size: clamp(14px, 1.5vw, 16px);
             font-weight: 700;
             margin: 4px 0;
             padding: 2px;
@@ -302,7 +296,7 @@ for ($question = 1; $question <= 5; $question++) {
 
         #edit-question-container input[type='button'] {
             font-family: 'Lalezar', system-ui;
-            font-size: clamp(14px, 2vw, 16px);
+            font-size: clamp(14px, 1.5vw, 16px);
             font-weight: 700;
             padding: 8px 16px;
             border-radius: 5px;
@@ -344,7 +338,7 @@ for ($question = 1; $question <= 5; $question++) {
     <div id='content'>
         <div id='add-quiz-container'>
             <h2>Add New Quiz</h2>
-            <form action="admin_addQuizNew.php" method="post" enctype="multipart/form-data" onsubmit="return addQuiz()">
+            <form action="admin_addQuizNew.php" method="post" enctype="multipart/form-data" onsubmit="return validateQuizForm()">
                 <label for="quizName">Quiz Name:</label>
                 <input type="text" id="quizName" name="quizName" required><br>
                 <label for="quizImage">Quiz Category:</label>
@@ -571,8 +565,6 @@ for ($question = 1; $question <= 5; $question++) {
 
         return true; // Allow form submission
     }
-
-
 
     function setCookie(name, value, days) {
         const date = new Date();
