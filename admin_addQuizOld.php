@@ -35,64 +35,6 @@ if ($result->num_rows > 0) {
     // Handle case where user data is not found
     $profile_picture_path = 'Icon/account.png'; // Default profile picture
 }
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
-
-    if (isset($_POST['options']) && isset($_POST['quizName'])) {
-        $genreID = $_POST['options'];
-        $quizName = $_POST['quizName'];
-    }
-
-
-// Generate QuizID
-$result = $conn->query("SELECT QuizID FROM quiz ORDER BY QuizID DESC LIMIT 1");
-$lastQuizID = $result->fetch_assoc()['QuizID'];
-$newQuizID = 'Q' . str_pad((int)substr($lastQuizID, 1) + 1, 3, '0', STR_PAD_LEFT);
-
-// Insert quiz details into the database
-$sql = "INSERT INTO quiz (QuizID, GenreID, CreatedTime, QuizName) VALUES ('$newQuizID', '$genreID', NOW(),'$quizName')";
-
-if ($conn->query($sql) == TRUE) {
-    echo "<script>alert('New quiz added successfully.');</script>";
-} else {
-    echo "<script>alert('Error: " . $sql . "<br>" . $conn->error . "');</script>";
-}
-
-// Generate new QuestionID
-$result = $conn->query("SELECT QuestionID FROM question ORDER BY QuestionID DESC LIMIT 1");
-$lastQuestionID = $result->fetch_assoc()['QuestionID'];
-$lastQuestionNo = (int)substr($lastQuestionID, 1);
-
-// Insert questions into the database
-for ($question = 1; $question <= 5; $question++) {
-    $newQuestionID = 'T' . str_pad(++$lastQuestionNo, 3, '0', STR_PAD_LEFT);
-    $songName = $_COOKIE['question' . $question . 'SongName'];
-
-    $sql = "INSERT INTO question (QuestionID, CorrectRate, QuizID, CorrectAnswer, TotalAttempts) VALUES ('$newQuestionID', 0, '$newQuizID', '$songName', 0)";
-    $conn->query($sql);
-
-    $songID = $_COOKIE['question' . $question . 'SongID'];
-    $sql = "UPDATE song SET QuestionID = '$newQuestionID' WHERE SongID = '$songID'";
-    $conn->query($sql);
-
-    // Insert options into option table
-    $options = $_COOKIE['question' . $question . 'Options'];
-    $options = explode(', ', $options);
-
-    $result = $conn->query("SELECT OptionID FROM option ORDER BY OptionID DESC LIMIT 1");
-    $lastOptionID = $result->fetch_assoc()['OptionID'];
-    $lastOptionNo = (int)substr($lastOptionID, 1);
-
-    for ($i = 0; $i < count($options); $i++) {
-        $option = $options[$i];
-        $newOptionID = 'O' . str_pad(++$lastOptionNo, 3, '0', STR_PAD_LEFT);
-        $sql = "INSERT INTO option (OptionID, OptionName, QuestionID) VALUES ('$newOptionID', '$option', '$newQuestionID')";
-        $conn->query($sql);
-    }
-}
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -172,7 +114,7 @@ for ($question = 1; $question <= 5; $question++) {
             text-align: center;
             border: 1px solid black;
             border-collapse: collapse;
-            padding: clamp(2px, 1vw, 6px);
+            padding: 8px;
             font-size: (14px, 1.5vw, 16px);
         }
 
@@ -241,91 +183,16 @@ for ($question = 1; $question <= 5; $question++) {
         }
 
         #edit-question-container {
-            font-family: 'Lalezar', system-ui;
-            font-size: clamp(14px, 1.5vw, 16px);
-            font-weight: 700;
             display: none;
             position: fixed;
             background-color: white;
             z-index: 1000;
-            width: 40vw;
-            min-width: 380px;
-            height: 50vh;
+            width: fit-content;
+            height: fit-content;
             padding: 12px;
             border-radius: 15px;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.5);
         }
 
-        /* #edit-question-container form {
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-        } */
-
-        #edit-question-container h2 {
-            font-size: clamp(20px, 2vw, 28px);
-            margin: 12px 0;
-        }
-
-        #edit-question-container select {
-            font-family: 'Lalezar', system-ui;
-            font-size: clamp(14px, 1.5vw, 16px);
-            font-weight: 700;
-            padding: 4px;
-            margin: 6px 0;
-            width: 80%;
-        }
-
-        #edit-question-container select option {
-            font-family: 'Lalezar', system-ui;
-            font-size: clamp(14px, 1.5vw, 16px);
-            font-weight: 700;
-        }
-
-        #edit-question-container label {
-            font-family: 'Lalezar', system-ui;
-            font-size: clamp(14px, 1.5vw, 16px);
-            align-items: center;
-            width: 100%;
-        }
-
-        #edit-question-container input[type='text'] {
-            font-family: 'Lalezar', system-ui;
-            font-size: clamp(14px, 2vw, 16px);
-            font-weight: 700;
-            margin: 4px 0;
-            padding: 2px;
-        }
-
-        #edit-question-container input[type='button'] {
-            font-family: 'Lalezar', system-ui;
-            font-size: clamp(14px, 2vw, 16px);
-            font-weight: 700;
-            padding: 8px 16px;
-            border-radius: 5px;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-top: 12px;
-        }
-
-        #save-edit-button {
-            background-color: #4CAF50;
-        }
-
-        #save-edit-button:hover {
-            background-color: #45a049;
-        }
-
-        #cancel-edit-button {
-            background-color: red;
-        }
-
-        #cancel-edit-button:hover {
-            background-color: darkred;
-        }
         
 
     </style>
@@ -367,7 +234,7 @@ for ($question = 1; $question <= 5; $question++) {
                         <th>Song ID</th>
                         <th>Song Name</th>
                         <th>Options</th>
-                        <th>Actions</th>
+                        <th>Action</th>
                     </tr>
                     <?php
                         for ($question = 1; $question <= 5; $question++) {
@@ -395,7 +262,7 @@ for ($question = 1; $question <= 5; $question++) {
                     <option value="" id='select-song'>Select song</option>
 
                         <?php 
-                        $sql = "SELECT SongID, SongName FROM song WHERE QuestionID IS NULL";
+                        $sql = "SELECT SongID, SongName FROM song WHERE QuestionID IS  NULL";
                         $result1 = mysqli_query($conn, $sql);
 
                         while ($row1 = mysqli_fetch_assoc($result1)) {
@@ -416,8 +283,8 @@ for ($question = 1; $question <= 5; $question++) {
                 <label for="option4">Option 4:</label>
                 <input type="text" id="option4" name="option4" required><br>
 
-                <input id="save-edit-button" type="button" value="Save" onclick="saveQuestion()">
-                <input id="cancel-edit-button" type="button" value="Cancel" onclick="document.getElementById('edit-question-container').style.display = 'none'">
+                <input type="button" value="Save" onclick="saveQuestion()">
+                <input type="button" value="Cancel" onclick="document.getElementById('edit-question-container').style.display = 'none'">
             </form>
         </div>
     </div>
@@ -540,13 +407,6 @@ for ($question = 1; $question <= 5; $question++) {
         document.getElementById('edit-question-container').style.display = 'none';
 
         updateSelectOptions()
-
-        setCookie('selectedSongs', selectedSongs.join(','), 0.1);
-        setCookie('quizName', document.getElementById('quizName').value, 0.1);
-        setCookie('quizCategory', document.getElementById('options').value, 0.1);
-        setCookie('question' + rowIndex + 'SongID', songID, 0.1);
-        setCookie('question' + rowIndex + 'SongName', songName, 0.1);
-        setCookie('question' + rowIndex + 'Options', options, 0.1);
     }
 
     function validateQuizForm() {
@@ -555,7 +415,7 @@ for ($question = 1; $question <= 5; $question++) {
         let allRowsFilled = true;
 
         // Check if all rows (excluding the header row) contain data
-        for (let i = 1; i <rows.length; i++) {
+        for (let i = 1; i < rows.length; i++) {
             const cells = rows[i].getElementsByTagName('td');
             if (cells[1].textContent.trim() === '' || cells[2].textContent.trim() === '' || cells[3].textContent.trim() === '') {
                 allRowsFilled = false;
@@ -573,29 +433,133 @@ for ($question = 1; $question <= 5; $question++) {
 
 
 
-    function setCookie(name, value, days) {
-        const date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        let expires = "expires=" + date.toUTCString();
-        document.cookie = `${name}=${value}; ${expires}; path=/`;
-    }
 
-    function deleteCookie(name) {
-        setCookie(name, null, null);
-    }
 
-    function getCookie(name) {
-        const cDecoded = decodeURIComponent(document.cookie);
-        const cArray = cDecoded.split('; ');
-        let result = null;
+
+
+
+
+    function addQuiz() {
+        if (!validateQuizForm()) {
+            return;
+        }
+
+        // Add 1 quiz to quiz table
+        // Create new QuizID
+        // Link quiz to genre ID
+        // Get created time
+        // Set quiz name
+
+        quizName = document.getElementById('quizName').value;
+        genreID = document.getElementById('options').value;
         
-        cArray.forEach(element => {
-            if(element.indexOf(name) === 0) {
-                result = element.substring(name.length + 1)
+        <?php
+            // Add quiz to quiz table
+            $stmt = $conn->prepare("INSERT INTO quiz (QuizID, GenreID, CreatedTime, QuizName) VALUES (?, ?, NOW(), ?)");
+            $stmt->bind_param("sss", $newQuizID, $genreID, $quizName);
+
+            // Create new QuizID
+            $sql = "SELECT QuizID FROM quiz ORDER BY QuizID DESC LIMIT 1";
+            $result = mysqli_query($conn, $sql);
+            $lastQuizID = mysqli_fetch_assoc($result)['QuizID'];
+            $newQuizNo = ((int)substr($lastQuizID, 1)) + 1;
+
+            if ($newQuizNo < 10) {
+                $newQuizID = 'Q00' . $newQuizNo;
+            } else if ($newQuizNo < 100) {
+                $newQuizID = 'Q0' . $newQuizNo;
+            } else if ($newQuizNo < 1000) {
+                $newQuizID = 'Q' . $newQuizNo;
+            }     
+
+            $quizName = $_POST['quizName'];
+            $genreID = $_POST['options'];
+            $stmt->execute();
+        ?>
+
+
+        // Create new QuestionID
+        // Set song name as correct answer
+            
+        // Add 5 questions to question table
+            
+        table = document.getElementById('questions-table');
+        rows = table.getElementsByTagName('tr');
+        songNameList = [];
+        optionsList = [];
+        questionList = [];
+
+        // Get each question from the table
+        for (let i = 1; i < rows.length; i++) {
+            row = rows[i];
+
+            questionList.push(row);
+
+        }
+            
+        // Loop through each question
+        for (question in questionList) {
+            songId = question.cells[1].textContent;
+            songName = question.cells[2].textContent;
+            options = question.cells[3].textContent.split(', ');
+            correctAnswer = songName;
+
+            // Add question to question table
+            <?php
+            $stmt = $conn->prepare("INSERT INTO question (QuestionID, CorrectRate, QuizID, CorrectAnswer, TotalAttempts) VALUES (?, 0, ?, ?, 0)");
+            $stmt->bind_param("sss", $newQuestionID, $newQuizID, $correctAnswer);
+
+            // Create new QuestionID
+            $sql = "SELECT QuestionID FROM question ORDER BY QuestionID DESC LIMIT 1";
+            $result = mysqli_query($conn, $sql);
+            $lastQuestionID = mysqli_fetch_assoc($result)['QuestionID'];
+            $newQuestionNo = ((int)substr($lastQuestionID, 1)) + 1;
+
+            if ($newQuestionNo < 10) {
+                $newQuestionID = 'T00' . $newQuestionNo;
+            } else if ($newQuestionNo < 100) {
+                $newQuestionID = 'T0' . $newQuestionNo;
+            } else if ($newQuestionNo < 1000) {
+                $newQuestionID = 'T' . $newQuestionNo;
             }
-        })
-        return result;
+
+            $stmt->execute();
+            ?>
+
+
+            // Add options to option table
+            for (option in options) {
+                <?php
+                $stmt = $conn->prepare("INSERT INTO option (OptionID, OptionName, QuestionID) VALUES (?, ?, ?)");
+                $stmt->bind_param("sss", $newOptionID, $option, $newQuestionID);
+
+                // Create new OptionID
+                $sql = "SELECT OptionID FROM option ORDER BY OptionID DESC LIMIT 1";
+                $result = mysqli_query($conn, $sql);
+                $lastOptionID = mysqli_fetch_assoc($result)['OptionID'];
+                $newOptionNo = (int)substr($lastOptionID, 1) + 1;
+
+                if ($newOptionNo < 10) {
+                    $newOptionID = 'O00' . $newOptionNo;
+                } else if ($newOptionNo < 100) {
+                    $newOptionID = 'O0' . $newOptionNo;
+                } else if ($newOptionNo < 1000) {
+                    $newOptionID = 'O' . $newOptionNo;
+                }
+                ?>
+            }
+
+            
+            // Update song table to include question ID
+            <?php
+                $stmt = $conn->prepare("UPDATE song SET QuestionID = ? WHERE SongID = ?");
+                $stmt->bind_param("ss", $newQuestionID, $songID);
+                $stmt->execute();
+            ?>
+        
+        }
+
+
     }
-    
 </script>
 </html>
