@@ -131,7 +131,10 @@ $conn->close();
         .quiz-box {
             font-family: "Lalezar", system-ui;
             font-weight: 1000;
-            font-size: small;
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
             width: 200px;
             height: 200px;
             margin: 12px;
@@ -146,12 +149,8 @@ $conn->close();
         }
 
         .quiz-box div {
-            display: block;
-            padding: 8px 5px;
-            font-size: 1.1rem;
-            background-color: rgba(0, 0, 0, 0.6);
-            position: relative;
-            top: 5px;
+            font-size: 20px;
+            padding: 10px;
         }
 
         @media (max-width: 1024px) {
@@ -160,10 +159,6 @@ $conn->close();
                 margin-bottom: 12px;
             }
 
-            .quiz-box div {
-                font-size: 0.8rem;
-                padding: 5px;
-            }
         }
 
         .quiz-box:hover {
