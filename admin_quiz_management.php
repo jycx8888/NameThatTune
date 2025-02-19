@@ -58,31 +58,42 @@ if (!$results) {
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $quiz_id = $_GET['id'];
 
-    $stmt = $connection->prepare("DELETE FROM song WHERE QuestionID IN (SELECT QuestionID FROM question WHERE QuizID = ?)");
+    $stmt = $connection->prepare("SELECT COUNT(*) AS count FROM record WHERE QuizID = ?");
     $stmt->bind_param("s", $quiz_id);
     $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
     $stmt->close();
 
-    $stmt = $connection->prepare("DELETE FROM `option` WHERE QuestionID IN (SELECT QuestionID FROM question WHERE QuizID = ?)");
-    $stmt->bind_param("s", $quiz_id);
-    $stmt->execute();
-    $stmt->close();
-
-    $stmt = $connection->prepare("DELETE FROM question WHERE QuizID = ?");
-    $stmt->bind_param("s", $quiz_id);
-    $stmt->execute();
-    $stmt->close();
-
-    $stmt = $connection->prepare("DELETE FROM admin_quiz WHERE QuizID = ?");
-    $stmt->bind_param("s", $quiz_id);
-    $stmt->execute();
-    $stmt->close();
-
-    $stmt = $connection->prepare("DELETE FROM quiz WHERE QuizID = ?");
-    $stmt->bind_param("s", $quiz_id);
-
-    if ($stmt->execute()) {
-        echo "<script>alert('Quiz deleted successfully!'); window.location.href='admin_quiz_management.php';</script>";
+    if ($row['count'] > 0) {
+        echo "<script>alert('Quiz cannot be deleted because it is attempted by users.'); window.location.href='admin_quiz_management.php';</script>";
+    } else {
+        $stmt = $connection->prepare("DELETE FROM song WHERE QuestionID IN (SELECT QuestionID FROM question WHERE QuizID = ?)");
+        $stmt->bind_param("s", $quiz_id);
+        $stmt->execute();
+        $stmt->close();
+    
+        $stmt = $connection->prepare("DELETE FROM `option` WHERE QuestionID IN (SELECT QuestionID FROM question WHERE QuizID = ?)");
+        $stmt->bind_param("s", $quiz_id);
+        $stmt->execute();
+        $stmt->close();
+    
+        $stmt = $connection->prepare("DELETE FROM question WHERE QuizID = ?");
+        $stmt->bind_param("s", $quiz_id);
+        $stmt->execute();
+        $stmt->close();
+    
+        $stmt = $connection->prepare("DELETE FROM admin_quiz WHERE QuizID = ?");
+        $stmt->bind_param("s", $quiz_id);
+        $stmt->execute();
+        $stmt->close();
+    
+        $stmt = $connection->prepare("DELETE FROM quiz WHERE QuizID = ?");
+        $stmt->bind_param("s", $quiz_id);
+    
+        if ($stmt->execute()) {
+            echo "<script>alert('Quiz deleted successfully!'); window.location.href='admin_quiz_management.php';</script>";
+        }
     }
 }
 ?>
