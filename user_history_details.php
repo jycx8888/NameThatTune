@@ -108,7 +108,7 @@ include 'user_fetch_profile.php';
     <div id="header">
         <h1><a href="user_mainPage.php">NameThatTune</a></h1>
         <div id="login">
-        <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
+        <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> 
         <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>

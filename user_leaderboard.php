@@ -11,14 +11,14 @@ if (!isset($_GET['quizId'])) {
 }
 
 $servername = "localhost";
-$dbusername = "root"; // Database username
-$dbpassword = ""; // Database password
+$dbusername = "root"; 
+$dbpassword = ""; 
 $dbname = "namethattune";
 
-// Create connection
+
 $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
-// Check connection
+
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -149,7 +149,7 @@ include 'user_fetch_profile.php';
     <div id="header">
         <h1><a href="user_mainPage.php">NameThatTune</a></h1>
         <div id="login">
-        <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
+        <img src="<?php echo htmlspecialchars($profile_picture_path); ?>">
         <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>

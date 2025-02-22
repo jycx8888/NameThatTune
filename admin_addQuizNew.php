@@ -6,23 +6,23 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Database connection
+
 $servername = "localhost";
-$dbusername = "root"; // Database username
-$dbpassword = ""; // Database password
+$dbusername = "root"; 
+$dbpassword = ""; 
 $dbname = "namethattune";
 
-// Create connection
+
 $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
-// Check connection
+
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
 $username = $_SESSION['username'];
 
-// Fetch user data from the database
+
 $stmt = $conn->prepare("SELECT ProfilePicture FROM admin WHERE Username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
@@ -32,8 +32,8 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $profile_picture_path = $row['ProfilePicture'];
 } else {
-    // Handle case where user data is not found
-    $profile_picture_path = 'Icon/account.png'; // Default profile picture
+    
+    $profile_picture_path = 'Icon/account.png'; 
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -45,12 +45,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
 
-// Generate QuizID
+
 $result = $conn->query("SELECT QuizID FROM quiz ORDER BY QuizID DESC LIMIT 1");
 $lastQuizID = $result->fetch_assoc()['QuizID'];
 $newQuizID = 'Q' . str_pad((int)substr($lastQuizID, 1) + 1, 3, '0', STR_PAD_LEFT);
 
-// Insert quiz details into the database
+
 $sql = "INSERT INTO quiz (QuizID, GenreID, CreatedTime, QuizName) VALUES ('$newQuizID', '$genreID', NOW(),'$quizName')";
 
 if ($conn->query($sql) == TRUE) {
@@ -63,12 +63,12 @@ $adminID = $_SESSION['adminID'];
 $sql = "INSERT INTO admin_quiz (AdminID, QuizID) VALUES ('$adminID', '$newQuizID')";
 $conn->query($sql);
 
-// Generate new QuestionID
+
 $result = $conn->query("SELECT QuestionID FROM question ORDER BY QuestionID DESC LIMIT 1");
 $lastQuestionID = $result->fetch_assoc()['QuestionID'];
 $lastQuestionNo = (int)substr($lastQuestionID, 1);
 
-// Insert questions into the database
+
 for ($question = 1; $question <= 5; $question++) {
     $newQuestionID = 'T' . str_pad(++$lastQuestionNo, 3, '0', STR_PAD_LEFT);
     $songName = $_COOKIE['question' . $question . 'SongName'];
@@ -80,7 +80,7 @@ for ($question = 1; $question <= 5; $question++) {
     $sql = "UPDATE song SET QuestionID = '$newQuestionID' WHERE SongID = '$songID'";
     $conn->query($sql);
 
-    // Insert options into option table
+    
     $options = $_COOKIE['question' . $question . 'Options'];
     $options = explode(', ', $options);
 
@@ -552,7 +552,7 @@ for ($question = 1; $question <= 5; $question++) {
         const rows = table.getElementsByTagName('tr');
         let allRowsFilled = true;
 
-        // Check if all rows (excluding the header row) contain data
+        
         for (let i = 1; i <rows.length; i++) {
             const cells = rows[i].getElementsByTagName('td');
             if (cells[1].textContent.trim() === '' || cells[2].textContent.trim() === '' || cells[3].textContent.trim() === '') {
@@ -563,10 +563,10 @@ for ($question = 1; $question <= 5; $question++) {
 
         if (!allRowsFilled) {
             alert('Please ensure all questions are filled out.');
-            return false; // Prevent form submission
+            return false; 
         }
 
-        return true; // Allow form submission
+        return true; 
     }
 
     function setCookie(name, value, days) {

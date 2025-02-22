@@ -7,21 +7,21 @@ if (!isset($_SESSION['username'])) {
 }
 
 $servername = "localhost";
-$dbusername = "root"; // Database username
-$dbpassword = ""; // Database password
+$dbusername = "root"; 
+$dbpassword = ""; 
 $dbname = "namethattune";
 
-// Create connection
+
 $connection = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
-// Check connection
+
 if ($connection->connect_error) {
     die("Connection failed: " . $connection->connect_error);
 }
 
 $username = $_SESSION['username'];
 
-// Fetch user data from the database
+
 $stmt = $connection->prepare("SELECT ProfilePicture FROM admin WHERE Username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
@@ -31,11 +31,11 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $profile_picture_path = $row['ProfilePicture'];
 } else {
-    // Handle case where user data is not found
-    $profile_picture_path = 'Icon/account.png'; // Default profile picture
+    
+    $profile_picture_path = 'Icon/account.png'; 
 }
 
-// Function to check available songs
+
 function checkAvailableSongs($connection) {
     $query = "SELECT COUNT(*) AS available_songs FROM song WHERE QuestionID IS NULL";
     $result = mysqli_query($connection, $query);
@@ -46,7 +46,7 @@ function checkAvailableSongs($connection) {
     return false;
 }
 
-// Query to fetch quiz data
+
 $query = "SELECT QuizID AS quiz_id, GenreID AS genre_id, CreatedTime AS created_time FROM quiz";
 $results = mysqli_query($connection, $query);
 
@@ -54,7 +54,7 @@ if (!$results) {
     die("Query failed: " . mysqli_error($connection));
 }
 
-// Check if delete action is requested
+
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $quiz_id = $_GET['id'];
 
@@ -245,7 +245,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     </style>
     <script>
         function addSong() {
-            console.log("Add Song button clicked!"); // Debugging
+            console.log("Add Song button clicked!"); 
             window.location.href = 'admin_quiz_management_2.php';
         }
     </script>
@@ -262,12 +262,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
 
     <?php include 'admin_hamburger_menu.php'; ?>
 
-    <!-- Content -->
     <div id="content">
         <div id="edit-quiz-container">
             <div class="section-title">Quiz Management</div>
 
-            <!-- Search Filter Section -->
             <div class="search-bar">
                 <label for="filter">Search by:</label>
                 <select id="filter">
@@ -282,7 +280,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
 
             </div>
 
-            <!-- Table Section -->
             <table>
             <thead>
             <tr>
@@ -328,14 +325,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
                     </tbody>
                     </table>
                     
-                    <!-- Back Button -->
-                    <!-- Back Button -->
                     <button onclick="back()" class="back-button">Back to Dashboard</button>
                     
         </div>
     </div>
 
-    <!-- Script for Search Functionality -->
     <script>
         function performSearch() {
             const searchInput = document.getElementById("search");
@@ -405,7 +399,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     </script>
     
      <?php 
-    // Close database connection at the very end of the page
+    
     mysqli_close($connection);
     ?>
 </body>

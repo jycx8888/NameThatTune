@@ -1,5 +1,5 @@
 <?php
-//Fetch user data from the database
+
 $stmt = $conn->prepare("SELECT ProfilePicture FROM user WHERE Username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
@@ -9,8 +9,8 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $profile_picture_path = $row['ProfilePicture'];
 } else {
-    // Handle case where user data is not found
-    $profile_picture_path = 'Icon/account.png'; // Default profile picture
+    
+    $profile_picture_path = 'Icon/account.png'; 
 }
     
 $stmt->close();

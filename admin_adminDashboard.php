@@ -7,21 +7,21 @@ if (!isset($_SESSION['username'])) {
 }
 
 $servername = "localhost";
-$dbusername = "root"; // Database username
-$dbpassword = ""; // Database password
+$dbusername = "root"; 
+$dbpassword = ""; 
 $dbname = "namethattune";
 
-// Create connection
+
 $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
-// Check connection
+
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
 $username = $_SESSION['username'];
 
-// Fetch user data from the database
+
 $stmt = $conn->prepare("SELECT ProfilePicture FROM admin WHERE Username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
@@ -31,8 +31,8 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $profile_picture_path = $row['ProfilePicture'];
 } else {
-    // Handle case where user data is not found
-    $profile_picture_path = 'Icon/account.png'; // Default profile picture
+    
+    $profile_picture_path = 'Icon/account.png'; 
 }
 
 $stmt->close();

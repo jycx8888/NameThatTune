@@ -62,10 +62,10 @@ function togglePasswordVisibility(fieldId, iconElement) {
     const icon = document.getElementById(iconElement);
     if (passwordField.type === 'password') {
         passwordField.type = 'text';
-        iconElement.src = 'Icon/show.png'; // Change to the open eye icon
+        iconElement.src = 'Icon/show.png'; 
     } else {
         passwordField.type = 'password';
-        iconElement.src = 'Icon/hide.png'; // Change to the closed eye icon
+        iconElement.src = 'Icon/hide.png'; 
     }
 }
 
@@ -97,7 +97,7 @@ function logout() {
 
 document.getElementById('volumeSlider').addEventListener('input', function() {
     const volume = this.value;
-    console.log('Volume:', volume); // Replace with actual volume control logic
+    console.log('Volume:', volume); 
 });
 
 function showWarning(message) {

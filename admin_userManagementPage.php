@@ -6,21 +6,21 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-$servername = "localhost"; // Or your database server IP
-$dbusername = "root";      // MySQL username
-$dbpassword = "";          // MySQL password
-$dbname = "namethattune";  // Database name
+$servername = "localhost"; 
+$dbusername = "root";      
+$dbpassword = "";          
+$dbname = "namethattune";  
 
 $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
-// Check the connection
+
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
 $username = $_SESSION['username'];
 
-// Fetch user data from the database
+
 $stmt = $conn->prepare("SELECT ProfilePicture FROM admin WHERE Username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
@@ -30,27 +30,27 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $profile_picture_path = $row['ProfilePicture'];
 } else {
-    // Handle case where user data is not found
-    $profile_picture_path = 'Icon/account.png'; // Default profile picture
+    
+    $profile_picture_path = 'Icon/account.png'; 
 } 
 
-// Handle deletion
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_user_id'])) {
     $delete_user_id = $_POST['delete_user_id'];
 
-    // Delete related records in record_question table
+    
     $delete_related_stmt = $conn->prepare("DELETE FROM record_question WHERE RecordID IN (SELECT RecordID FROM record WHERE UserID = ?)");
     $delete_related_stmt->bind_param("s", $delete_user_id);
     $delete_related_stmt->execute();
     $delete_related_stmt->close();
 
-    // Delete related records in record table
+    
     $delete_record_stmt = $conn->prepare("DELETE FROM record WHERE UserID = ?");
     $delete_record_stmt->bind_param("s", $delete_user_id);
     $delete_record_stmt->execute();
     $delete_record_stmt->close();
 
-    // Delete user
+    
     $delete_stmt = $conn->prepare("DELETE FROM user WHERE UserID = ?");
     $delete_stmt->bind_param("s", $delete_user_id);
     if ($delete_stmt->execute()) {
@@ -59,18 +59,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_user_id'])) {
         echo "<script>alert('Failed to delete user.');</script>";
     }
     $delete_stmt->close();
-    // Refresh the page
+    
     echo "<script>window.location.href = window.location.href;</script>";
     exit();
 }
 
-// Handle edit
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['edit_user_id'])) {
     $edit_user_id = $_POST['edit_user_id'];
     $edit_username = $_POST['edit_username'];
     $edit_profile_picture = $_FILES['edit_profile_picture'];
 
-    // Handle profile picture upload
+    
     if ($edit_profile_picture['error'] == UPLOAD_ERR_OK) {
         $target_dir = "uploads/";
         $target_file = $target_dir . basename($edit_profile_picture["name"]);
@@ -89,12 +89,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['edit_user_id'])) {
         echo "<script>alert('Failed to update user.');</script>";
     }
     $edit_stmt->close();
-    // Refresh the page
+    
     echo "<script>window.location.href = window.location.href;</script>";
     exit();
 }
 
-// Handle search
+
 $search_query = "";
 if (isset($_GET['search'])) {
     $search_query = $_GET['search'];
@@ -189,33 +189,33 @@ if (isset($_GET['search'])) {
 
     .back-button {
         display: block;
-        padding: 12px 0; /* Increased padding */
+        padding: 12px 0;
         font-family: 'Lalezar', system-ui;
         font-size: clamp(14px, 2vw, 16px);
         font-weight: 700;
-        background-color: #4CAF50; /* Green background */
-        color: white; /* White text */
-        border: none; /* Remove borders */
-        border-radius: 4px; /* Rounded corners */
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
         cursor: pointer; 
         width: clamp(160px, 20vw, 200px);
-        text-align: center; /* Center text */
+        text-align: center;
         justify-self: center;
     }
 
     .back-button:hover {
-        background-color: #45a049; /* Slightly darker green on hover */
+        background-color: #45a049;
     }
 
     .back-button:active {
-        background-color: #3e8e41; /* Even darker green on click */
-        box-shadow: 0 3px #666; /* Adjust shadow on click */
-        transform: translateY(2px); /* Slight button press effect */
+        background-color: #3e8e41;
+        box-shadow: 0 3px #666;
+        transform: translateY(2px);
     }
 
     .search-bar {
         margin-bottom: 24px;
-        border-radius: 10px; /* Add border radius */
+        border-radius: 10px;
     }
 
     .search-bar input {
@@ -225,27 +225,27 @@ if (isset($_GET['search'])) {
         font-family: 'Lalezar', system-ui;
         font-weight: 700;
         font-size: clamp(14px, 2vw, 16px);
-        border: 1px solid #ccc; /* Add border */
-        border-radius: 4px; /* Add border radius */
+        border: 1px solid #ccc;
+        border-radius: 4px;
     }
 
     .search-bar button {
-        padding: 10px 20px; /* Increase padding */
+        padding: 10px 20px;
         font-family: 'Lalezar', system-ui;
         font-size: clamp(14px, 2vw, 16px);
         font-weight: 700;
-        background-color: #4CAF50; /* Green background */
-        color: white; /* White text */
-        border: none; /* Remove borders */
-        border-radius: 4px; /* Rounded corners */
-        cursor: pointer; /* Pointer cursor */
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
     }
 
     .search-bar button:hover {
-        background-color: #45a049; /* Slightly darker green on hover */
+        background-color: #45a049;
     }
 
-    /* Pop-Up styles */
+   
     .editPopUpPage {
         font-family: 'Lalezar', system-ui;
         font-weight: 700;
@@ -292,18 +292,18 @@ if (isset($_GET['search'])) {
     }
 
     .pagination-button {
-        padding: 15px 30px; /* Increase padding */
-        font-size: 18px; /* Increase font size */
-        background-color: #4CAF50; /* Green background */
-        color: white; /* White text */
-        border: none; /* Remove borders */
-        border-radius: 4px; /* Rounded corners */
-        cursor: pointer; /* Pointer cursor */
-        margin: 5px; /* Add margin for spacing */
+        padding: 15px 30px;
+        font-size: 18px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 5px;
     }
 
     .pagination-button:hover {
-        background-color: #45a049; /* Slightly darker green on hover */
+        background-color: #45a049;
     }
 
     #edit-user-form {
@@ -354,7 +354,6 @@ if (isset($_GET['search'])) {
             </tr>
         </thead>
         <tbody id="table-body">
-            <!-- Rows will be dynamically generated here -->
         </tbody>
     </table>
 </div>
@@ -364,18 +363,15 @@ if (isset($_GET['search'])) {
     <button onclick="nextPage()" id="next-btn" class="pagination-button">Next</button>
 </div>
 
-<!-- Back to First Page Button -->
 <div id="back-to-first-page">
     <button onclick="resetSearch()" class="back-button">Back to Full List</button>
 </div>
 
-<!-- Back button -->
 <div class="center-align">
     <button onclick="goBackToDashboard()" class="back-button">Back to Dashboard</button>
 </div>
 </main>
 
-    <!-- edit pop-up page-->
     <div id="editPopUpPage" class="editPopUpPage">
         <div class="editPopUpPage-content">
             <span class="close" onclick="closeEditPopUpPage()">&times;</span>
@@ -396,17 +392,17 @@ if (isset($_GET['search'])) {
     
 
     function openEditPopUpPage(userId, username, profilePicture) {
-        // Set values in the pop-up
+        
         document.getElementById('edit_user_id').value = userId;
         document.getElementById('edit_username').value = username;
         document.getElementById('current_profile_picture').src = profilePicture;
     
-        // Show the pop-up
+        
         document.getElementById('editPopUpPage').style.display = "block";
     }
     
     function closeEditPopUpPage() {
-        // Hide the pop-up
+        
         document.getElementById('editPopUpPage').style.display = "none";
     }
 
@@ -417,10 +413,10 @@ if (isset($_GET['search'])) {
 
 
 <script>
-    const rowsPerPage = 10; // Number of rows to display per page
-    let currentPage = 1; // Current page
+    const rowsPerPage = 10; 
+    let currentPage = 1; 
     const users = <?php
-        // Fetch user data from the database
+        
         $sql = "SELECT UserID, Username, DateJoined, ProfilePicture FROM user WHERE UserID LIKE ? OR Username LIKE ?";
         $stmt = $conn->prepare($sql);
         $search_param = "%" . $search_query . "%";
@@ -434,17 +430,17 @@ if (isset($_GET['search'])) {
         echo json_encode($users);
     ?>;
 
-    // Function to render the table and manage button visibility
+    
     function renderTable() {
     const tableBody = document.getElementById('table-body');
     const backToFirstPageButton = document.getElementById('back-to-first-page');
 
-    tableBody.innerHTML = ''; // Clear previous content
+    tableBody.innerHTML = ''; 
     const start = (currentPage - 1) * rowsPerPage;
     const end = start + rowsPerPage;
     const paginatedUsers = users.slice(start, end);
 
-    // Populate the table with paginated data
+    
     paginatedUsers.forEach(user => {
         const row = `
             <tr>
@@ -463,23 +459,23 @@ if (isset($_GET['search'])) {
         tableBody.insertAdjacentHTML('beforeend', row);
     });
 
-    // Update pagination controls
+    
     document.getElementById('prev-btn').style.display = currentPage > 1 ? 'inline-block' : 'none';
     document.getElementById('next-btn').style.display = currentPage * rowsPerPage < users.length ? 'inline-block' : 'none';
 
-    // Show or hide the back-to-first-page button based on search query
+    
     const searchQuery = document.querySelector('input[name="search"]').value.trim();
     backToFirstPageButton.style.display = searchQuery ? 'block' : 'none';
 }
 
 
-    // Function to reset the table to the original unfiltered list
+    
     function resetSearch() {
             window.location.href = 'admin_userManagementPage.php';
         }
 
 
-    // Function to fetch the original users without any search filter
+    
     async function fetchOriginalUsers() {
         const response = await fetch(window.location.href.split('?')[0] + "?reset=1");
         if (!response.ok) {
@@ -504,7 +500,7 @@ if (isset($_GET['search'])) {
     }
 }
 
-    // Initial rendering
+    
     renderTable();
 </script>
 </body>

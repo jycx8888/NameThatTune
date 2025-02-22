@@ -3,7 +3,7 @@
 <div id="hamburger-menu">
         <div class="close-btn" onclick="toggleMenu()">×</div>
         <div class="profile-container">
-            <img src="<?php echo htmlspecialchars($profile_picture_path); ?>" alt="Profile Picture" id="profilePicture" onclick="showPopup('profilePopup')"> <!-- Display the profile picture -->
+            <img src="<?php echo htmlspecialchars($profile_picture_path); ?>" alt="Profile Picture" id="profilePicture" onclick="showPopup('profilePopup')">
             <img src="Icon/pencil.png" alt="Edit" class="edit-icon" style="width: 60px; height: 60px;" onclick="showPopup('profilePopup')">
         </div>
         <div id="username"><?php echo htmlspecialchars($username); ?></div>
@@ -13,7 +13,6 @@
         <button class="logout-btn" onclick="confirmLogout()">Log Out</button>
     </div>
 
-    <!-- Profile Popup -->
     <div id="profilePopup" class="overlay">
         <div class="popup">
             <span class="close-btn" onclick="closePopup('profilePopup')">&times;</span>
@@ -25,7 +24,6 @@
         </div>
     </div>
 
-    <!-- Username Popup -->
     <div id="usernamePopup" class="overlay">
         <div class="popup">
             <span class="close-btn" onclick="closePopup('usernamePopup')">&times;</span>
@@ -37,7 +35,6 @@
         </div>
     </div>
 
-    <!-- Password Popup -->
     <div id="passwordPopup" class="overlay">
         <div class="popup">
             <span class="close-btn" onclick="closePopup('passwordPopup')">&times;</span>
@@ -60,7 +57,6 @@
         </div>
     </div>
 
-    <!-- Warning Popup -->
     <div id="warningPopup" class="overlay">
         <div class="popup">
             <span class="close-btn" onclick="closeWarningPopup()">&times;</span>

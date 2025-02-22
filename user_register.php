@@ -4,10 +4,10 @@ $dbusername = "root";
 $dbpassword = "";
 $dbname = "namethattune";
 
-// Create connection
+
 $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname,3306);
 
-// Check connection
+
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -16,10 +16,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
     $dateJoined = date("Y-m-d");
-    $answerCorrectRate = 0; // Default value
-    $profilePicture = 'uploads/avatar.png'; // Path to the default profile picture
+    $answerCorrectRate = 0; 
+    $profilePicture = 'uploads/avatar.png'; 
  
-    // Generate UserID
+    
     $result = $conn->query("SELECT UserID FROM user ORDER BY UserID DESC LIMIT 1");
     $row = $result->fetch_assoc();
 
@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $userCount = (int)substr($lastUserID, 1) +1;
     $userID = 'U' . str_pad($userCount, 3, '0', STR_PAD_LEFT);
  
-    // Insert user into the database
+    
     $sql = "INSERT INTO user (UserID, Username, Password, DateJoined, AnswerCorrectRate, ProfilePicture) VALUES ('$userID', '$username', '$password', '$dateJoined', '$answerCorrectRate', '$profilePicture')";
  
     if ($conn->query($sql) === TRUE) {
@@ -53,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         #register-container {
             display: flex;
             justify-content: center;
-            height: 75%; /* Adjust height to account for header */
+            height: 75%;
             width: 100%;
             margin: 90px 0 180px 0;
         }
@@ -89,9 +89,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .logo-image {
             width: 150px;
             height: 150px;
-            border: 3px solid #000; /* Black border */
+            border: 3px solid #000;
             border-radius: 25px;
-            margin-bottom: 20px; /* Space between the logo and the form */
+            margin-bottom: 20px;
         }
 
         #button-container {
@@ -123,7 +123,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: white;
             cursor: pointer;
             font-family: "Lalezar", system-ui;
-            font-weight: 1000; /* Change the font family */
+            font-weight: 1000;
             font-size: 18px;
             align-self: center;
         }
@@ -133,7 +133,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .terms {
-            font-size: 12px; /* Smaller font size for terms and conditions */
+            font-size: 12px;
             font-family: "Roboto", sans-serif;
             font-weight: 100;
             font-style: normal;
@@ -228,7 +228,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <p id="copy">&copy; 2025 NameThatTune. All Rights Reserved.</p>
     </div>
 
-    <!-- Warning Popup -->
     <div id="warningPopup" class="overlay">
         <div class="popup">
             <span class="close-btn" onclick="closeWarningPopup()">&times;</span>
@@ -282,10 +281,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             const icon = document.getElementById(iconElement);
             if (passwordField.type === 'password') {
                 passwordField.type = 'text';
-                iconElement.src = 'Icon/show.png'; // Change to the open eye icon
+                iconElement.src = 'Icon/show.png'; 
             } else {
                 passwordField.type = 'password';
-                iconElement.src = 'Icon/hide.png'; // Change to the closed eye icon
+                iconElement.src = 'Icon/hide.png'; 
             }
         }
 

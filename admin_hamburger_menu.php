@@ -12,7 +12,6 @@
         <button class="logout-btn" onclick="confirmLogout()">Log Out</button>
     </div>
 
-    <!-- Profile Popup -->
     <div id="profilePopup" class="overlay">
         <div class="popup">
             <span class="close-btn" onclick="closePopup('profilePopup')">&times;</span>
@@ -24,7 +23,6 @@
         </div>
     </div>
 
-    <!-- Username Popup -->
     <div id="usernamePopup" class="overlay">
         <div class="popup">
             <span class="close-btn" onclick="closePopup('usernamePopup')">&times;</span>
@@ -36,7 +34,6 @@
         </div>
     </div>
 
-    <!-- Password Popup -->
     <div id="passwordPopup" class="overlay">
         <div class="popup">
             <span class="close-btn" onclick="closePopup('passwordPopup')">&times;</span>
@@ -59,7 +56,6 @@
         </div>
     </div>
 
-    <!-- Warning Popup -->
     <div id="warningPopup" class="overlay">
         <div class="popup">
             <span class="close-btn" onclick="closeWarningPopup()">&times;</span>

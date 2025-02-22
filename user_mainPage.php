@@ -7,21 +7,21 @@ if (!isset($_SESSION['username'])) {
 }
 
 $servername = "localhost";
-$dbusername = "root"; // Database username
-$dbpassword = ""; // Database password
+$dbusername = "root"; 
+$dbpassword = ""; 
 $dbname = "namethattune";
 
-// Create connection
+
 $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
-// Check connection
+
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
 $username = $_SESSION['username'];
 
-// Fetch user data from the database
+
 $stmt = $conn->prepare("SELECT ProfilePicture FROM user WHERE Username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
@@ -31,8 +31,8 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $profile_picture_path = $row['ProfilePicture'];
 } else {
-    // Handle case where user data is not found
-    $profile_picture_path = 'Icon/account.png'; // Default profile picture
+    
+    $profile_picture_path = 'Icon/account.png'; 
 }
 
 $stmt->close();
@@ -117,14 +117,14 @@ $conn->close();
             align-items: center;
             padding: 8vh 0;
             font-family: "Lalezar", system-ui;
-            font-weight: 1000; /* Change the font family */
+            font-weight: 1000;
             font-size: 20px;
         }
 
         #startQuiz img {
             width: 150px;
             height: 150px;
-            border: 3px solid #000; /* Black border */
+            border: 3px solid #000;
             border-radius: 25px;
         }
 
@@ -143,7 +143,7 @@ $conn->close();
             color: white;
             cursor: pointer;
             font-family: "Lalezar", system-ui;
-            font-weight: 1000; /* Change the font family */
+            font-weight: 1000;
             font-size: clamp(1.15em, 4vw, 1.25em);
             align-self: center;
         }
@@ -170,61 +170,6 @@ $conn->close();
     </div>
 
     <?php include 'user_hamburger_menu.php'; ?>
-
-    <!-- Profile Popup -->
-    <div id="profilePopup" class="overlay">
-        <div class="popup">
-            <span class="close-btn" onclick="closePopup('profilePopup')">&times;</span>
-            <h2>Change Profile Image</h2>
-            <form action="" method="post" enctype="multipart/form-data">
-                <input type="file" name="ProfilePicture" id="profileImageInput">
-                <button type="submit" name="update_profile">Save</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Username Popup -->
-    <div id="usernamePopup" class="overlay">
-        <div class="popup">
-            <span class="close-btn" onclick="closePopup('usernamePopup')">&times;</span>
-            <h2>Change Username</h2>
-            <form onsubmit="return validateNewUsername()" action="" method="post">
-                <input type="text" name="newUsername" id="usernameInput" placeholder="Enter new username">
-                <button type="submit" name="update_username">Save</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Password Popup -->
-    <div id="passwordPopup" class="overlay">
-        <div class="popup">
-            <span class="close-btn" onclick="closePopup('passwordPopup')">&times;</span>
-            <h2>Change Password</h2>
-            <form onsubmit="return validateNewPassword()" action="" method="post">
-                <div style="position: relative;">
-                    <input type="password" name="newPassword" id="newPasswordInput" placeholder="Enter new password" required>
-                    <span class="toggle-password"  style="position: absolute; right: 15px; object-fit: contain; top: 50%; transform: translateY(-50%); cursor: pointer;">
-                        <img src="Icon/hide.png" alt="Show Password" onclick="togglePasswordVisibility('newPasswordInput',this)" style="width: 20px; height: 20px;">
-                    </span>
-                </div>
-                <div style="position: relative;">
-                    <input type="password" name="confirmPassword" id="confirmPasswordInput" placeholder="Confirm new password" required>
-                    <span class="toggle-password"  style="position: absolute; right: 15px; object-fit: contain; top: 50%; transform: translateY(-50%); cursor: pointer;">
-                        <img src="Icon/hide.png" name alt="Show Password" onclick="togglePasswordVisibility('confirmPasswordInput',this)" style="width: 20px; height: 20px;">
-                    </span>
-                </div>
-                <button type="submit" name="update_password">Save</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Warning Popup -->
-    <div id="warningPopup" class="overlay">
-        <div class="popup">
-            <span class="close-btn" onclick="closeWarningPopup()">&times;</span>
-            <p id="warningMessage"></p>
-        </div>
-    </div>
 
     <div id="startQuiz-container">
         <div id="startQuiz">

@@ -23,7 +23,7 @@
 </head>
 <body>
     <div id="countdown">3</div>
-    <audio id="countdown-audio" src="Sound Effect/countdown.mp3"></audio> <!-- Add the audio element -->
+    <audio id="countdown-audio" src="Sound Effect/countdown.mp3"></audio> 
 
     <script>
         let countdown = 3;

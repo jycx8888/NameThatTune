@@ -6,20 +6,17 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Step 1: Database Connection
 $servername = "localhost";
-$dbusername = "root"; // Replace with your MySQL username
-$password = ""; // Replace with your MySQL password
-$dbname = "namethattune"; // Replace with your database name
+$dbusername = "root"; 
+$password = ""; 
+$dbname = "namethattune"; 
 
 $conn = new mysqli($servername, $dbusername, $password, $dbname);
 
-// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Step 2: Fetch Data for Analytics
 $sql = "SELECT QuizID, COUNT(*) AS TotalAttempts, 
         SUM(Result) AS TotalCorrect, 
         COUNT(*) - SUM(Result) AS TotalIncorrect 
@@ -44,8 +41,7 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $profile_picture_path = $row['ProfilePicture'];
 } else {
-    // Handle case where user data is not found
-    $profile_picture_path = 'Icon/account.png'; // Default profile picture
+    $profile_picture_path = 'Icon/account.png';
 }
 
 $stmt->close();
@@ -80,7 +76,7 @@ $conn->close();
             border-collapse: collapse;
             width: 80%;
             margin: 20px auto;
-            background-color: white; /* White background for the table */
+            background-color: white;
         }
         th, td {
             font-family: 'Lalezar', system-ui;
@@ -97,12 +93,12 @@ $conn->close();
         canvas {
             display: block;
             margin: 20px auto;
-            background-color: white; /* White background for the chart */
-            padding: 20px; /* Optional: Add padding for better appearance */
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for better appearance */
-            width: 100%; /* Make the canvas take full width */
-            max-width: 1000px; /* Set a maximum width */
-            height: 500px; /* Set a fixed height */
+            background-color: white; 
+            padding: 20px; 
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1000px; 
+            height: 500px; 
         }
         .back-button {
             font-family: 'Lalezar', system-ui;
@@ -127,13 +123,13 @@ $conn->close();
             margin-bottom: 20px;
             display: flex;
             justify-content: center;
-            gap: 10px; /* Adds space between the search input and buttons */
+            gap: 10px; 
         }
         
         .search-bar input[type="text"] {
             font-family: 'Lalezar', system-ui;
             font-weight: 500;
-            width: 60%; /* Adjust width to fit the buttons */
+            width: 60%; 
             padding: 10px;
             font-size: clamp(14px, 2vw, 16px);
             border: 1px solid #ccc;
@@ -159,7 +155,7 @@ $conn->close();
         .refresh-button {
             padding: 10px 20px;
             font-size: 16px;
-            background-color: #f44336; /* Red color for the refresh button */
+            background-color: #f44336;
             color: white;
             border: none;
             border-radius: 4px;
@@ -167,17 +163,17 @@ $conn->close();
         }
         
         .refresh-button:hover {
-            background-color: #e53935; /* Darker red on hover */
+            background-color: #e53935;
         }
             </style>
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         </head>
         <body>
-   <!-- Header Section -->
+  
    <div id="header">
         <h1><a href="admin_adminDashboard.php">NameThatTune</a></h1>
         <div id="login" onclick="">
-            <img src="<?php echo htmlspecialchars($profile_picture_path); ?>"> <!-- Display the profile picture -->
+            <img src="<?php echo htmlspecialchars($profile_picture_path); ?>">
             <p><?php echo htmlspecialchars($username); ?></p>
         </div>
     </div>
@@ -221,12 +217,10 @@ $conn->close();
             const tableBody = document.getElementById('table-body');
             const rows = tableBody.getElementsByTagName('tr');
 
-            // Show all table rows
             for (let i = 0; i < rows.length; i++) {
                 rows[i].style.display = '';
             }
         
-            // Reset chart data
             quizChart.data.labels = labels;
             quizChart.data.datasets[0].data = totalAttempts;
             quizChart.data.datasets[1].data = totalCorrect;
@@ -236,13 +230,11 @@ $conn->close();
     </script>
 
     <script>
-        // Prepare data for the chart
         const labels = <?php echo json_encode(array_column($data, 'QuizID')); ?>;
         const totalAttempts = <?php echo json_encode(array_column($data, 'TotalAttempts')); ?>;
         const totalCorrect = <?php echo json_encode(array_column($data, 'TotalCorrect')); ?>;
         const totalIncorrect = <?php echo json_encode(array_column($data, 'TotalIncorrect')); ?>;
 
-        // Configure the chart
         const data = {
             labels: labels,
             datasets: [

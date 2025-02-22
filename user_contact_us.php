@@ -2,14 +2,14 @@
 session_start();
 
 $servername = "localhost";
-$dbusername = "root"; // Database username
-$dbpassword = ""; // Database password
+$dbusername = "root"; 
+$dbpassword = ""; 
 $dbname = "namethattune";
 
-// Create connection
+
 $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
-// Check connection
+
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -34,7 +34,7 @@ $conn->close();
     <style>
         
         #content {
-            flex-grow: 5; /* This ensures content takes up remaining space */
+            flex-grow: 5;
             display: flex;
             justify-content: center;
             font-family: "Lalezar", system-ui;
@@ -44,7 +44,7 @@ $conn->close();
         .container {
             width: clamp(420px, 50%, 800px);
             margin: 20px auto;
-            padding: 20px 20px 10px; /* Reduced the padding-bottom from 20px to 10px */
+            padding: 20px 20px 10px;
             background: #fff;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
@@ -53,7 +53,7 @@ $conn->close();
         }
 
         .container-short-bottom {
-            margin-bottom: 5px; /* Reduced from 10px to 5px */
+            margin-bottom: 5px;
         }
         
         .contact-info {
@@ -119,10 +119,10 @@ $conn->close();
             <div class="contact-info">
                 <h1>Contact Us</h1>
                 <p>We'd love to hear from you! Connect with us through any of the following channels:</p>
-                <a href="https://www.instagram.com" target="_blank">
+                <a href="https:
                     <span class="icon">📸</span> Follow us on Instagram
                 </a>
-                <a href="https://www.facebook.com" target="_blank">
+                <a href="https:
                     <span class="icon">📘</span> Like us on Facebook
                 </a>
                 <a href="mailto:namethattune@gmail.com">

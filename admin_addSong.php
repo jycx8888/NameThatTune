@@ -6,23 +6,23 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Database connection
+
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "namethattune";
 
-// Create connection
+
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
+
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
 $username = $_SESSION['username'];
 
-// Fetch user data from the database
+
 $stmt = $conn->prepare("SELECT ProfilePicture FROM admin WHERE Username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
@@ -32,32 +32,32 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $profile_picture_path = $row['ProfilePicture'];
 } else {
-    // Handle case where user data is not found
-    $profile_picture_path = 'Icon/account.png'; // Default profile picture
+    
+    $profile_picture_path = 'Icon/account.png'; 
 }
 
-// Generate new Song IDs and insert into song table
+
 $result = $conn->query("SELECT SongID FROM song ORDER BY SongID DESC LIMIT 1");
 $lastSongID = $result->fetch_assoc()['SongID'];
 $newSongID = 'S' . str_pad((int)substr($lastSongID, 1) + 1, 3, '0', STR_PAD_LEFT);
 
-// Handle form submission
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $songName = $_POST['songName'];
-    $questionID = NULL; // Question ID remains empty
+    $questionID = NULL; 
 
-    // Handle file uploads
+    
     $audioFile = $_FILES['audioFile']['name'];
     $imageFile = $_FILES['imageFile']['name'];
 
-    // Move uploaded files to a designated directory
+    
     $audioTargetDir = "Question Songs/";
     $imageTargetDir = "Question Images/";
     $audioFilePath = $audioTargetDir . basename($audioFile);
     $imageFilePath = $imageTargetDir . basename($imageFile);
 
     if (move_uploaded_file($_FILES['audioFile']['tmp_name'], $audioFilePath) && move_uploaded_file($_FILES['imageFile']['tmp_name'], $imageFilePath)) {
-        // Insert song details into the database
+        
         $sql = "INSERT INTO song (SongID, SongName, QuestionID, SongAudio, SongImage) VALUES ('$newSongID','$songName', NULL, '$audioFilePath', '$imageFilePath')";
 
         if ($conn->query($sql) === TRUE) {

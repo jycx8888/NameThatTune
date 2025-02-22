@@ -2,14 +2,14 @@
 session_start();
 
 $servername = "localhost";
-$dbusername = "root"; // Database username
-$dbpassword = ""; // Database password
+$dbusername = "root"; 
+$dbpassword = ""; 
 $dbname = "namethattune";
 
-// Create connection
+
 $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
-// Check connection
+
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Prepare and bind
+    
     $stmt = $conn->prepare("SELECT * FROM user WHERE Username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
@@ -29,9 +29,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        // Compare passwords in a case-sensitive manner
+        
         if ($row['Password'] === $password) {
-            // Login successful
+            
             $_SESSION['username'] = $username;
             $_SESSION['user_id'] = $row['UserID'];
             $_SESSION['password'] = $row['Password'];
@@ -39,11 +39,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: user_mainPage.php");
             exit();
         } else {
-            // Login failed
+            
             $login_error = "Invalid username or password.";
         }
     } else {
-        // Login failed
+        
         $login_error = "Invalid username or password.";
     }
 
@@ -66,7 +66,7 @@ $conn->close();
         #login-container {
             display: flex;
             justify-content: center;
-            height: 50%; /* Adjust height to account for header */
+            height: 50%;
             width: 100%;
             margin: 120px 0 180px 0;
         }
@@ -102,9 +102,9 @@ $conn->close();
         .logo-image {
             width: 150px;
             height: 150px;
-            border: 3px solid #000; /* Black border */
+            border: 3px solid #000;
             border-radius: 25px;
-            margin-bottom: 20px; /* Space between the logo and the form */
+            margin-bottom: 20px;
         }
         
         #button-container {
@@ -122,7 +122,7 @@ $conn->close();
             color: white;
             cursor: pointer;
             font-family: "Lalezar", system-ui;
-            font-weight: 1000; /* Change the font family */
+            font-weight: 1000;
             font-size: 18px;
             align-self: center;
         }
@@ -137,7 +137,7 @@ $conn->close();
         }
 
         .createAccount {
-            font-size: 12px; /* Smaller font size for terms and conditions */
+            font-size: 12px;
             font-family: "Roboto", sans-serif;
             font-weight: 100;
             font-style: normal;
@@ -281,10 +281,10 @@ $conn->close();
             const icon = document.getElementById(iconElement);
             if (passwordField.type === 'password') {
                 passwordField.type = 'text';
-                iconElement.src = 'Icon/show.png'; // Change to the open eye icon
+                iconElement.src = 'Icon/show.png'; 
             } else {
                 passwordField.type = 'password';
-                iconElement.src = 'Icon/hide.png'; // Change to the closed eye icon
+                iconElement.src = 'Icon/hide.png'; 
             }
         }
 

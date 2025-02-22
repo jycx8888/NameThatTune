@@ -17,10 +17,8 @@ $dbusername = "root";
 $dbpassword = "";
 $dbname = "namethattune";
 
-// Create connection
 $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
-// Check connection
 if ($conn->connect_error) {
     error_log("Connection failed: " . $conn->connect_error);
     die(json_encode(['success' => false, 'message' => 'Connection failed: ' . $conn->connect_error]));
@@ -63,7 +61,7 @@ if (!$stmt) {
     error_log("Prepare failed: " . $conn->error);
     die(json_encode(['success' => false, 'message' => 'Prepare failed: ' . $conn->error]));
 }
-$stmt->bind_param("ssssss", $recordId, $correctAnswersCount, $startTime, $userId, $quizId, $timeTaken); // Bind UserID as string
+$stmt->bind_param("ssssss", $recordId, $correctAnswersCount, $startTime, $userId, $quizId, $timeTaken); 
 if (!$stmt->execute()) {
     error_log("Execute failed: " . $stmt->error);
     die(json_encode(['success' => false, 'message' => 'Execute failed: ' . $stmt->error]));
