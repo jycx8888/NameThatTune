@@ -1,0 +1,7 @@
+Good day sir, this is the insturctions to use our website
+our admin website and user website is seperate, so if need to start 
+for admin : admin_login.php
+for user : user_login.php
+and also we have provide one mp3 and one image to let you add the song on the moodle, and only you can have
+enough five song to add a quiz.
+Enjoy and have fun!
